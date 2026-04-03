@@ -1,45 +1,18 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useApp } from "@/context/AppContext";
 import { Building2, Star, TrendingUp, Users } from "lucide-react";
 import { motion } from "motion/react";
 
-const partners = [
-  { name: "Fabindia", sector: "Retail & Handicrafts", openings: 120 },
-  { name: "Lijjat Papad", sector: "Food Industry", openings: 85 },
-  { name: "BSNL", sector: "Telecom", openings: 45 },
-  { name: "State Bank of India", sector: "Banking", openings: 30 },
-  { name: "Apollo Clinics", sector: "Healthcare", openings: 60 },
-  { name: "Reliance Trends", sector: "Retail", openings: 95 },
-];
-
-const stories = [
-  {
-    name: "Mona Singh",
-    from: "Bareilly, UP",
-    now: "Tailoring Business Owner",
-    income: "₹25,000/month",
-    quote:
-      "DMVV Foundation's tailoring training completely transformed my life. I now run a boutique employing 5 other women from my village.",
-  },
-  {
-    name: "Fatima Begum",
-    from: "Kishanganj, Bihar",
-    now: "Beauty Salon Owner",
-    income: "₹18,000/month",
-    quote:
-      "I never thought I could own my own business. After the beauty training, I started my own salon and now I'm financially independent.",
-  },
-  {
-    name: "Rekha Devi",
-    from: "Alwar, Rajasthan",
-    now: "Food Processing Entrepreneur",
-    income: "₹15,000/month",
-    quote:
-      "With the food processing skills and MUDRA loan support, I started a pickle manufacturing unit. My products now sell in 3 districts.",
-  },
-];
-
 export default function Employment() {
+  const { employmentPartners, successStories } = useApp();
+  const activePartners = employmentPartners
+    .filter((p) => p.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const activeStories = successStories
+    .filter((s) => s.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <main className="min-h-screen">
       <section className="relative h-52 flex items-center bg-ngo-green">
@@ -104,23 +77,38 @@ export default function Employment() {
         <h2 className="text-2xl font-extrabold text-gray-900 mb-6">
           Our Industry Partners
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {partners.map((p) => (
-            <Card
-              key={p.name}
-              className="hover:shadow-md transition-shadow text-center"
-            >
-              <CardContent className="p-4">
-                <Building2 size={24} className="text-ngo-green mx-auto mb-2" />
-                <div className="font-bold text-sm text-gray-800">{p.name}</div>
-                <div className="text-xs text-gray-500">{p.sector}</div>
-                <Badge className="mt-2 bg-green-100 text-green-700 text-xs">
-                  {p.openings} openings
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {activePartners.length === 0 ? (
+          <div
+            className="text-center py-10 text-gray-400"
+            data-ocid="employment.empty_state"
+          >
+            Koi partner available nahi hai.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {activePartners.map((p, idx) => (
+              <Card
+                key={p.id}
+                className="hover:shadow-md transition-shadow text-center"
+                data-ocid={`employment.item.${idx + 1}`}
+              >
+                <CardContent className="p-4">
+                  <Building2
+                    size={24}
+                    className="text-ngo-green mx-auto mb-2"
+                  />
+                  <div className="font-bold text-sm text-gray-800">
+                    {p.name}
+                  </div>
+                  <div className="text-xs text-gray-500">{p.sector}</div>
+                  <Badge className="mt-2 bg-green-100 text-green-700 text-xs">
+                    {p.openings} openings
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Success Stories */}
@@ -129,42 +117,59 @@ export default function Employment() {
           <h2 className="text-2xl font-extrabold text-white mb-8 text-center">
             Success Stories
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {stories.map((s, idx) => (
-              <motion.div
-                key={s.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Card className="bg-white h-full">
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-ngo-orange rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        {s.name.charAt(0)}
+          {activeStories.length === 0 ? (
+            <div className="text-center py-10 text-green-200">
+              Koi success story available nahi hai.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {activeStories.map((s, idx) => (
+                <motion.div
+                  key={s.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  data-ocid={`employment.item.${idx + 1}`}
+                >
+                  <Card className="bg-white h-full">
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-3 mb-4">
+                        {s.photoUrl ? (
+                          <img
+                            src={s.photoUrl}
+                            alt={s.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-ngo-orange rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {s.name.charAt(0)}
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-bold text-gray-900">
+                            {s.name}
+                          </div>
+                          <div className="text-xs text-gray-500">{s.from}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-gray-900">{s.name}</div>
-                        <div className="text-xs text-gray-500">{s.from}</div>
+                      <p className="text-sm text-gray-600 italic mb-4">
+                        "{s.quote}"
+                      </p>
+                      <div className="border-t pt-3 flex justify-between text-xs">
+                        <span className="text-ngo-green font-medium">
+                          {s.now}
+                        </span>
+                        <span className="text-ngo-orange font-bold">
+                          {s.income}
+                        </span>
                       </div>
-                    </div>
-                    <p className="text-sm text-gray-600 italic mb-4">
-                      "{s.quote}"
-                    </p>
-                    <div className="border-t pt-3 flex justify-between text-xs">
-                      <span className="text-ngo-green font-medium">
-                        {s.now}
-                      </span>
-                      <span className="text-ngo-orange font-bold">
-                        {s.income}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>

@@ -7,53 +7,70 @@ import {
   Award,
   Banknote,
   BookOpen,
+  Briefcase,
   ChevronRight,
   Clock,
+  Globe,
   GraduationCap,
   Heart,
+  HeartHandshake,
+  HomeIcon,
+  Leaf,
   MapPin,
+  Shield,
+  Star,
   Users,
+  Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 
-const initiatives = [
-  { icon: GraduationCap, label: "Vocational Training", color: "text-blue-600" },
-  { icon: BookOpen, label: "Education Support", color: "text-green-600" },
-  { icon: Banknote, label: "Financial Empowerment", color: "text-orange-500" },
-  { icon: Heart, label: "Healthcare", color: "text-red-500" },
-];
+// Icon lookup map for initiative & stat icons stored as strings
+const ICON_MAP: Record<string, React.ElementType> = {
+  GraduationCap,
+  BookOpen,
+  Banknote,
+  Heart,
+  Users,
+  MapPin,
+  Award,
+  Clock,
+  Leaf,
+  Shield,
+  Star,
+  Zap,
+  HomeIcon,
+  Briefcase,
+  Globe,
+  Home: HomeIcon,
+  HeartHandshake,
+  ArrowRight,
+};
 
-const stats = [
-  {
-    icon: Users,
-    number: "50,000+",
-    label: "Women Empowered",
-    color: "text-green-700",
-  },
-  {
-    icon: MapPin,
-    number: "200+",
-    label: "Active Centers",
-    color: "text-orange-500",
-  },
-  {
-    icon: Award,
-    number: "15+",
-    label: "States Covered",
-    color: "text-blue-600",
-  },
-  {
-    icon: Clock,
-    number: "10+",
-    label: "Years of Service",
-    color: "text-purple-600",
-  },
-];
+function getIcon(name: string): React.ElementType {
+  return ICON_MAP[name] ?? Star;
+}
 
 export default function Home() {
-  const { news } = useApp();
+  const {
+    news,
+    homeHero,
+    homeStats,
+    homeInitiatives,
+    homeImpactStories,
+    homeCTA,
+  } = useApp();
+
   const latestNews = news.filter((n) => n.isPublished).slice(0, 3);
+  const activeStats = homeStats
+    .filter((s) => s.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const activeInitiatives = homeInitiatives
+    .filter((i) => i.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const activeImpactStories = homeImpactStories
+    .filter((s) => s.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <main>
@@ -77,15 +94,22 @@ export default function Home() {
             <Badge className="bg-ngo-orange text-white mb-4 text-sm px-3 py-1">
               महिला सशक्तिकरण
             </Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
-              Empowering Women,
-              <br />
-              <span className="text-ngo-orange">Transforming India</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 whitespace-pre-line">
+              {homeHero.heading.split("\n").map((line) =>
+                line.includes("Transform") || line.includes("India") ? (
+                  <span key={line} className="text-ngo-orange">
+                    {line}
+                  </span>
+                ) : (
+                  <span key={line}>
+                    {line}
+                    <br />
+                  </span>
+                ),
+              )}
             </h1>
             <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-xl leading-relaxed">
-              DMVV Bhartiy Mahila Shakti Foundation™ works tirelessly to provide
-              vocational training, financial support, and opportunities for
-              women across rural and urban India.
+              {homeHero.subheading}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/about">
@@ -94,7 +118,8 @@ export default function Home() {
                   className="bg-ngo-orange text-white hover:bg-ngo-orange-dark font-semibold"
                   data-ocid="hero.primary_button"
                 >
-                  Explore Our Work <ArrowRight size={16} className="ml-2" />
+                  {homeHero.primaryBtnText}{" "}
+                  <ArrowRight size={16} className="ml-2" />
                 </Button>
               </Link>
               <Link to="/signup">
@@ -104,7 +129,7 @@ export default function Home() {
                   className="border-white text-white hover:bg-white/20"
                   data-ocid="hero.secondary_button"
                 >
-                  Register Now
+                  {homeHero.secondaryBtnText}
                 </Button>
               </Link>
             </div>
@@ -123,53 +148,48 @@ export default function Home() {
                   <h3 className="font-bold text-sm">Our Core Initiatives</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-3 p-4">
-                  {initiatives.map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-xl"
-                    >
-                      <item.icon size={28} className={item.color} />
-                      <span className="text-xs font-medium text-gray-700 mt-2">
-                        {item.label}
-                      </span>
-                    </div>
-                  ))}
+                  {activeInitiatives.map((item) => {
+                    const Icon = getIcon(item.iconName);
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex flex-col items-center text-center p-3 bg-gray-50 rounded-xl"
+                        data-ocid={`initiatives.item.${item.sortOrder}`}
+                      >
+                        <Icon size={28} className={item.color} />
+                        <span className="text-xs font-medium text-gray-700 mt-2">
+                          {item.label}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
                 <div className="border-t px-5 py-3">
                   <div className="font-semibold text-sm text-gray-800 mb-3">
                     Impact Stories
                   </div>
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 p-2 bg-green-50 rounded-lg">
-                      <img
-                        src="/assets/generated/training-tailoring.dim_600x400.jpg"
-                        className="w-10 h-10 object-cover rounded-lg"
-                        alt="Training"
-                      />
-                      <div>
-                        <div className="text-xs font-semibold text-gray-800">
-                          Sunita's Story
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          From trainee to entrepreneur
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-2 bg-orange-50 rounded-lg">
-                      <img
-                        src="/assets/generated/employment-success.dim_600x400.jpg"
-                        className="w-10 h-10 object-cover rounded-lg"
-                        alt="Employment"
-                      />
-                      <div>
-                        <div className="text-xs font-semibold text-gray-800">
-                          Rekha's Journey
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Self-reliant through microfinance
+                    {activeImpactStories.map((story) => (
+                      <div
+                        key={story.id}
+                        className={`flex items-center gap-3 p-2 ${story.bgColor} rounded-lg`}
+                        data-ocid={`impact_stories.item.${story.sortOrder}`}
+                      >
+                        <img
+                          src={story.imageUrl}
+                          className="w-10 h-10 object-cover rounded-lg"
+                          alt={story.title}
+                        />
+                        <div>
+                          <div className="text-xs font-semibold text-gray-800">
+                            {story.title}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {story.subtitle}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </CardContent>
@@ -190,22 +210,26 @@ export default function Home() {
             <Card className="shadow-xl rounded-2xl">
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                  {stats.map((stat) => (
-                    <div
-                      key={stat.label}
-                      className="flex flex-col items-center"
-                    >
-                      <stat.icon size={28} className={stat.color} />
+                  {activeStats.map((stat) => {
+                    const Icon = getIcon(stat.iconName);
+                    return (
                       <div
-                        className={`text-3xl font-extrabold mt-2 ${stat.color}`}
+                        key={stat.id}
+                        className="flex flex-col items-center"
+                        data-ocid={`stats.item.${stat.sortOrder}`}
                       >
-                        {stat.number}
+                        <Icon size={28} className={stat.color} />
+                        <div
+                          className={`text-3xl font-extrabold mt-2 ${stat.color}`}
+                        >
+                          {stat.number}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1 font-medium">
+                          {stat.label}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 mt-1 font-medium">
-                        {stat.label}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -403,12 +427,9 @@ export default function Home() {
       <section className="bg-ngo-green py-14">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-extrabold text-white mb-4">
-            Join the Movement for Women's Empowerment
+            {homeCTA.heading}
           </h2>
-          <p className="text-green-200 text-lg mb-8">
-            Become a volunteer, donate, or register as a beneficiary. Together,
-            we can create lasting change.
-          </p>
+          <p className="text-green-200 text-lg mb-8">{homeCTA.subtext}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/signup">
               <Button
@@ -416,7 +437,7 @@ export default function Home() {
                 className="bg-ngo-orange text-white hover:bg-ngo-orange-dark font-semibold"
                 data-ocid="cta.primary_button"
               >
-                Register Now
+                {homeCTA.primaryBtnText}
               </Button>
             </Link>
             <Link to="/contact">
@@ -426,7 +447,7 @@ export default function Home() {
                 className="border-white text-white hover:bg-white/20"
                 data-ocid="cta.secondary_button"
               >
-                Contact Us
+                {homeCTA.secondaryBtnText}
               </Button>
             </Link>
           </div>

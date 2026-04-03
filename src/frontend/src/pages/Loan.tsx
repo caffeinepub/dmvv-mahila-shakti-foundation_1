@@ -1,72 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useApp } from "@/context/AppContext";
 import { CheckCircle, Clock, IndianRupee, Percent } from "lucide-react";
 import { motion } from "motion/react";
 
-const loanSchemes = [
-  {
-    name: "MUDRA Loan - Shishu",
-    amount: "Up to ₹50,000",
-    interest: "7-10% p.a.",
-    tenure: "Up to 5 years",
-    description:
-      "For micro businesses in early stage or needing a small push. Ideal for home-based businesses like tailoring, food making, and beauty services.",
-    eligibility: [
-      "Women entrepreneur above 18 years",
-      "Non-farm income generating activity",
-      "Micro or small enterprise",
-      "Valid KYC documents",
-    ],
-    color: "border-green-400",
-  },
-  {
-    name: "MUDRA Loan - Kishor",
-    amount: "₹50,001 to ₹5,00,000",
-    interest: "8-12% p.a.",
-    tenure: "Up to 7 years",
-    description:
-      "For expanding existing small businesses. Suitable for women running small shops, production units, or service businesses.",
-    eligibility: [
-      "Existing business of at least 6 months",
-      "ITR or business proof required",
-      "Good credit history preferred",
-      "Bank account mandatory",
-    ],
-    color: "border-blue-400",
-  },
-  {
-    name: "Mahila Samridhi Yojana",
-    amount: "₹10,000 to ₹2,00,000",
-    interest: "4% p.a. (subsidized)",
-    tenure: "Up to 3 years",
-    description:
-      "DMVV Foundation's own microfinance program for marginalized women. Provides collateral-free micro-loans with minimal documentation.",
-    eligibility: [
-      "Women from BPL or EWS category",
-      "Completed at least one DMVV training",
-      "KYC verified on portal",
-      "Self-Help Group membership preferred",
-    ],
-    color: "border-orange-400",
-  },
-  {
-    name: "Stand-Up India Women Loan",
-    amount: "₹10 Lakh to ₹1 Crore",
-    interest: "Bank rate + 3%",
-    tenure: "Up to 7 years",
-    description:
-      "For women entrepreneurs setting up new greenfield enterprises in manufacturing, services, or trade sector.",
-    eligibility: [
-      "First-generation women entrepreneur",
-      "Business plan with financial projections",
-      "SC/ST women get additional benefits",
-      "Age above 18 years",
-    ],
-    color: "border-purple-400",
-  },
-];
-
 export default function Loan() {
+  const { loanSchemes } = useApp();
+  const active = loanSchemes
+    .filter((l) => l.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <main className="min-h-screen">
       <section className="relative h-52 flex items-center bg-ngo-green">
@@ -119,59 +62,69 @@ export default function Loan() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-14 space-y-8">
-        {loanSchemes.map((scheme, idx) => (
-          <motion.div
-            key={scheme.name}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.05 }}
+        {active.length === 0 ? (
+          <div
+            className="text-center py-20 text-gray-400"
+            data-ocid="loan.empty_state"
           >
-            <Card
-              className={`border-l-4 ${scheme.color} hover:shadow-lg transition-shadow`}
+            Koi loan scheme available nahi hai.
+          </div>
+        ) : (
+          active.map((scheme, idx) => (
+            <motion.div
+              key={scheme.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.05 }}
+              data-ocid={`loan.item.${idx + 1}`}
             >
-              <CardContent className="p-6">
-                <h2 className="text-xl font-extrabold text-gray-900 mb-1">
-                  {scheme.name}
-                </h2>
-                <div className="flex flex-wrap gap-3 mb-4">
-                  <Badge variant="outline">
-                    <IndianRupee size={12} className="mr-1" />
-                    {scheme.amount}
-                  </Badge>
-                  <Badge variant="outline">
-                    <Percent size={12} className="mr-1" />
-                    {scheme.interest}
-                  </Badge>
-                  <Badge variant="outline">
-                    <Clock size={12} className="mr-1" />
-                    {scheme.tenure}
-                  </Badge>
-                </div>
-                <p className="text-gray-600 mb-4">{scheme.description}</p>
-                <div>
-                  <h3 className="font-bold text-sm text-gray-800 mb-2">
-                    Eligibility:
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                    {scheme.eligibility.map((e) => (
-                      <li
-                        key={e}
-                        className="flex items-start gap-2 text-sm text-gray-600"
-                      >
-                        <CheckCircle
-                          size={14}
-                          className="text-green-500 mt-0.5 flex-shrink-0"
-                        />
-                        {e}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+              <Card
+                className={`border-l-4 ${scheme.color} hover:shadow-lg transition-shadow`}
+              >
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-extrabold text-gray-900 mb-1">
+                    {scheme.name}
+                  </h2>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    <Badge variant="outline">
+                      <IndianRupee size={12} className="mr-1" />
+                      {scheme.amount}
+                    </Badge>
+                    <Badge variant="outline">
+                      <Percent size={12} className="mr-1" />
+                      {scheme.interest}
+                    </Badge>
+                    <Badge variant="outline">
+                      <Clock size={12} className="mr-1" />
+                      {scheme.tenure}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600 mb-4">{scheme.description}</p>
+                  <div>
+                    <h3 className="font-bold text-sm text-gray-800 mb-2">
+                      Eligibility:
+                    </h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                      {scheme.eligibility.map((e) => (
+                        <li
+                          key={e}
+                          className="flex items-start gap-2 text-sm text-gray-600"
+                        >
+                          <CheckCircle
+                            size={14}
+                            className="text-green-500 mt-0.5 flex-shrink-0"
+                          />
+                          {e}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))
+        )}
       </section>
     </main>
   );

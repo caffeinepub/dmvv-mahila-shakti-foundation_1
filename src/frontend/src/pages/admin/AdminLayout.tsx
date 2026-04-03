@@ -1,19 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/AppContext";
 import {
+  Briefcase,
   Building,
   Building2,
+  Bus,
+  CalendarDays,
   ChevronRight,
+  ClipboardList,
+  Download,
   FileCheck,
   FileText,
   GraduationCap,
+  Home,
   Image,
   Images,
+  IndianRupee,
   LayoutDashboard,
+  ListChecks,
   LogOut,
   Menu,
+  Monitor,
   Newspaper,
   Settings,
+  Trophy,
+  UserCheck,
   Users,
   X,
 } from "lucide-react";
@@ -22,14 +33,26 @@ import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 
 const adminNav = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Home Page", path: "/admin/homepage", icon: Home },
   { label: "User Management", path: "/admin/users", icon: Users },
   { label: "KYC Management", path: "/admin/kyc", icon: FileCheck },
   { label: "Center Management", path: "/admin/centers", icon: Building2 },
   { label: "News Management", path: "/admin/news", icon: Newspaper },
-  { label: "Page Builder", path: "/admin/pages", icon: FileText },
-  { label: "Media Manager", path: "/admin/media", icon: Image },
+  { label: "Leadership Team", path: "/admin/leadership", icon: UserCheck },
+  { label: "Foundation Events", path: "/admin/events", icon: CalendarDays },
+  { label: "Computer Centers", path: "/admin/computer-centers", icon: Monitor },
+  { label: "Schemes", path: "/admin/schemes", icon: ListChecks },
+  { label: "Loan Schemes", path: "/admin/loan", icon: IndianRupee },
+  { label: "Employment", path: "/admin/employment", icon: Briefcase },
+  { label: "Rewards", path: "/admin/rewards", icon: Trophy },
+  { label: "Apply Forms", path: "/admin/apply-forms", icon: ClipboardList },
+  { label: "Community Center", path: "/admin/community", icon: Building },
+  { label: "Transport", path: "/admin/transport", icon: Bus },
+  { label: "Downloads", path: "/admin/downloads", icon: Download },
   { label: "Training Programs", path: "/admin/training", icon: GraduationCap },
   { label: "Gallery Management", path: "/admin/gallery", icon: Images },
+  { label: "Page Builder", path: "/admin/pages", icon: FileText },
+  { label: "Media Manager", path: "/admin/media", icon: Image },
   { label: "Company Profile", path: "/admin/company", icon: Building },
   { label: "Site Settings", path: "/admin/settings", icon: Settings },
 ];
@@ -75,7 +98,7 @@ export default function AdminLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
+                `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                   isActive
                     ? "bg-sidebar-accent text-white font-semibold"
                     : "text-green-200 hover:bg-sidebar-accent hover:text-white"
@@ -84,9 +107,9 @@ export default function AdminLayout() {
               onClick={() => setSidebarOpen(false)}
               data-ocid="admin_nav.link"
             >
-              <item.icon size={16} />
-              {item.label}
-              <ChevronRight size={12} className="ml-auto opacity-50" />
+              <item.icon size={15} />
+              <span className="flex-1">{item.label}</span>
+              <ChevronRight size={11} className="opacity-40" />
             </NavLink>
           ))}
         </nav>

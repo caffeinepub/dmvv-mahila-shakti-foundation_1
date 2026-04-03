@@ -26,17 +26,29 @@ import Training from "@/pages/Training";
 import KYCPage from "@/pages/user/KYCPage";
 import UserDashboard from "@/pages/user/UserDashboard";
 
+import AdminApplyForm from "@/pages/admin/AdminApplyForm";
 import AdminCenters from "@/pages/admin/AdminCenters";
+import AdminCommunityCenter from "@/pages/admin/AdminCommunityCenter";
 import AdminCompanyProfile from "@/pages/admin/AdminCompanyProfile";
+import AdminComputerCenters from "@/pages/admin/AdminComputerCenters";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminDownloads from "@/pages/admin/AdminDownloads";
+import AdminEmployment from "@/pages/admin/AdminEmployment";
+import AdminFoundationEvents from "@/pages/admin/AdminFoundationEvents";
 import AdminGallery from "@/pages/admin/AdminGallery";
+import AdminHomePage from "@/pages/admin/AdminHomePage";
 import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminLeadership from "@/pages/admin/AdminLeadership";
+import AdminLoan from "@/pages/admin/AdminLoan";
 import AdminMedia from "@/pages/admin/AdminMedia";
 import AdminNews from "@/pages/admin/AdminNews";
 import AdminPages from "@/pages/admin/AdminPages";
+import AdminRewards from "@/pages/admin/AdminRewards";
+import AdminSchemes from "@/pages/admin/AdminSchemes";
 import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminTraining from "@/pages/admin/AdminTraining";
+import AdminTransport from "@/pages/admin/AdminTransport";
 import AdminUsers from "@/pages/admin/AdminUsers";
 
 import CenterDashboard from "@/pages/center/CenterDashboard";
@@ -224,6 +236,7 @@ function AppRoutes() {
       {/* Admin routes */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="homepage" element={<AdminHomePage />} />
         <Route path="kyc" element={<AdminKYC />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="settings" element={<AdminSettings />} />
@@ -234,6 +247,17 @@ function AppRoutes() {
         <Route path="gallery" element={<AdminGallery />} />
         <Route path="training" element={<AdminTraining />} />
         <Route path="company" element={<AdminCompanyProfile />} />
+        <Route path="leadership" element={<AdminLeadership />} />
+        <Route path="events" element={<AdminFoundationEvents />} />
+        <Route path="computer-centers" element={<AdminComputerCenters />} />
+        <Route path="schemes" element={<AdminSchemes />} />
+        <Route path="loan" element={<AdminLoan />} />
+        <Route path="employment" element={<AdminEmployment />} />
+        <Route path="rewards" element={<AdminRewards />} />
+        <Route path="apply-forms" element={<AdminApplyForm />} />
+        <Route path="community" element={<AdminCommunityCenter />} />
+        <Route path="transport" element={<AdminTransport />} />
+        <Route path="downloads" element={<AdminDownloads />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
 

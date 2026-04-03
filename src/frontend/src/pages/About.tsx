@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useApp } from "@/context/AppContext";
 import { Award, BookOpen, Eye, Heart, Target, Users } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -36,30 +37,12 @@ const values = [
   },
 ];
 
-const leadership = [
-  {
-    name: "Dr. Anjali Srivastava",
-    role: "Founder & President",
-    qualification: "Ph.D. Social Work, BHU",
-  },
-  {
-    name: "Mrs. Meena Gupta",
-    role: "Secretary General",
-    qualification: "M.A. Public Administration",
-  },
-  {
-    name: "Mr. Suresh Kumar Verma",
-    role: "Treasurer",
-    qualification: "CA, ICAI",
-  },
-  {
-    name: "Dr. Priya Nair",
-    role: "Program Director",
-    qualification: "MBA, Social Entrepreneurship",
-  },
-];
-
 export default function About() {
+  const { leadership } = useApp();
+  const activeLeadership = [...leadership]
+    .filter((m) => m.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
   return (
     <main className="min-h-screen">
       {/* Hero */}
@@ -189,7 +172,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Leadership */}
+      {/* Leadership - Dynamic from admin */}
       <section className="bg-ngo-green py-14">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10">
@@ -201,20 +184,35 @@ export default function About() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {leadership.map((person) => (
+            {activeLeadership.map((person) => (
               <Card
-                key={person.name}
+                key={person.id}
                 className="bg-white/10 border-green-600 text-white"
               >
                 <CardContent className="p-5 text-center">
-                  <div className="w-16 h-16 bg-ngo-orange rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
-                    {person.name.charAt(0)}
-                  </div>
+                  {person.photoUrl ? (
+                    <img
+                      src={person.photoUrl}
+                      alt={person.name}
+                      className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-ngo-orange"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-ngo-orange rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
+                      {person.name.charAt(0)}
+                    </div>
+                  )}
                   <h3 className="font-bold">{person.name}</h3>
-                  <p className="text-ngo-orange text-sm mt-1">{person.role}</p>
+                  <p className="text-ngo-orange text-sm mt-1">
+                    {person.designation}
+                  </p>
                   <p className="text-green-300 text-xs mt-1">
                     {person.qualification}
                   </p>
+                  {person.message && (
+                    <p className="text-green-200 text-xs mt-2 italic line-clamp-3">
+                      "{person.message}"
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             ))}
