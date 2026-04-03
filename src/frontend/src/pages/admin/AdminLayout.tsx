@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/AppContext";
 import {
+  Award,
   Briefcase,
   Building,
   Building2,
@@ -12,6 +13,8 @@ import {
   FileCheck,
   FileText,
   GraduationCap,
+  HandHeart,
+  Handshake,
   Heart,
   Home,
   Image,
@@ -26,11 +29,15 @@ import {
   MessageSquare,
   Monitor,
   Newspaper,
+  Package,
   ScrollText,
   Settings,
+  Shield,
+  Store,
   Trophy,
   UserCheck,
   Users,
+  Wallet,
   X,
   Youtube,
 } from "lucide-react";
@@ -47,6 +54,16 @@ const adminNav = [
     icon: KeyRound,
   },
   { label: "KYC Management", path: "/admin/kyc", icon: FileCheck },
+  {
+    label: "Loan Applications",
+    path: "/admin/loan-applications",
+    icon: IndianRupee,
+  },
+  { label: "Products", path: "/admin/products", icon: Package },
+  { label: "Volunteers", path: "/admin/volunteers", icon: HandHeart },
+  { label: "Insurance", path: "/admin/insurance", icon: Shield },
+  { label: "Wallet", path: "/admin/wallet", icon: Wallet },
+  { label: "Franchise Page", path: "/admin/franchise", icon: Store },
   { label: "Center Management", path: "/admin/centers", icon: Building2 },
   { label: "News Management", path: "/admin/news", icon: Newspaper },
   { label: "Leadership Team", path: "/admin/leadership", icon: UserCheck },
@@ -92,7 +109,9 @@ export default function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar text-sidebar-foreground flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar text-sidebar-foreground flex flex-col transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           <div>
@@ -113,7 +132,11 @@ export default function AdminLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isActive ? "bg-sidebar-accent text-white font-semibold" : "text-green-200 hover:bg-sidebar-accent hover:text-white"}`
+                `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "bg-sidebar-accent text-white font-semibold"
+                    : "text-green-200 hover:bg-sidebar-accent hover:text-white"
+                }`
               }
               onClick={() => setSidebarOpen(false)}
               data-ocid="admin_nav.link"

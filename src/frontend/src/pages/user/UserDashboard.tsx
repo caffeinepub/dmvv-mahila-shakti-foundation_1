@@ -1,202 +1,2170 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { useApp } from "@/context/AppContext";
-import { AlertCircle, FileCheck, User } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  type IncomeSource,
+  type InsuranceApplication,
+  type LoanApplication,
+  type Order,
+  type TrainingEnrollment,
+  type VolunteerActivity,
+  useApp,
+} from "@/context/AppContext";
+import {
+  AlertCircle,
+  Award,
+  Briefcase,
+  CheckCircle,
+  CreditCard,
+  FileCheck,
+  GraduationCap,
+  HandHeart,
+  IndianRupee,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Package,
+  Printer,
+  Settings,
+  Shield,
+  ShoppingCart,
+  User,
+  Wallet,
+  Wrench,
+  X,
+  Zap,
+} from "lucide-react";
+import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+
+const navItems = [
+  { label: "Dashboard", key: "dashboard", icon: LayoutDashboard },
+  { label: "My Profile", key: "profile", icon: User },
+  { label: "ID Card & Certificate", key: "idcard", icon: CreditCard },
+  { label: "Loan Apply", key: "loan", icon: IndianRupee },
+  { label: "Multiple Income", key: "income", icon: Briefcase },
+  { label: "Training", key: "training", icon: GraduationCap },
+  { label: "Volunteer Work", key: "volunteer", icon: HandHeart },
+  { label: "Product Shopping", key: "shopping", icon: ShoppingCart },
+  { label: "Utilities", key: "utilities", icon: Wrench },
+  { label: "Insurance", key: "insurance", icon: Shield },
+  { label: "My Wallet", key: "wallet", icon: Wallet },
+  { label: "KYC", key: "kyc", icon: FileCheck },
+];
+
+async function downloadAsPDF(elementId: string, filename: string) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  try {
+    const html2canvas = (await import("html2canvas")).default;
+    const jsPDF = (await import("jspdf")).default;
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width / 2, canvas.height / 2],
+    });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
+    pdf.save(filename);
+    toast.success("PDF download shuru ho gayi!");
+  } catch {
+    toast.error("PDF download mein error. Please dobara try karein.");
+  }
+}
 
 export default function UserDashboard() {
-  const { currentUser, kycs } = useApp();
+  const { currentUser, setCurrentUser } = useApp();
+  const navigate = useNavigate();
+  const [section, setSection] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!currentUser) return <Navigate to="/login" replace />;
 
-  const myKYC = kycs.find((k) => k.userId === currentUser.id);
+  const handleLogout = () => {
+    setCurrentUser(null);
+    navigate("/");
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-gray-900">
-            Welcome, {currentUser.fullName}
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Your DMVV Foundation member dashboard
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Account Status */}
-          <Card className="border-l-4 border-green-400">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <User size={24} className="text-ngo-green" />
-                <h3 className="font-bold text-gray-800">Account Status</h3>
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-ngo-green text-white flex flex-col transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-green-700">
+          <div>
+            <div className="font-bold text-sm">Member Dashboard</div>
+            <div className="text-xs text-green-300 truncate max-w-[160px]">
+              {currentUser.fullName}
+            </div>
+            {currentUser.memberId && (
+              <div className="text-xs text-green-400">
+                {currentUser.memberId}
               </div>
-              <Badge className="bg-green-100 text-green-700 capitalize">
-                {currentUser.status}
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-white"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <nav className="flex-1 py-2 overflow-y-auto">
+          {navItems.map((item) => (
+            <button
+              type="button"
+              key={item.key}
+              className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm transition-colors ${
+                section === item.key
+                  ? "bg-green-700 font-semibold"
+                  : "text-green-100 hover:bg-green-700"
+              }`}
+              onClick={() => {
+                setSection(item.key);
+                setSidebarOpen(false);
+              }}
+              data-ocid={`user_nav.${item.key}.link`}
+            >
+              <item.icon size={16} />
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-green-700">
+          <Button
+            variant="ghost"
+            className="w-full text-red-300 hover:text-red-100 hover:bg-red-900/30 justify-start"
+            onClick={handleLogout}
+            data-ocid="user_nav.close_button"
+          >
+            <LogOut size={16} className="mr-2" /> Logout
+          </Button>
+        </div>
+      </aside>
+
+      {sidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden w-full"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <div className="flex-1 lg:ml-64 flex flex-col">
+        <div className="sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center gap-3">
+          <button
+            type="button"
+            className="lg:hidden"
+            onClick={() => setSidebarOpen(true)}
+            data-ocid="user.hamburger_button"
+          >
+            <Menu size={22} />
+          </button>
+          <span className="font-bold text-gray-800">
+            {navItems.find((n) => n.key === section)?.label || "Dashboard"} —
+            Member Panel
+          </span>
+        </div>
+        <main className="flex-1 p-4 md:p-6">
+          {section === "dashboard" && <UserHome setSection={setSection} />}
+          {section === "profile" && <UserProfile />}
+          {section === "idcard" && <UserIDCard />}
+          {section === "loan" && <UserLoan />}
+          {section === "income" && <UserIncome />}
+          {section === "training" && <UserTraining />}
+          {section === "volunteer" && <UserVolunteer />}
+          {section === "shopping" && <UserShopping />}
+          {section === "utilities" && <UserUtilities />}
+          {section === "insurance" && <UserInsurance />}
+          {section === "wallet" && <UserWallet />}
+          {section === "kyc" && (
+            <div className="bg-white rounded-xl p-6 shadow">
+              <h2 className="text-xl font-bold mb-4">KYC Verification</h2>
+              <p className="text-gray-600 mb-4">
+                Submit your KYC documents for account verification.
+              </p>
+              <Link to="/user/kyc">
+                <Button
+                  className="bg-ngo-green text-white"
+                  data-ocid="user_kyc.primary_button"
+                >
+                  Go to KYC Page
+                </Button>
+              </Link>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// ─── Home Section ───
+
+function UserHome({ setSection }: { setSection: (s: string) => void }) {
+  const { currentUser, kycs, walletTransactions } = useApp();
+  if (!currentUser) return null;
+
+  const myKYC = kycs.find((k) => k.userId === currentUser.id);
+  const myTxns = walletTransactions.filter((t) => t.userId === currentUser.id);
+  const walletBalance = myTxns.reduce(
+    (sum, t) => sum + (t.type === "credit" ? t.amount : -t.amount),
+    0,
+  );
+
+  const quickActions = [
+    {
+      label: "Apply Loan",
+      key: "loan",
+      icon: IndianRupee,
+      color: "bg-green-100 text-green-700",
+    },
+    {
+      label: "My Training",
+      key: "training",
+      icon: GraduationCap,
+      color: "bg-blue-100 text-blue-700",
+    },
+    {
+      label: "Shop Products",
+      key: "shopping",
+      icon: ShoppingCart,
+      color: "bg-orange-100 text-orange-700",
+    },
+    {
+      label: "Insurance",
+      key: "insurance",
+      icon: Shield,
+      color: "bg-purple-100 text-purple-700",
+    },
+    {
+      label: "ID Card",
+      key: "idcard",
+      icon: CreditCard,
+      color: "bg-pink-100 text-pink-700",
+    },
+    {
+      label: "Volunteer",
+      key: "volunteer",
+      icon: HandHeart,
+      color: "bg-red-100 text-red-700",
+    },
+    {
+      label: "Utilities",
+      key: "utilities",
+      icon: Wrench,
+      color: "bg-yellow-100 text-yellow-700",
+    },
+    {
+      label: "My Wallet",
+      key: "wallet",
+      icon: Wallet,
+      color: "bg-teal-100 text-teal-700",
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome banner */}
+      <div className="bg-gradient-to-r from-ngo-green to-green-600 text-white rounded-2xl p-6">
+        <h1 className="text-2xl font-extrabold">
+          Namaskar, {currentUser.fullName}! 🙏
+        </h1>
+        <p className="text-green-100 mt-1">DMVV Foundation Member Dashboard</p>
+        {currentUser.memberId && (
+          <span className="inline-block mt-2 bg-white/20 px-3 py-1 rounded-full text-sm font-mono">
+            {currentUser.memberId}
+          </span>
+        )}
+      </div>
+
+      {/* Status cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="border-l-4 border-green-400">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <User size={18} className="text-ngo-green" />
+              <span className="font-semibold text-gray-800">
+                Account Status
+              </span>
+            </div>
+            <Badge
+              className={`capitalize ${
+                currentUser.status === "approved"
+                  ? "bg-green-100 text-green-700"
+                  : currentUser.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-red-100 text-red-700"
+              }`}
+            >
+              {currentUser.status}
+            </Badge>
+            <div className="mt-2 text-xs text-gray-500">
+              Role:{" "}
+              <span className="capitalize font-medium">{currentUser.role}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-orange-400">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FileCheck size={18} className="text-ngo-orange" />
+              <span className="font-semibold text-gray-800">KYC Status</span>
+            </div>
+            {myKYC ? (
+              <Badge
+                className={`capitalize ${
+                  myKYC.status === "approved"
+                    ? "bg-green-100 text-green-700"
+                    : myKYC.status === "rejected"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                {myKYC.status}
               </Badge>
-              <div className="mt-3 text-sm text-gray-600 space-y-1">
-                <div>
-                  <span className="font-medium">Role:</span>{" "}
-                  <span className="capitalize">{currentUser.role}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Email:</span>{" "}
-                  {currentUser.email}
-                </div>
-                <div>
-                  <span className="font-medium">Mobile:</span>{" "}
-                  {currentUser.mobile}
-                </div>
-                <div>
-                  <span className="font-medium">Joined:</span>{" "}
-                  {currentUser.createdAt}
-                </div>
+            ) : (
+              <div className="flex items-center gap-1 text-yellow-600 text-sm">
+                <AlertCircle size={14} /> Not submitted
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* KYC Status */}
-          <Card className="border-l-4 border-orange-400">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <FileCheck size={24} className="text-ngo-orange" />
-                <h3 className="font-bold text-gray-800">KYC Status</h3>
-              </div>
-              {myKYC ? (
-                <>
-                  <Badge
-                    className={`${
-                      myKYC.status === "approved"
-                        ? "bg-green-100 text-green-700"
-                        : myKYC.status === "rejected"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                    } capitalize`}
-                  >
-                    {myKYC.status}
-                  </Badge>
-                  {myKYC.adminRemark && (
-                    <div className="mt-2 text-xs text-gray-500">
-                      <strong>Admin Remark:</strong> {myKYC.adminRemark}
-                    </div>
-                  )}
-                  <div className="mt-3">
-                    <Link to="/user/kyc">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-ngo-green text-ngo-green w-full"
-                        data-ocid="user_dashboard.edit_button"
-                      >
-                        View / Update KYC
-                      </Button>
-                    </Link>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 text-yellow-600 mb-3">
-                    <AlertCircle size={16} />
-                    <span className="text-sm">KYC not submitted</span>
-                  </div>
-                  <Link to="/user/kyc">
-                    <Button
-                      size="sm"
-                      className="bg-ngo-orange text-white hover:bg-ngo-orange-dark w-full"
-                      data-ocid="user_dashboard.primary_button"
-                    >
-                      Submit KYC Now
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="border-l-4 border-blue-400">
-            <CardContent className="p-5">
-              <h3 className="font-bold text-gray-800 mb-3">Quick Links</h3>
-              <div className="space-y-2">
-                <Link to="/schemes">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-left"
-                    data-ocid="user_dashboard.secondary_button"
-                  >
-                    📋 View Schemes
-                  </Button>
-                </Link>
-                <Link to="/training">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-left"
-                    data-ocid="user_dashboard.secondary_button"
-                  >
-                    🎓 Training Programs
-                  </Button>
-                </Link>
-                <Link to="/loan">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-left"
-                    data-ocid="user_dashboard.secondary_button"
-                  >
-                    💰 Loan Schemes
-                  </Button>
-                </Link>
-                <Link to="/downloads">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-left"
-                    data-ocid="user_dashboard.secondary_button"
-                  >
-                    📥 Downloads
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Profile Card */}
-        <Card>
-          <CardContent className="p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">My Profile</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { label: "Full Name", value: currentUser.fullName },
-                { label: "Email", value: currentUser.email },
-                { label: "Mobile", value: currentUser.mobile },
-                { label: "Role", value: currentUser.role, capitalize: true },
-                {
-                  label: "Account Status",
-                  value: currentUser.status,
-                  capitalize: true,
-                },
-                { label: "Member Since", value: currentUser.createdAt },
-              ].map((field) => (
-                <div key={field.label} className="flex flex-col">
-                  <span className="text-xs text-gray-400 font-medium">
-                    {field.label}
-                  </span>
-                  <span
-                    className={`text-sm text-gray-800 font-semibold mt-0.5 ${field.capitalize ? "capitalize" : ""}`}
-                  >
-                    {field.value}
-                  </span>
-                </div>
-              ))}
+        <Card className="border-l-4 border-blue-400">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet size={18} className="text-blue-600" />
+              <span className="font-semibold text-gray-800">
+                Wallet Balance
+              </span>
+            </div>
+            <div className="text-2xl font-extrabold text-blue-700">
+              ₹{walletBalance.toLocaleString()}
             </div>
           </CardContent>
         </Card>
       </div>
-    </main>
+
+      {/* Quick actions */}
+      <div>
+        <h2 className="font-bold text-gray-800 mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {quickActions.map((a) => (
+            <button
+              key={a.key}
+              type="button"
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl ${a.color} hover:opacity-90 transition-opacity`}
+              onClick={() => setSection(a.key)}
+              data-ocid={`user_home.${a.key}.button`}
+            >
+              <a.icon size={24} />
+              <span className="text-xs font-semibold text-center">
+                {a.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Notice */}
+      <Card className="border-l-4 border-yellow-400 bg-yellow-50">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-2">
+            <Zap size={18} className="text-yellow-600 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-yellow-800">Samvaad (Notice)</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                KYC verify karein aur loan, insurance aur training ke liye
+                eligible banein. Koi bhi madad ke liye +91 9876543210 pe call
+                karein.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ─── Profile Section ───
+
+function UserProfile() {
+  const { currentUser, updateUser } = useApp();
+  const [editing, setEditing] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [pwForm, setPwForm] = useState({ oldPw: "", newPw: "", confirmPw: "" });
+
+  if (!currentUser) return null;
+
+  const handleEditSave = () => {
+    updateUser(currentUser.id, {
+      fullName: form.fullName || currentUser.fullName,
+      mobile: form.mobile || currentUser.mobile,
+      fatherName: form.fatherName || currentUser.fatherName,
+      dob: form.dob || currentUser.dob,
+      address: form.address || currentUser.address,
+      district: form.district || currentUser.district,
+      state: form.state || currentUser.state,
+      pincode: form.pincode || currentUser.pincode,
+    });
+    toast.success("Profile updated successfully!");
+    setEditing(false);
+  };
+
+  const handlePasswordChange = () => {
+    if (pwForm.oldPw !== currentUser.password) {
+      toast.error("Old password incorrect.");
+      return;
+    }
+    if (pwForm.newPw !== pwForm.confirmPw) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+    if (pwForm.newPw.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
+    updateUser(currentUser.id, { password: pwForm.newPw });
+    toast.success("Password changed successfully!");
+    setChangingPassword(false);
+    setPwForm({ oldPw: "", newPw: "", confirmPw: "" });
+  };
+
+  const fields = [
+    ["Full Name", "fullName", currentUser.fullName],
+    ["Father's Name", "fatherName", currentUser.fatherName || ""],
+    ["Date of Birth", "dob", currentUser.dob || ""],
+    ["Mobile", "mobile", currentUser.mobile],
+    ["Email", "email", currentUser.email],
+    ["Address", "address", currentUser.address || ""],
+    ["District", "district", currentUser.district || ""],
+    ["State", "state", currentUser.state || ""],
+    ["Pincode", "pincode", currentUser.pincode || ""],
+  ];
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <CardTitle>My Profile</CardTitle>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setEditing(!editing);
+                setForm({});
+              }}
+              data-ocid="user_profile.edit_button"
+            >
+              <Settings size={14} className="mr-1" />{" "}
+              {editing ? "Cancel" : "Edit Profile"}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-orange-300 text-orange-600"
+              onClick={() => setChangingPassword(!changingPassword)}
+              data-ocid="user_profile.secondary_button"
+            >
+              Change Password
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {editing ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {fields.map(([label, key, val]) => (
+                <div key={key}>
+                  <Label className="text-xs text-gray-500">{label}</Label>
+                  <Input
+                    defaultValue={val}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, [key]: e.target.value }))
+                    }
+                    className="mt-1"
+                    disabled={key === "email"}
+                    data-ocid="user_profile.input"
+                  />
+                </div>
+              ))}
+              <div className="md:col-span-2 flex gap-2">
+                <Button
+                  onClick={handleEditSave}
+                  className="bg-ngo-green text-white"
+                  data-ocid="user_profile.save_button"
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setEditing(false)}
+                  data-ocid="user_profile.cancel_button"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {fields.map(([label, , val]) => (
+                <div key={label}>
+                  <span className="text-xs text-gray-400 font-medium">
+                    {label}
+                  </span>
+                  <div className="text-sm text-gray-800 font-semibold mt-0.5">
+                    {val || "—"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {changingPassword && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Change Password</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 max-w-sm">
+              <div>
+                <Label>Old Password</Label>
+                <Input
+                  type="password"
+                  value={pwForm.oldPw}
+                  onChange={(e) =>
+                    setPwForm((p) => ({ ...p, oldPw: e.target.value }))
+                  }
+                  className="mt-1"
+                  data-ocid="user_profile.input"
+                />
+              </div>
+              <div>
+                <Label>New Password</Label>
+                <Input
+                  type="password"
+                  value={pwForm.newPw}
+                  onChange={(e) =>
+                    setPwForm((p) => ({ ...p, newPw: e.target.value }))
+                  }
+                  className="mt-1"
+                  data-ocid="user_profile.input"
+                />
+              </div>
+              <div>
+                <Label>Confirm New Password</Label>
+                <Input
+                  type="password"
+                  value={pwForm.confirmPw}
+                  onChange={(e) =>
+                    setPwForm((p) => ({ ...p, confirmPw: e.target.value }))
+                  }
+                  className="mt-1"
+                  data-ocid="user_profile.input"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handlePasswordChange}
+                  className="bg-ngo-green text-white"
+                  data-ocid="user_profile.submit_button"
+                >
+                  Change Password
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setChangingPassword(false)}
+                  data-ocid="user_profile.cancel_button"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// ─── ID Card Section ───
+
+function UserIDCard() {
+  const { currentUser, settings } = useApp();
+  const [selectedDesign, setSelectedDesign] = useState(0);
+  if (!currentUser) return null;
+
+  const designs = [
+    {
+      name: "Green Classic",
+      bg: "linear-gradient(135deg, #0F4A2E 0%, #1a7a4a 100%)",
+      accent: "#F28C28",
+      text: "#fff",
+    },
+    {
+      name: "Royal Blue",
+      bg: "linear-gradient(135deg, #1a237e 0%, #1976D2 100%)",
+      accent: "#FFD700",
+      text: "#fff",
+    },
+    {
+      name: "Deep Purple",
+      bg: "linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%)",
+      accent: "#E91E63",
+      text: "#fff",
+    },
+    {
+      name: "Maroon Gold",
+      bg: "linear-gradient(135deg, #880E4F 0%, #C62828 100%)",
+      accent: "#FFD700",
+      text: "#fff",
+    },
+  ];
+  const d = designs[selectedDesign];
+
+  return (
+    <div className="space-y-6">
+      <Tabs defaultValue="idcard">
+        <TabsList>
+          <TabsTrigger value="idcard" data-ocid="user_idcard.tab">
+            ID Card
+          </TabsTrigger>
+          <TabsTrigger value="certificate" data-ocid="user_idcard.tab">
+            Certificate
+          </TabsTrigger>
+          <TabsTrigger value="achievements" data-ocid="user_idcard.tab">
+            Achievements
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="idcard">
+          <div className="mb-4">
+            <h3 className="font-semibold text-gray-700 mb-2">
+              Design Select Karein:
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {designs.map((des, i) => (
+                <button
+                  key={des.name}
+                  type="button"
+                  onClick={() => setSelectedDesign(i)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all ${
+                    selectedDesign === i
+                      ? "border-ngo-green shadow-md"
+                      : "border-gray-200"
+                  }`}
+                  style={{ background: des.bg, color: des.text }}
+                  data-ocid="user_idcard.toggle"
+                >
+                  {des.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* PVC Card */}
+          <div
+            id="user-id-card"
+            className="w-[340px] h-[214px] rounded-2xl p-4 shadow-2xl text-white relative overflow-hidden"
+            style={{ background: d.bg }}
+          >
+            <div
+              className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10"
+              style={{
+                background: d.accent,
+                transform: "translate(20px,-30px)",
+              }}
+            />
+            <div className="flex items-start gap-3">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/20 flex items-center justify-center flex-shrink-0">
+                {currentUser.photoUrl ? (
+                  <img
+                    src={currentUser.photoUrl}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={32} className="text-white/70" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] opacity-70">
+                  DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
+                </div>
+                <div className="font-extrabold text-sm truncate">
+                  {currentUser.fullName}
+                </div>
+                <div className="text-xs opacity-80 capitalize">
+                  {currentUser.role}
+                </div>
+                <div className="text-[10px] mt-0.5" style={{ color: d.accent }}>
+                  {currentUser.memberId || "DMVV/2025/XXX"}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-1 text-[10px]">
+              <div>
+                <span className="opacity-60">Mobile: </span>
+                {currentUser.mobile}
+              </div>
+              <div>
+                <span className="opacity-60">Joined: </span>
+                {currentUser.createdAt}
+              </div>
+              <div>
+                <span className="opacity-60">Access: </span>
+                {currentUser.accessCode || "—"}
+              </div>
+              <div>
+                <span className="opacity-60">Status: </span>
+                <span
+                  style={{ color: d.accent }}
+                  className="font-bold capitalize"
+                >
+                  {currentUser.status}
+                </span>
+              </div>
+            </div>
+            {(settings.signatureUrl || settings.authorityName) && (
+              <div className="absolute bottom-3 right-4 text-right">
+                {settings.signatureUrl && (
+                  <img
+                    src={settings.signatureUrl}
+                    alt="Signature"
+                    className="h-6 ml-auto mb-0.5"
+                  />
+                )}
+                <div className="text-[9px] opacity-80">
+                  {settings.authorityName}
+                </div>
+                <div className="text-[8px] opacity-60">
+                  {settings.authorityDesignation}
+                </div>
+              </div>
+            )}
+            {settings.sealUrl && (
+              <img
+                src={settings.sealUrl}
+                alt="Seal"
+                className="absolute bottom-2 left-4 h-10 opacity-80"
+              />
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-4">
+            <Button
+              onClick={() =>
+                downloadAsPDF(
+                  "user-id-card",
+                  `ID_Card_${currentUser.memberId}.pdf`,
+                )
+              }
+              className="bg-ngo-green text-white"
+              data-ocid="user_idcard.primary_button"
+            >
+              <Printer size={14} className="mr-2" /> Download PDF
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="certificate">
+          <div
+            id="user-certificate"
+            className="max-w-[600px] bg-white border-4 border-green-700 rounded-2xl p-8 shadow-xl relative"
+          >
+            <div className="text-center mb-4">
+              <img
+                src="/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png"
+                alt="Logo"
+                className="h-16 mx-auto mb-2"
+              />
+              <h2 className="text-2xl font-extrabold text-green-800">
+                DMVV Bhartiy Mahila Shakti Foundation™
+              </h2>
+              <div className="text-sm text-gray-500">
+                Membership Certificate
+              </div>
+            </div>
+            <div className="border-t border-b border-green-200 py-4 my-4 text-center">
+              <p className="text-gray-600 text-sm">This is to certify that</p>
+              <h3 className="text-3xl font-extrabold text-green-800 mt-1">
+                {currentUser.fullName}
+              </h3>
+              <p className="text-gray-600 text-sm mt-1">
+                is a registered member of
+              </p>
+              <p className="font-bold text-gray-800">
+                DMVV Bhartiy Mahila Shakti Foundation™
+              </p>
+              <div className="mt-2 text-sm text-gray-500">
+                Member ID:{" "}
+                <span className="font-mono font-bold text-green-700">
+                  {currentUser.memberId || "DMVV/2025/XXX"}
+                </span>
+              </div>
+              <div className="text-sm text-gray-500">
+                Member Since: {currentUser.createdAt}
+              </div>
+            </div>
+            <div className="flex justify-between items-end mt-4">
+              <div>
+                {settings.sealUrl && (
+                  <img src={settings.sealUrl} alt="Seal" className="h-16" />
+                )}
+              </div>
+              <div className="text-right">
+                {settings.signatureUrl && (
+                  <img
+                    src={settings.signatureUrl}
+                    alt="Signature"
+                    className="h-10 ml-auto mb-1"
+                  />
+                )}
+                <div className="text-sm font-bold">
+                  {settings.authorityName}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {settings.authorityDesignation}
+                </div>
+              </div>
+            </div>
+          </div>
+          <Button
+            onClick={() =>
+              downloadAsPDF(
+                "user-certificate",
+                `Certificate_${currentUser.memberId}.pdf`,
+              )
+            }
+            className="bg-ngo-green text-white mt-4"
+            data-ocid="user_idcard.primary_button"
+          >
+            <Printer size={14} className="mr-2" /> Download PDF
+          </Button>
+        </TabsContent>
+
+        <TabsContent value="achievements">
+          <div className="space-y-3">
+            {(currentUser.achievementCerts || []).length === 0 ? (
+              <div
+                className="text-center py-12 text-gray-400"
+                data-ocid="user_achievements.empty_state"
+              >
+                <Award size={40} className="mx-auto mb-3 opacity-30" />
+                Abhi tak koi achievement certificate nahi hai.
+              </div>
+            ) : (
+              (currentUser.achievementCerts || []).map((ac, i) => (
+                <Card key={ac.id} data-ocid={`user_achievements.item.${i + 1}`}>
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-gray-800">{ac.title}</h3>
+                    <p className="text-sm text-gray-500">{ac.description}</p>
+                    <div className="text-xs text-gray-400 mt-1">
+                      {ac.issuedDate} | {ac.awardedBy}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ─── Loan Section ───
+
+function UserLoan() {
+  const { currentUser, loanApplications, addLoanApplication } = useApp();
+  const [activeTab, setActiveTab] = useState("general");
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  if (!currentUser) return null;
+
+  const myApplications = loanApplications.filter(
+    (a) => a.userId === currentUser.id,
+  );
+  const hasActiveLoan = myApplications.some(
+    (a) =>
+      a.status === "pending" ||
+      a.status === "approved" ||
+      a.status === "under_review",
+  );
+
+  const handleSubmit = (type: "general" | "shg" | "udhyog") => {
+    if (
+      !form.amount ||
+      !form.purpose ||
+      !form.bankName ||
+      !form.accountNumber
+    ) {
+      toast.error("Kripya sare required fields bharein.");
+      return;
+    }
+    setSubmitting(true);
+    const app: LoanApplication = {
+      id: `loan_${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.fullName,
+      userMobile: currentUser.mobile,
+      loanType: type,
+      amount: form.amount,
+      purpose: form.purpose,
+      bankName: form.bankName,
+      accountNumber: form.accountNumber,
+      ifscCode: form.ifscCode || "",
+      guarantorName: form.guarantorName || "",
+      guarantorPhone: form.guarantorPhone || "",
+      businessDetails: form.businessDetails,
+      shgName: form.shgName,
+      shgMembersCount: form.shgMembersCount,
+      businessName: form.businessName,
+      businessType: form.businessType,
+      gstNumber: form.gstNumber,
+      status: "pending",
+      appliedAt: new Date().toISOString().split("T")[0],
+    };
+    addLoanApplication(app);
+    toast.success("Loan application submit ho gayi! Admin review karenge.");
+    setForm({});
+    setSubmitting(false);
+  };
+
+  const statusColor = (s: string) => {
+    if (s === "approved") return "bg-green-100 text-green-700";
+    if (s === "rejected") return "bg-red-100 text-red-700";
+    if (s === "under_review") return "bg-blue-100 text-blue-700";
+    return "bg-yellow-100 text-yellow-700";
+  };
+
+  const F = ({
+    label,
+    k,
+    placeholder,
+    type = "text",
+  }: { label: string; k: string; placeholder?: string; type?: string }) => (
+    <div>
+      <Label className="text-xs">{label}</Label>
+      <Input
+        type={type}
+        placeholder={placeholder}
+        value={form[k] || ""}
+        onChange={(e) => setForm((p) => ({ ...p, [k]: e.target.value }))}
+        className="mt-1"
+        data-ocid="user_loan.input"
+      />
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Banner to SHG/Udhyog pages */}
+      <div className="flex flex-wrap gap-3">
+        <Link to="/shg-loan">
+          <Button
+            className="bg-blue-600 text-white"
+            data-ocid="user_loan.secondary_button"
+          >
+            SHG Loan Yojana →
+          </Button>
+        </Link>
+        <Link to="/udhyog-loan">
+          <Button
+            className="bg-orange-600 text-white"
+            data-ocid="user_loan.secondary_button"
+          >
+            Udhyog Loan Yojana →
+          </Button>
+        </Link>
+      </div>
+
+      {/* Existing applications */}
+      {myApplications.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Meri Loan Applications</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {myApplications.map((a, i) => (
+              <div
+                key={a.id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                data-ocid={`user_loan.item.${i + 1}`}
+              >
+                <div>
+                  <div className="font-semibold text-sm capitalize">
+                    {a.loanType} Loan — ₹{a.amount}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {a.purpose} | {a.appliedAt}
+                  </div>
+                </div>
+                <Badge className={`capitalize ${statusColor(a.status)}`}>
+                  {a.status.replace("_", " ")}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {hasActiveLoan ? (
+        <Card className="bg-yellow-50 border-yellow-300">
+          <CardContent className="p-4 text-yellow-800">
+            <AlertCircle size={18} className="inline mr-2" />
+            Aapki ek loan application already pending/approved hai. Naya apply
+            karne ke liye pehli application resolve honi chahiye.
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Loan Apply Karein</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="mb-4">
+                <TabsTrigger value="general" data-ocid="user_loan.tab">
+                  General Loan
+                </TabsTrigger>
+                <TabsTrigger value="shg" data-ocid="user_loan.tab">
+                  SHG Loan
+                </TabsTrigger>
+                <TabsTrigger value="udhyog" data-ocid="user_loan.tab">
+                  Udhyog Loan
+                </TabsTrigger>
+              </TabsList>
+
+              {(["general", "shg", "udhyog"] as const).map((type) => (
+                <TabsContent key={type} value={type}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <F
+                      label="Loan Amount (₹) *"
+                      k="amount"
+                      placeholder="50000"
+                    />
+                    <F
+                      label="Purpose *"
+                      k="purpose"
+                      placeholder="Business / Medical / Education"
+                    />
+                    <F
+                      label="Monthly Income (₹)"
+                      k="monthlyIncome"
+                      placeholder="15000"
+                    />
+                    <F
+                      label="Occupation"
+                      k="occupation"
+                      placeholder="Tailor / Farmer / Business"
+                    />
+                    {type === "shg" && (
+                      <>
+                        <F
+                          label="SHG Group Name *"
+                          k="shgName"
+                          placeholder="Mahila Shakti SHG"
+                        />
+                        <F
+                          label="SHG Members Count"
+                          k="shgMembersCount"
+                          placeholder="10"
+                        />
+                        <div className="md:col-span-2">
+                          <Label className="text-xs">
+                            Group Activity Description
+                          </Label>
+                          <Textarea
+                            placeholder="Group ki activities ke baare mein likhein..."
+                            value={form.businessDetails || ""}
+                            onChange={(e) =>
+                              setForm((p) => ({
+                                ...p,
+                                businessDetails: e.target.value,
+                              }))
+                            }
+                            className="mt-1"
+                            data-ocid="user_loan.textarea"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {type === "udhyog" && (
+                      <>
+                        <F
+                          label="Business Name *"
+                          k="businessName"
+                          placeholder="Sharma Enterprises"
+                        />
+                        <F
+                          label="Business Type"
+                          k="businessType"
+                          placeholder="Manufacturing / Service / Retail"
+                        />
+                        <F
+                          label="Business Age (Years)"
+                          k="businessAge"
+                          placeholder="3"
+                        />
+                        <F
+                          label="Annual Turnover (₹)"
+                          k="annualTurnover"
+                          placeholder="500000"
+                        />
+                        <F
+                          label="GST Number (Optional)"
+                          k="gstNumber"
+                          placeholder="22AAAAA0000A1Z5"
+                        />
+                      </>
+                    )}
+                    <F
+                      label="Bank Name *"
+                      k="bankName"
+                      placeholder="State Bank of India"
+                    />
+                    <F
+                      label="Account Number *"
+                      k="accountNumber"
+                      placeholder="123456789012"
+                    />
+                    <F
+                      label="IFSC Code"
+                      k="ifscCode"
+                      placeholder="SBIN0001234"
+                    />
+                    <F
+                      label="Guarantor Name"
+                      k="guarantorName"
+                      placeholder="Ramesh Kumar"
+                    />
+                    <F
+                      label="Guarantor Phone"
+                      k="guarantorPhone"
+                      placeholder="9876543210"
+                    />
+                    <div className="md:col-span-2">
+                      <Button
+                        onClick={() => handleSubmit(type)}
+                        disabled={submitting}
+                        className="bg-ngo-green text-white"
+                        data-ocid="user_loan.submit_button"
+                      >
+                        {submitting
+                          ? "Submitting..."
+                          : `Apply for ${type === "shg" ? "SHG" : type === "udhyog" ? "Udhyog" : "General"} Loan`}
+                      </Button>
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// ─── Income Section ───
+
+function UserIncome() {
+  const { currentUser, incomeSources, addIncomeSource, deleteIncomeSource } =
+    useApp();
+  const [form, setForm] = useState({
+    source: "",
+    type: "salary" as IncomeSource["type"],
+    monthlyAmount: "",
+    description: "",
+  });
+  if (!currentUser) return null;
+  const myIncome = incomeSources.filter((s) => s.userId === currentUser.id);
+  const totalMonthly = myIncome.reduce(
+    (sum, s) => sum + (Number.parseFloat(s.monthlyAmount) || 0),
+    0,
+  );
+
+  const handleAdd = () => {
+    if (!form.source || !form.monthlyAmount) {
+      toast.error("Source aur amount bharein.");
+      return;
+    }
+    addIncomeSource({
+      id: `inc_${Date.now()}`,
+      userId: currentUser.id,
+      ...form,
+      addedAt: new Date().toISOString().split("T")[0],
+    });
+    setForm({ source: "", type: "salary", monthlyAmount: "", description: "" });
+    toast.success("Income source add ho gaya!");
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="bg-green-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="text-sm text-gray-600">Total Monthly Income</div>
+          <div className="text-3xl font-extrabold text-green-700">
+            ₹{totalMonthly.toLocaleString()}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Income Source</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs">Income Source Name *</Label>
+              <Input
+                value={form.source}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, source: e.target.value }))
+                }
+                placeholder="e.g. Tailoring Business"
+                className="mt-1"
+                data-ocid="user_income.input"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Type *</Label>
+              <Select
+                value={form.type}
+                onValueChange={(v) =>
+                  setForm((p) => ({ ...p, type: v as IncomeSource["type"] }))
+                }
+              >
+                <SelectTrigger className="mt-1" data-ocid="user_income.select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(
+                    [
+                      "salary",
+                      "business",
+                      "farming",
+                      "handicraft",
+                      "other",
+                    ] as const
+                  ).map((t) => (
+                    <SelectItem key={t} value={t} className="capitalize">
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Monthly Amount (₹) *</Label>
+              <Input
+                type="number"
+                value={form.monthlyAmount}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, monthlyAmount: e.target.value }))
+                }
+                placeholder="15000"
+                className="mt-1"
+                data-ocid="user_income.input"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Input
+                value={form.description}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, description: e.target.value }))
+                }
+                placeholder="Brief description"
+                className="mt-1"
+                data-ocid="user_income.input"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Button
+                onClick={handleAdd}
+                className="bg-ngo-green text-white"
+                data-ocid="user_income.primary_button"
+              >
+                Add Income Source
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-3">
+        {myIncome.length === 0 ? (
+          <div
+            className="text-center py-10 text-gray-400"
+            data-ocid="user_income.empty_state"
+          >
+            Koi income source nahi hai. Upar se add karein.
+          </div>
+        ) : (
+          myIncome.map((s, i) => (
+            <Card key={s.id} data-ocid={`user_income.item.${i + 1}`}>
+              <CardContent className="p-4 flex items-center justify-between">
+                <div>
+                  <div className="font-semibold text-gray-800">{s.source}</div>
+                  <div className="text-sm text-gray-500 capitalize">
+                    {s.type} | Added: {s.addedAt}
+                  </div>
+                  {s.description && (
+                    <div className="text-xs text-gray-400">{s.description}</div>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-extrabold text-green-700">
+                    ₹{Number(s.monthlyAmount).toLocaleString()}/mo
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-red-500"
+                    onClick={() => {
+                      deleteIncomeSource(s.id);
+                      toast.success("Removed.");
+                    }}
+                    data-ocid={`user_income.delete_button.${i + 1}`}
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Training Section ───
+
+function UserTraining() {
+  const {
+    currentUser,
+    trainingPrograms,
+    trainingEnrollments,
+    addTrainingEnrollment,
+  } = useApp();
+  if (!currentUser) return null;
+  const myEnrollments = trainingEnrollments.filter(
+    (e) => e.userId === currentUser.id,
+  );
+  const activePrograms = trainingPrograms.filter((p) => p.isActive);
+
+  const isEnrolled = (programId: string) =>
+    myEnrollments.some((e) => e.programId === programId);
+
+  const handleEnroll = (program: (typeof trainingPrograms)[0]) => {
+    if (isEnrolled(program.id)) {
+      toast.error("Already enrolled!");
+      return;
+    }
+    const enrollment: TrainingEnrollment = {
+      id: `enr_${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.fullName,
+      programName: program.title,
+      programId: program.id,
+      enrolledAt: new Date().toISOString().split("T")[0],
+      status: "pending",
+    };
+    addTrainingEnrollment(enrollment);
+    toast.success(`${program.title} mein enrollment ho gayi!`);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Tabs defaultValue="available">
+        <TabsList>
+          <TabsTrigger value="available" data-ocid="user_training.tab">
+            Available Programs
+          </TabsTrigger>
+          <TabsTrigger value="enrolled" data-ocid="user_training.tab">
+            My Enrollments
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="available">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {activePrograms.map((p, i) => (
+              <Card
+                key={p.id}
+                className={`border ${p.color}`}
+                data-ocid={`user_training.item.${i + 1}`}
+              >
+                <CardContent className="p-4">
+                  {p.image && (
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="w-full h-32 object-cover rounded-lg mb-3"
+                    />
+                  )}
+                  <h3 className="font-bold text-gray-800">{p.title}</h3>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {p.duration} | {p.eligibility}
+                  </div>
+                  <div className="text-xs text-gray-500">{p.certification}</div>
+                  <p className="text-sm text-gray-600 mt-2">{p.description}</p>
+                  <Button
+                    size="sm"
+                    className={`mt-3 w-full ${isEnrolled(p.id) ? "bg-gray-200 text-gray-600" : "bg-ngo-green text-white"}`}
+                    onClick={() => handleEnroll(p)}
+                    disabled={isEnrolled(p.id)}
+                    data-ocid={`user_training.primary_button.${i + 1}`}
+                  >
+                    {isEnrolled(p.id) ? "✓ Enrolled" : "Enroll Now"}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="enrolled">
+          <div className="space-y-3">
+            {myEnrollments.length === 0 ? (
+              <div
+                className="text-center py-10 text-gray-400"
+                data-ocid="user_training.empty_state"
+              >
+                Koi enrollment nahi hai.
+              </div>
+            ) : (
+              myEnrollments.map((e, i) => (
+                <Card key={e.id} data-ocid={`user_training.item.${i + 1}`}>
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold text-gray-800">
+                        {e.programName}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Enrolled: {e.enrolledAt}
+                      </div>
+                    </div>
+                    <Badge
+                      className={`capitalize ${
+                        e.status === "enrolled"
+                          ? "bg-green-100 text-green-700"
+                          : e.status === "completed"
+                            ? "bg-blue-100 text-blue-700"
+                            : e.status === "cancelled"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {e.status}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ─── Volunteer Section ───
+
+function UserVolunteer() {
+  const { currentUser, volunteerActivities, addVolunteerActivity } = useApp();
+  const [form, setForm] = useState({
+    area: "",
+    hoursPerWeek: "",
+    availability: "",
+    description: "",
+  });
+  if (!currentUser) return null;
+  const myActivity = volunteerActivities.find(
+    (v) => v.userId === currentUser.id,
+  );
+
+  const handleRegister = () => {
+    if (!form.area || !form.hoursPerWeek) {
+      toast.error("Area aur hours bharein.");
+      return;
+    }
+    const activity: VolunteerActivity = {
+      id: `vol_${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.fullName,
+      userMobile: currentUser.mobile,
+      ...form,
+      status: "pending",
+      joinedAt: new Date().toISOString().split("T")[0],
+    };
+    addVolunteerActivity(activity);
+    toast.success("Volunteer registration ho gayi! Admin approve karenge.");
+  };
+
+  if (myActivity) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>My Volunteer Registration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-600">Area:</span>{" "}
+              {myActivity.area}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Hours/Week:</span>{" "}
+              {myActivity.hoursPerWeek}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Availability:</span>{" "}
+              {myActivity.availability}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Joined:</span>{" "}
+              {myActivity.joinedAt}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Description:</span>{" "}
+              {myActivity.description}
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Status: </span>
+              <Badge
+                className={`capitalize ${
+                  myActivity.status === "active"
+                    ? "bg-green-100 text-green-700"
+                    : myActivity.status === "inactive"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                {myActivity.status}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Volunteer Registration</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-gray-600 mb-4">
+          DMVV Foundation ke saath volunteer ban kar apne samaj ki seva karein.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-xs">Area of Interest *</Label>
+            <Input
+              value={form.area}
+              onChange={(e) => setForm((p) => ({ ...p, area: e.target.value }))}
+              placeholder="Education / Health / Environment"
+              className="mt-1"
+              data-ocid="user_volunteer.input"
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Hours per Week *</Label>
+            <Input
+              type="number"
+              value={form.hoursPerWeek}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, hoursPerWeek: e.target.value }))
+              }
+              placeholder="5"
+              className="mt-1"
+              data-ocid="user_volunteer.input"
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Availability Days</Label>
+            <Input
+              value={form.availability}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, availability: e.target.value }))
+              }
+              placeholder="Mon, Wed, Sat"
+              className="mt-1"
+              data-ocid="user_volunteer.input"
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Brief Description</Label>
+            <Input
+              value={form.description}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, description: e.target.value }))
+              }
+              placeholder="Apne baare mein likhein"
+              className="mt-1"
+              data-ocid="user_volunteer.input"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <Button
+              onClick={handleRegister}
+              className="bg-ngo-green text-white"
+              data-ocid="user_volunteer.submit_button"
+            >
+              Register as Volunteer
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Shopping Section ───
+
+function UserShopping() {
+  const { currentUser, products, addOrder } = useApp();
+  const [cart, setCart] = useState<Record<string, number>>({});
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutForm, setCheckoutForm] = useState({
+    name: "",
+    address: "",
+    phone: "",
+  });
+
+  if (!currentUser) return null;
+  const activeProducts = products.filter((p) => p.isActive && p.stock > 0);
+
+  const cartTotal = Object.entries(cart).reduce((sum, [pid, qty]) => {
+    const p = products.find((pr) => pr.id === pid);
+    return sum + (p ? Number.parseFloat(p.price) * qty : 0);
+  }, 0);
+
+  const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
+
+  const handleCheckout = () => {
+    if (!checkoutForm.name || !checkoutForm.address || !checkoutForm.phone) {
+      toast.error("Sare fields bharein.");
+      return;
+    }
+    const items = Object.entries(cart).map(([pid, qty]) => {
+      const p = products.find((pr) => pr.id === pid)!;
+      return {
+        productId: pid,
+        productName: p.name,
+        quantity: qty,
+        price: p.price,
+      };
+    });
+    const order: Order = {
+      id: `ord_${Date.now()}`,
+      userId: currentUser.id,
+      userName: checkoutForm.name,
+      userMobile: checkoutForm.phone,
+      userAddress: checkoutForm.address,
+      items,
+      totalAmount: cartTotal.toString(),
+      status: "placed",
+      placedAt: new Date().toISOString().split("T")[0],
+    };
+    addOrder(order);
+    setCart({});
+    setCheckoutOpen(false);
+    toast.success("Order place ho gaya! 🎉");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-bold text-gray-800">Available Products</h2>
+        {cartCount > 0 && (
+          <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className="bg-ngo-orange text-white"
+                data-ocid="user_shopping.open_modal_button"
+              >
+                <ShoppingCart size={16} className="mr-2" /> Cart ({cartCount}) —
+                ₹{cartTotal}
+              </Button>
+            </DialogTrigger>
+            <DialogContent data-ocid="user_shopping.dialog">
+              <DialogHeader>
+                <DialogTitle>Checkout</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                {Object.entries(cart).map(([pid, qty]) => {
+                  const p = products.find((pr) => pr.id === pid);
+                  return p ? (
+                    <div key={pid} className="flex justify-between text-sm">
+                      <span>
+                        {p.name} × {qty}
+                      </span>
+                      <span className="font-bold">
+                        ₹{(Number.parseFloat(p.price) * qty).toLocaleString()}
+                      </span>
+                    </div>
+                  ) : null;
+                })}
+                <div className="border-t pt-2 font-bold flex justify-between">
+                  <span>Total</span>
+                  <span>₹{cartTotal}</span>
+                </div>
+                <div>
+                  <Label className="text-xs">Delivery Name *</Label>
+                  <Input
+                    value={checkoutForm.name}
+                    onChange={(e) =>
+                      setCheckoutForm((p) => ({ ...p, name: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="user_shopping.input"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Delivery Address *</Label>
+                  <Textarea
+                    value={checkoutForm.address}
+                    onChange={(e) =>
+                      setCheckoutForm((p) => ({
+                        ...p,
+                        address: e.target.value,
+                      }))
+                    }
+                    className="mt-1"
+                    data-ocid="user_shopping.textarea"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Phone *</Label>
+                  <Input
+                    value={checkoutForm.phone}
+                    onChange={(e) =>
+                      setCheckoutForm((p) => ({ ...p, phone: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="user_shopping.input"
+                  />
+                </div>
+                <Button
+                  onClick={handleCheckout}
+                  className="bg-ngo-green text-white w-full"
+                  data-ocid="user_shopping.confirm_button"
+                >
+                  Confirm Order
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+
+      {activeProducts.length === 0 ? (
+        <div
+          className="text-center py-12 text-gray-400"
+          data-ocid="user_shopping.empty_state"
+        >
+          <Package size={40} className="mx-auto mb-3 opacity-30" /> Koi product
+          available nahi hai.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {activeProducts.map((p, i) => (
+            <Card
+              key={p.id}
+              className="hover:shadow-md transition-shadow"
+              data-ocid={`user_shopping.item.${i + 1}`}
+            >
+              <CardContent className="p-0">
+                <div className="h-40 bg-gray-100 rounded-t-lg flex items-center justify-center">
+                  {p.imageUrl ? (
+                    <img
+                      src={p.imageUrl}
+                      alt={p.name}
+                      className="h-full w-full object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <Package size={40} className="text-gray-300" />
+                  )}
+                </div>
+                <div className="p-3">
+                  <h3 className="font-bold text-gray-800 text-sm">{p.name}</h3>
+                  <div className="text-xs text-gray-400">
+                    {p.category} | {p.centerName}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {p.description}
+                  </p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="font-extrabold text-green-700">
+                      ₹{Number(p.price).toLocaleString()}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      Stock: {p.stock}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setCart((c) => ({
+                          ...c,
+                          [p.id]: Math.max(0, (c[p.id] || 0) - 1),
+                        }))
+                      }
+                      disabled={!cart[p.id]}
+                    >
+                      −
+                    </Button>
+                    <span className="text-sm font-bold w-6 text-center">
+                      {cart[p.id] || 0}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setCart((c) => ({ ...c, [p.id]: (c[p.id] || 0) + 1 }))
+                      }
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Utilities Section ───
+
+function UserUtilities() {
+  const { utilityServices } = useApp();
+  const activeServices = utilityServices.filter((s) => s.isActive);
+  const typeIcon: Record<string, string> = {
+    electricity: "⚡",
+    water: "💧",
+    gas: "🔥",
+    insurance: "🛡️",
+    other: "🔧",
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-gray-600">
+        DMVV centers par yeh utility services available hain. Contact number pe
+        call karke service lein.
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {activeServices.map((s, i) => (
+          <Card
+            key={s.id}
+            className="hover:shadow-md transition-shadow"
+            data-ocid={`user_utilities.item.${i + 1}`}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="text-3xl">{typeIcon[s.type] || "🔧"}</div>
+                <div>
+                  <h3 className="font-bold text-gray-800">{s.name}</h3>
+                  <p className="text-sm text-gray-500">{s.description}</p>
+                  <div className="mt-2">
+                    <a
+                      href={`tel:${s.contactNumber}`}
+                      className="text-ngo-green font-semibold text-sm"
+                    >
+                      📞 {s.contactNumber}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Insurance Section ───
+
+function UserInsurance() {
+  const {
+    currentUser,
+    insuranceSchemes,
+    insuranceApplications,
+    addInsuranceApplication,
+  } = useApp();
+  if (!currentUser) return null;
+  const myApplications = insuranceApplications.filter(
+    (a) => a.userId === currentUser.id,
+  );
+
+  const hasApplied = (schemeId: string) =>
+    myApplications.some((a) => a.schemeId === schemeId);
+
+  const handleApply = (scheme: (typeof insuranceSchemes)[0]) => {
+    if (hasApplied(scheme.id)) {
+      toast.error("Already applied!");
+      return;
+    }
+    const app: InsuranceApplication = {
+      id: `insapp_${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.fullName,
+      schemeId: scheme.id,
+      schemeName: scheme.name,
+      status: "pending",
+      appliedAt: new Date().toISOString().split("T")[0],
+    };
+    addInsuranceApplication(app);
+    toast.success(`${scheme.name} ke liye apply ho gaya!`);
+  };
+
+  const typeColor: Record<string, string> = {
+    life: "bg-green-100 text-green-700",
+    health: "bg-blue-100 text-blue-700",
+    crop: "bg-yellow-100 text-yellow-700",
+    accident: "bg-red-100 text-red-700",
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {insuranceSchemes
+          .filter((s) => s.isActive)
+          .map((s, i) => (
+            <Card
+              key={s.id}
+              className="hover:shadow-md transition-shadow"
+              data-ocid={`user_insurance.item.${i + 1}`}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <h3 className="font-bold text-gray-800 flex-1 pr-2">
+                    {s.name}
+                  </h3>
+                  <Badge className={`capitalize ${typeColor[s.type]}`}>
+                    {s.type}
+                  </Badge>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">{s.description}</p>
+                <div className="grid grid-cols-2 gap-2 mt-3 text-sm">
+                  <div>
+                    <span className="text-gray-400">Premium: </span>
+                    <span className="font-semibold">{s.premium}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Coverage: </span>
+                    <span className="font-semibold">{s.coverage}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Tenure: </span>
+                    <span className="font-semibold">{s.tenure}</span>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="text-xs font-semibold text-gray-500 mb-1">
+                    Eligibility:
+                  </div>
+                  {s.eligibility.map((e) => (
+                    <div
+                      key={e}
+                      className="flex items-center gap-1 text-xs text-gray-600"
+                    >
+                      <CheckCircle size={12} className="text-green-500" /> {e}
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  size="sm"
+                  className={`mt-3 w-full ${hasApplied(s.id) ? "bg-gray-200 text-gray-600" : "bg-ngo-green text-white"}`}
+                  onClick={() => handleApply(s)}
+                  disabled={hasApplied(s.id)}
+                  data-ocid={`user_insurance.primary_button.${i + 1}`}
+                >
+                  {hasApplied(s.id) ? "✓ Applied" : "Apply Now"}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+      </div>
+
+      {myApplications.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">My Insurance Applications</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {myApplications.map((a, i) => (
+              <div
+                key={a.id}
+                className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded-lg"
+                data-ocid={`user_insurance.item.${i + 1}`}
+              >
+                <span>{a.schemeName}</span>
+                <Badge
+                  className={`capitalize ${
+                    a.status === "approved"
+                      ? "bg-green-100 text-green-700"
+                      : a.status === "rejected"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {a.status}
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+// ─── Wallet Section ───
+
+function UserWallet() {
+  const { currentUser, walletTransactions } = useApp();
+  if (!currentUser) return null;
+  const myTxns = walletTransactions.filter((t) => t.userId === currentUser.id);
+  const balance = myTxns.reduce(
+    (sum, t) => sum + (t.type === "credit" ? t.amount : -t.amount),
+    0,
+  );
+
+  return (
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-r from-ngo-green to-green-600 text-white">
+        <CardContent className="p-6">
+          <div className="text-sm opacity-80">Total Wallet Balance</div>
+          <div className="text-4xl font-extrabold">
+            ₹{balance.toLocaleString()}
+          </div>
+          <div className="text-xs opacity-70 mt-2">
+            {currentUser.fullName} | {currentUser.memberId}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-yellow-50 border-yellow-200">
+        <CardContent className="p-4 text-sm text-yellow-800">
+          <Wallet size={16} className="inline mr-2" />
+          Aapka wallet admin dwara credited hota hai. Loan disbursement,
+          scholarship, aur rewards yahan reflect honge.
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Transaction History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {myTxns.length === 0 ? (
+            <div
+              className="text-center py-10 text-gray-400"
+              data-ocid="user_wallet.empty_state"
+            >
+              Koi transaction nahi hui hai.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {["Date", "Description", "Type", "Amount", "Balance"].map(
+                      (h) => (
+                        <th
+                          key={h}
+                          className="px-3 py-2 text-left font-semibold text-gray-600 text-xs"
+                        >
+                          {h}
+                        </th>
+                      ),
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {myTxns.map((t, i) => (
+                    <tr
+                      key={t.id}
+                      className="border-t"
+                      data-ocid={`user_wallet.row.${i + 1}`}
+                    >
+                      <td className="px-3 py-2 text-xs text-gray-500">
+                        {t.date}
+                      </td>
+                      <td className="px-3 py-2">{t.description}</td>
+                      <td className="px-3 py-2">
+                        <Badge
+                          className={`capitalize ${t.type === "credit" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                        >
+                          {t.type}
+                        </Badge>
+                      </td>
+                      <td
+                        className={`px-3 py-2 font-bold ${t.type === "credit" ? "text-green-700" : "text-red-600"}`}
+                      >
+                        {t.type === "credit" ? "+" : "-"}₹
+                        {t.amount.toLocaleString()}
+                      </td>
+                      <td className="px-3 py-2 font-semibold">
+                        ₹{t.balance.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

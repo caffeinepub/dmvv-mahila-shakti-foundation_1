@@ -1,14 +1,67 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useApp } from "@/context/AppContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { type LoanApplication, useApp } from "@/context/AppContext";
 import { CheckCircle, Clock, IndianRupee, Percent } from "lucide-react";
 import { motion } from "motion/react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Loan() {
-  const { loanSchemes } = useApp();
+  const { loanSchemes, currentUser, addLoanApplication } = useApp();
   const active = loanSchemes
     .filter((l) => l.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+  const [openModal, setOpenModal] = useState<string | null>(null);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleApplySubmit = (schemeName: string) => {
+    if (
+      !form.fullName ||
+      !form.mobile ||
+      !form.amount ||
+      !form.bankName ||
+      !form.accountNumber
+    ) {
+      toast.error("Kripya sare required fields bharein.");
+      return;
+    }
+    setSubmitting(true);
+    const app: LoanApplication = {
+      id: `loan_${Date.now()}`,
+      userId: currentUser?.id || "guest",
+      userName: form.fullName,
+      userMobile: form.mobile,
+      loanType: "general",
+      amount: form.amount,
+      purpose: form.purpose || schemeName,
+      bankName: form.bankName,
+      accountNumber: form.accountNumber,
+      ifscCode: form.ifscCode || "",
+      guarantorName: form.guarantorName || "",
+      guarantorPhone: form.guarantorPhone || "",
+      status: "pending",
+      appliedAt: new Date().toISOString().split("T")[0],
+    };
+    addLoanApplication(app);
+    toast.success(
+      "🎉 Loan application submit ho gayi! Hum jald hi contact karenge.",
+    );
+    setForm({});
+    setOpenModal(null);
+    setSubmitting(false);
+  };
 
   return (
     <main className="min-h-screen">
@@ -21,6 +74,31 @@ export default function Loan() {
           <p className="text-green-200 mt-2">
             Microfinance and loan programs for women entrepreneurs
           </p>
+        </div>
+      </section>
+
+      {/* SHG / Udhyog banner */}
+      <section className="bg-gradient-to-r from-blue-600 to-orange-500 py-4">
+        <div className="max-w-7xl mx-auto px-4 flex flex-wrap gap-4 items-center justify-between">
+          <div className="text-white font-bold">Vishesh Loan Yojanaein:</div>
+          <div className="flex gap-3">
+            <Link to="/shg-loan">
+              <Button
+                className="bg-white text-blue-700 hover:bg-blue-50 font-bold"
+                data-ocid="loan_page.secondary_button"
+              >
+                SHG Loan Yojana →
+              </Button>
+            </Link>
+            <Link to="/udhyog-loan">
+              <Button
+                className="bg-white text-orange-700 hover:bg-orange-50 font-bold"
+                data-ocid="loan_page.secondary_button"
+              >
+                Udhyog Loan Yojana →
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -83,42 +161,118 @@ export default function Loan() {
                 className={`border-l-4 ${scheme.color} hover:shadow-lg transition-shadow`}
               >
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-extrabold text-gray-900 mb-1">
-                    {scheme.name}
-                  </h2>
-                  <div className="flex flex-wrap gap-3 mb-4">
-                    <Badge variant="outline">
-                      <IndianRupee size={12} className="mr-1" />
-                      {scheme.amount}
-                    </Badge>
-                    <Badge variant="outline">
-                      <Percent size={12} className="mr-1" />
-                      {scheme.interest}
-                    </Badge>
-                    <Badge variant="outline">
-                      <Clock size={12} className="mr-1" />
-                      {scheme.tenure}
-                    </Badge>
-                  </div>
-                  <p className="text-gray-600 mb-4">{scheme.description}</p>
-                  <div>
-                    <h3 className="font-bold text-sm text-gray-800 mb-2">
-                      Eligibility:
-                    </h3>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                      {scheme.eligibility.map((e) => (
-                        <li
-                          key={e}
-                          className="flex items-start gap-2 text-sm text-gray-600"
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h2 className="text-xl font-extrabold text-gray-900 mb-1">
+                        {scheme.name}
+                      </h2>
+                      <div className="flex flex-wrap gap-3 mb-4">
+                        <Badge variant="outline">
+                          <IndianRupee size={12} className="mr-1" />
+                          {scheme.amount}
+                        </Badge>
+                        <Badge variant="outline">
+                          <Percent size={12} className="mr-1" />
+                          {scheme.interest}
+                        </Badge>
+                        <Badge variant="outline">
+                          <Clock size={12} className="mr-1" />
+                          {scheme.tenure}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600 mb-4">{scheme.description}</p>
+                      <div>
+                        <h3 className="font-bold text-sm text-gray-800 mb-2">
+                          Eligibility:
+                        </h3>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                          {scheme.eligibility.map((e) => (
+                            <li
+                              key={e}
+                              className="flex items-start gap-2 text-sm text-gray-600"
+                            >
+                              <CheckCircle
+                                size={14}
+                                className="text-green-500 mt-0.5 flex-shrink-0"
+                              />
+                              {e}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <Dialog
+                        open={openModal === scheme.id}
+                        onOpenChange={(open) => {
+                          setOpenModal(open ? scheme.id : null);
+                          setForm({});
+                        }}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            className="bg-ngo-green text-white"
+                            data-ocid={`loan.primary_button.${idx + 1}`}
+                          >
+                            Apply Now
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent
+                          className="max-w-md"
+                          data-ocid="loan.dialog"
                         >
-                          <CheckCircle
-                            size={14}
-                            className="text-green-500 mt-0.5 flex-shrink-0"
-                          />
-                          {e}
-                        </li>
-                      ))}
-                    </ul>
+                          <DialogHeader>
+                            <DialogTitle>Apply for {scheme.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-3 max-h-96 overflow-y-auto">
+                            {(
+                              [
+                                ["Full Name *", "fullName", "text"],
+                                ["Mobile *", "mobile", "tel"],
+                                ["Loan Amount (₹) *", "amount", "number"],
+                                ["Purpose", "purpose", "text"],
+                                [
+                                  "Monthly Income (₹)",
+                                  "monthlyIncome",
+                                  "number",
+                                ],
+                                ["Bank Name *", "bankName", "text"],
+                                ["Account Number *", "accountNumber", "text"],
+                                ["IFSC Code", "ifscCode", "text"],
+                                ["Guarantor Name", "guarantorName", "text"],
+                                ["Guarantor Phone", "guarantorPhone", "tel"],
+                              ] as [string, string, string][]
+                            ).map(([l, k, t]) => (
+                              <div key={k}>
+                                <Label className="text-xs">{l}</Label>
+                                <Input
+                                  type={t}
+                                  value={form[k] || ""}
+                                  onChange={(e) =>
+                                    setForm((p) => ({
+                                      ...p,
+                                      [k]: e.target.value,
+                                    }))
+                                  }
+                                  className="mt-1"
+                                  data-ocid="loan.input"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <Button
+                            onClick={() => handleApplySubmit(scheme.name)}
+                            disabled={submitting}
+                            className="bg-ngo-green text-white w-full mt-2"
+                            data-ocid="loan.submit_button"
+                          >
+                            {submitting
+                              ? "Submitting..."
+                              : "Submit Application"}
+                          </Button>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

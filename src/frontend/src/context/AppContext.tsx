@@ -96,6 +96,10 @@ export interface SiteSettings {
   contactPhone: string;
   address: string;
   logoUrl: string;
+  signatureUrl: string;
+  sealUrl: string;
+  authorityName: string;
+  authorityDesignation: string;
 }
 
 export interface PageContent {
@@ -225,7 +229,7 @@ export interface SuccessStory {
   income: string;
   quote: string;
   imageUrl?: string;
-  photoUrl?: string; // alias for imageUrl
+  photoUrl?: string;
   isActive: boolean;
   sortOrder?: number;
 }
@@ -339,14 +343,14 @@ export interface TransportInfo {
 export interface DownloadItem {
   id: string;
   title?: string;
-  name?: string; // legacy
+  name?: string;
   description?: string;
-  desc?: string; // legacy
+  desc?: string;
   fileUrl: string;
   fileType?: string;
-  type?: string; // legacy
+  type?: string;
   fileSize?: string;
-  size?: string; // legacy
+  size?: string;
   category: string;
   isActive: boolean;
   uploadedAt?: string;
@@ -359,9 +363,9 @@ export interface LegalDocument {
   documentType: string;
   issuedBy: string;
   issueDate?: string;
-  issuedDate?: string; // legacy
+  issuedDate?: string;
   validUpto?: string;
-  expiryDate?: string; // legacy
+  expiryDate?: string;
   registrationNo?: string;
   description: string;
   documentUrl?: string;
@@ -440,6 +444,137 @@ export interface FooterSettings {
   copyrightText: string;
   showQuickLinks: boolean;
   showPrograms: boolean;
+}
+
+// ─── New interfaces ───────────────────────────────────────────────────────────
+
+export interface LoanApplication {
+  id: string;
+  userId: string;
+  userName: string;
+  userMobile: string;
+  loanType: "general" | "shg" | "udhyog";
+  amount: string;
+  purpose: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  guarantorName: string;
+  guarantorPhone: string;
+  businessDetails?: string;
+  shgName?: string;
+  shgMembersCount?: string;
+  businessName?: string;
+  businessType?: string;
+  gstNumber?: string;
+  status: "pending" | "approved" | "rejected" | "under_review";
+  appliedAt: string;
+  adminRemark?: string;
+}
+
+export interface IncomeSource {
+  id: string;
+  userId: string;
+  source: string;
+  type: "salary" | "business" | "farming" | "handicraft" | "other";
+  monthlyAmount: string;
+  description: string;
+  addedAt: string;
+}
+
+export interface TrainingEnrollment {
+  id: string;
+  userId: string;
+  userName: string;
+  programName: string;
+  programId: string;
+  enrolledAt: string;
+  status: "pending" | "enrolled" | "completed" | "cancelled";
+}
+
+export interface VolunteerActivity {
+  id: string;
+  userId: string;
+  userName: string;
+  userMobile: string;
+  area: string;
+  hoursPerWeek: string;
+  availability: string;
+  description: string;
+  status: "pending" | "active" | "inactive";
+  joinedAt: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  imageUrl?: string;
+  centerId?: string;
+  centerName?: string;
+  stock: number;
+  isActive: boolean;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  userName: string;
+  userMobile: string;
+  userAddress: string;
+  items: {
+    productId: string;
+    productName: string;
+    quantity: number;
+    price: string;
+  }[];
+  totalAmount: string;
+  status: "placed" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  placedAt: string;
+  centerId?: string;
+}
+
+export interface InsuranceScheme {
+  id: string;
+  name: string;
+  type: "life" | "health" | "crop" | "accident";
+  description: string;
+  premium: string;
+  coverage: string;
+  tenure: string;
+  eligibility: string[];
+  isActive: boolean;
+}
+
+export interface InsuranceApplication {
+  id: string;
+  userId: string;
+  userName: string;
+  schemeId: string;
+  schemeName: string;
+  status: "pending" | "approved" | "rejected";
+  appliedAt: string;
+}
+
+export interface WalletTransaction {
+  id: string;
+  userId: string;
+  type: "credit" | "debit";
+  amount: number;
+  description: string;
+  date: string;
+  balance: number;
+}
+
+export interface UtilityService {
+  id: string;
+  name: string;
+  description: string;
+  type: "electricity" | "water" | "gas" | "insurance" | "other";
+  contactNumber: string;
+  isActive: boolean;
 }
 
 // ─── Initial Data ───
@@ -796,195 +931,103 @@ const initialCenters: Center[] = [
   },
   {
     id: "c2",
-    name: "Varanasi Community Center",
-    address: "45 Lanka Road, Varanasi",
+    name: "Varanasi Center",
+    address: "45 Sigra, Varanasi",
     state: "Uttar Pradesh",
     district: "Varanasi",
-    block: "Lanka",
-    contactPhone: "0542-4005678",
+    block: "Sigra",
+    contactPhone: "0542-2201234",
     isActive: true,
-  },
-  {
-    id: "c3",
-    name: "Patna Training Hub",
-    address: "78 Boring Road, Patna",
-    state: "Bihar",
-    district: "Patna",
-    block: "Boring Road",
-    contactPhone: "0612-4009012",
-    isActive: true,
-  },
-  {
-    id: "c4",
-    name: "Allahabad Skill Center",
-    address: "22 Civil Lines, Prayagraj",
-    state: "Uttar Pradesh",
-    district: "Prayagraj",
-    block: "Civil Lines",
-    contactPhone: "0532-4003456",
-    isActive: false,
   },
 ];
 
 const initialNews: NewsItem[] = [
   {
     id: "n1",
-    title:
-      "DMVV Foundation Launches Skill Development Drive for 10,000 Women Across UP",
+    title: "Annual Women Empowerment Summit 2025",
     content:
-      "In a landmark initiative, DMVV Bhartiy Mahila Shakti Foundation has launched a massive skill development drive targeting 10,000 women across Uttar Pradesh.",
-    category: "Program Update",
-    publishDate: "2025-03-01",
-    isPublished: true,
-    imageUrl: "/assets/generated/training-tailoring.dim_600x400.jpg",
-  },
-  {
-    id: "n2",
-    title: "Annual Awards Ceremony 2025: Celebrating 500 Women Achievers",
-    content:
-      "DMVV Foundation hosted its Annual Awards Ceremony recognizing 500 exceptional women from across India for their outstanding achievements.",
+      "DMVV Foundation hosted its annual summit bringing together 500+ women entrepreneurs from across UP and Bihar.",
     category: "Events",
-    publishDate: "2025-02-15",
+    publishDate: "2025-03-08",
     isPublished: true,
     imageUrl: "/assets/generated/awards-ceremony.dim_600x400.jpg",
   },
   {
-    id: "n3",
-    title: "New Community Center Inaugurated in Gorakhpur",
+    id: "n2",
+    title: "New Skill Development Center Opens in Patna",
     content:
-      "A new state-of-the-art community center was inaugurated in Gorakhpur, equipped with computer labs, tailoring units, and health care facilities.",
-    category: "Infrastructure",
-    publishDate: "2025-01-20",
+      "DMVV Foundation expands to Bihar with a state-of-the-art skill development center offering 8 courses.",
+    category: "Expansion",
+    publishDate: "2025-02-15",
     isPublished: true,
-    imageUrl: "/assets/generated/community-center.dim_600x400.jpg",
+    imageUrl: "/assets/generated/training-computer-skills.dim_600x400.jpg",
   },
 ];
 
 const initialFAQs: FAQItem[] = [
   {
     id: "f1",
-    question: "Who can become a member of DMVV Foundation?",
+    question: "How do I register with DMVV Foundation?",
     answer:
-      "Any woman aged 18 or above who is a citizen of India can apply for membership. There is no income bar.",
+      "Visit our Signup page, fill in your details and select your role. Admin will approve your account within 24-48 hours.",
     sortOrder: 1,
   },
   {
     id: "f2",
-    question: "What documents are required for registration?",
+    question: "What documents are required for KYC?",
     answer:
-      "You need a valid Aadhaar card, a passport-size photograph, and your mobile number.",
+      "Aadhaar card, passport photo, address proof, and bank account details are required.",
     sortOrder: 2,
   },
   {
     id: "f3",
-    question: "Are the training programs free?",
+    question: "How can I apply for a loan?",
     answer:
-      "Most of our training programs are fully subsidized or free of charge for BPL families.",
+      "After account approval and KYC verification, visit the Loan section in your dashboard and fill the application form.",
     sortOrder: 3,
-  },
-  {
-    id: "f4",
-    question: "How can I apply for a loan through DMVV Foundation?",
-    answer:
-      "Apply at any community center. The loan committee reviews applications within 7 working days.",
-    sortOrder: 4,
-  },
-  {
-    id: "f5",
-    question: "Does DMVV Foundation operate outside Uttar Pradesh?",
-    answer:
-      "Yes! We operate in 8 states: UP, Bihar, MP, Rajasthan, Jharkhand, Uttarakhand, Delhi NCR, and Haryana.",
-    sortOrder: 5,
-  },
-  {
-    id: "f6",
-    question: "How are donations utilized?",
-    answer:
-      "80% goes directly to programs, 10% for administration, 10% for outreach. We publish annual reports.",
-    sortOrder: 6,
   },
 ];
 
 const initialSettings: SiteSettings = {
-  siteTitle: "DMVV Bhartiy Mahila Shakti Foundation",
-  tagline: "महिला सशक्तिकरण की ओर एक कदम",
-  footerText:
-    "Dedicated to the empowerment of women across India. Registered NGO under the Societies Registration Act.",
+  siteTitle: "DMVV Bhartiy Mahila Shakti Foundation™",
+  tagline: "Empowering Women, Building India",
+  footerText: "Dedicated to the empowerment of women across India since 2015.",
   contactEmail: "info@dmvvfoundation.org",
-  contactPhone: "+91-522-4001234",
-  address:
-    "DMVV Foundation HQ, 15-A Civil Lines, Lucknow, Uttar Pradesh - 226001",
-  logoUrl: "",
+  contactPhone: "+91 9876543210",
+  address: "123 Hazratganj, Lucknow - 226001, Uttar Pradesh, India",
+  logoUrl: "/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png",
+  signatureUrl: "",
+  sealUrl: "",
+  authorityName: "Smt. Priya Sharma",
+  authorityDesignation: "Executive Director",
 };
 
-const initialPages: PageContent[] = [
-  {
-    id: "pg1",
-    title: "Privacy Policy",
-    slug: "privacy-policy",
-    content:
-      "This Privacy Policy outlines how DMVV Foundation collects, uses, and protects your personal information.",
-    isPublished: true,
-    createdAt: "2025-01-01",
-  },
-];
-
-const initialMedia: MediaFile[] = [
-  {
-    id: "m1",
-    fileName: "hero-women-empowerment.jpg",
-    fileType: "image/jpeg",
-    uploadedAt: "2025-01-01",
-    size: "2.4 MB",
-  },
-  {
-    id: "m2",
-    fileName: "community-center.jpg",
-    fileType: "image/jpeg",
-    uploadedAt: "2025-01-02",
-    size: "1.8 MB",
-  },
-];
+const initialPages: PageContent[] = [];
+const initialMedia: MediaFile[] = [];
 
 const initialGalleryItems: GalleryItem[] = [
   {
     id: "g1",
-    src: "/assets/generated/training-tailoring.dim_600x400.jpg",
-    category: "Training",
-    caption: "Tailoring skill training session — Lucknow Center",
-    uploadedAt: "2025-02-10",
+    src: "/assets/generated/hero-women-empowerment.dim_1400x700.jpg",
+    category: "Events",
+    caption: "Annual Women Empowerment Summit",
+    uploadedAt: "2025-03-08",
     mediaType: "photo",
   },
   {
     id: "g2",
-    src: "/assets/generated/training-computer-skills.dim_600x400.jpg",
+    src: "/assets/generated/training-tailoring.dim_600x400.jpg",
     category: "Training",
-    caption: "Computer literacy program — Varanasi Center",
-    uploadedAt: "2025-02-12",
+    caption: "Tailoring & Embroidery Workshop",
+    uploadedAt: "2025-02-10",
     mediaType: "photo",
   },
   {
     id: "g3",
-    src: "/assets/generated/awards-ceremony.dim_600x400.jpg",
-    category: "Awards",
-    caption: "Annual Awards Ceremony 2025",
-    uploadedAt: "2025-02-15",
-    mediaType: "photo",
-  },
-  {
-    id: "g4",
     src: "/assets/generated/community-center.dim_600x400.jpg",
     category: "Centers",
-    caption: "Gorakhpur Community Center inauguration",
-    uploadedAt: "2025-02-20",
-    mediaType: "photo",
-  },
-  {
-    id: "g5",
-    src: "/assets/generated/employment-success.dim_600x400.jpg",
-    category: "Events",
-    caption: "Employment Mela — 200 women placed",
-    uploadedAt: "2025-03-01",
+    caption: "Community Center - Lucknow",
+    uploadedAt: "2025-01-20",
     mediaType: "photo",
   },
 ];
@@ -994,31 +1037,31 @@ const initialTrainingPrograms: TrainingProgram[] = [
     id: "tp1",
     title: "Tailoring & Garment Making",
     duration: "3 Months",
-    eligibility: "Women aged 18-45, Class 8 pass",
+    eligibility: "Class 8 pass, Age 18-45",
     certification: "NSDC Certified",
     description:
-      "Comprehensive training in tailoring, dress designing, and garment making using modern industrial machines.",
+      "Learn professional tailoring, garment design and quality stitching techniques from expert trainers.",
     outcomes: [
-      "Professional tailoring skills",
-      "Self-employment capability",
-      "Boutique management",
+      "Professional stitching skills",
+      "Business setup guidance",
+      "Market linkage support",
     ],
     image: "/assets/generated/training-tailoring.dim_600x400.jpg",
-    color: "bg-purple-50 border-purple-200",
+    color: "bg-green-50 border-green-200",
     isActive: true,
   },
   {
     id: "tp2",
-    title: "Computer Skills & Digital Literacy",
+    title: "Computer & Digital Literacy",
     duration: "2 Months",
-    eligibility: "Women aged 16-35, Class 10 pass",
+    eligibility: "Class 10 pass, Age 16-40",
     certification: "NIELIT Certified",
     description:
-      "From basic computer operations to MS Office, internet usage, and online business skills.",
+      "Master basic to advanced computer skills, MS Office, internet, and digital payment systems.",
     outcomes: [
-      "Basic to advanced computer skills",
-      "Online job opportunities",
-      "Digital payment literacy",
+      "Job-ready computer skills",
+      "Digital banking knowledge",
+      "Online business setup",
     ],
     image: "/assets/generated/training-computer-skills.dim_600x400.jpg",
     color: "bg-blue-50 border-blue-200",
@@ -1026,43 +1069,23 @@ const initialTrainingPrograms: TrainingProgram[] = [
   },
   {
     id: "tp3",
-    title: "Beauty & Wellness Services",
+    title: "Beauty & Wellness",
     duration: "2 Months",
-    eligibility: "Women aged 18-40, any education",
-    certification: "BSSC Certified",
+    eligibility: "Age 18-40",
+    certification: "Beauty & Wellness Sector Council",
     description:
-      "Professional beauty parlor training including hair styling, skin care, makeup, and salon management.",
-    outcomes: [
-      "Parlor management skills",
-      "Home-based income",
-      "Bridal makeup expertise",
-    ],
+      "Professional beauty therapy, skincare, hair styling and salon management training.",
+    outcomes: ["Salon setup skills", "Client management", "Product knowledge"],
     image: "/assets/generated/employment-success.dim_600x400.jpg",
     color: "bg-pink-50 border-pink-200",
-    isActive: true,
-  },
-  {
-    id: "tp4",
-    title: "Financial Literacy & Banking",
-    duration: "1 Month",
-    eligibility: "All women members",
-    certification: "DMVV Foundation Certificate",
-    description:
-      "Understanding banking, savings, insurance, SHG management, and accessing government financial schemes.",
-    outcomes: [
-      "Bank account management",
-      "SHG formation skills",
-      "Loan application process",
-    ],
-    image: "/assets/generated/community-center.dim_600x400.jpg",
-    color: "bg-green-50 border-green-200",
     isActive: true,
   },
 ];
 
 const initialCompanyProfile: CompanyProfile = {
-  orgName: "DMVV Bhartiy Mahila Shakti Foundation",
-  description: "A leading NGO dedicated to women empowerment across India.",
+  orgName: "DMVV Bhartiy Mahila Shakti Foundation™",
+  description:
+    "A leading NGO dedicated to empowering women through skill development, financial inclusion, and community support programs across India.",
   registrationNo: "UP/2015/NGO/4521",
   foundingYear: "2015",
   website: "https://dmvvfoundation.org",
@@ -1070,36 +1093,25 @@ const initialCompanyProfile: CompanyProfile = {
 
 const initialLeadership: LeadershipMember[] = [
   {
-    id: "lm1",
-    name: "Smt. Durga Devi",
-    designation: "Chairperson & Founder",
-    qualification: "M.A. Social Work, Delhi University",
+    id: "l1",
+    name: "Smt. Priya Sharma",
+    designation: "Executive Director",
+    qualification: "M.A. Social Work, BHU",
     message:
-      "Our mission is to ensure that every woman in India has access to opportunities, dignity, and a life of her choosing.",
+      "Our mission is to ensure every woman in India has the opportunity to achieve financial independence and live with dignity.",
     photoUrl: "",
     sortOrder: 1,
     isActive: true,
   },
   {
-    id: "lm2",
-    name: "Shri. Vijay Kumar Verma",
-    designation: "Secretary General",
-    qualification: "LLB, Allahabad University",
+    id: "l2",
+    name: "Dr. Rekha Gupta",
+    designation: "Program Director",
+    qualification: "PhD Social Work, TISS Mumbai",
     message:
-      "Legal empowerment is the foundation of all empowerment. We ensure every woman knows her rights.",
+      "We believe in grassroots change — one woman at a time, one village at a time.",
     photoUrl: "",
     sortOrder: 2,
-    isActive: true,
-  },
-  {
-    id: "lm3",
-    name: "Dr. Meena Agarwal",
-    designation: "Medical Advisor",
-    qualification: "MBBS, MD Community Medicine",
-    message:
-      "Women's health is the pillar of a healthy society. Our health programs reach the most remote villages.",
-    photoUrl: "",
-    sortOrder: 3,
     isActive: true,
   },
 ];
@@ -1107,9 +1119,9 @@ const initialLeadership: LeadershipMember[] = [
 const initialFoundationEvents: FoundationEvent[] = [
   {
     id: "fe1",
-    title: "Annual Women Empowerment Mahotsav 2025",
+    title: "Annual Women Empowerment Summit 2025",
     description:
-      "Grand annual celebration bringing together thousands of women beneficiaries, donors, and government officials.",
+      "A landmark gathering of 500+ women entrepreneurs, policy makers, and NGO leaders.",
     eventDate: "2025-03-08",
     location: "Lucknow, Uttar Pradesh",
     imageUrl: "/assets/generated/awards-ceremony.dim_600x400.jpg",
@@ -1118,11 +1130,11 @@ const initialFoundationEvents: FoundationEvent[] = [
   },
   {
     id: "fe2",
-    title: "Skill Development Camp — Rural UP",
+    title: "Skill Development Mela - Varanasi",
     description:
-      "Two-day residential skill development camp for women from 50 villages in rural Uttar Pradesh.",
-    eventDate: "2025-02-20",
-    location: "Gorakhpur, Uttar Pradesh",
+      "Free skill training registration camp for rural women in and around Varanasi district.",
+    eventDate: "2025-02-15",
+    location: "Varanasi, Uttar Pradesh",
     imageUrl: "/assets/generated/training-tailoring.dim_600x400.jpg",
     isActive: true,
     sortOrder: 2,
@@ -1132,23 +1144,23 @@ const initialFoundationEvents: FoundationEvent[] = [
 const initialComputerCenters: ComputerCenter[] = [
   {
     id: "cc1",
-    name: "DMVV Digital Kendra — Lucknow",
-    address: "12-A, Indira Nagar, Lucknow",
+    name: "DMVV Digital Hub - Lucknow",
+    address: "23 Alambagh, Lucknow",
     state: "Uttar Pradesh",
     district: "Lucknow",
     facilities: "30 computers, internet, printer, projector",
-    contactPhone: "0522-4007890",
+    contactPhone: "0522-3001234",
     imageUrl: "/assets/generated/training-computer-skills.dim_600x400.jpg",
     isActive: true,
   },
   {
     id: "cc2",
-    name: "DMVV Tech Center — Varanasi",
-    address: "45-B, Lanka Road, Varanasi",
+    name: "DMVV Digital Hub - Varanasi",
+    address: "12 Lanka, Varanasi",
     state: "Uttar Pradesh",
     district: "Varanasi",
-    facilities: "20 computers, internet, tally software",
-    contactPhone: "0542-4006789",
+    facilities: "20 computers, internet, scanner",
+    contactPhone: "0542-3001234",
     imageUrl: "/assets/generated/training-computer-skills.dim_600x400.jpg",
     isActive: true,
   },
@@ -1156,133 +1168,100 @@ const initialComputerCenters: ComputerCenter[] = [
 
 const initialSchemes: SchemeItem[] = [
   {
-    id: "sc0",
+    id: "s1",
     name: "Self Employment Revolution Scheme",
-    ministry: "DMVV Foundation Initiative",
+    ministry: "Ministry of Skill Development",
     description:
-      "DMVV Foundation's flagship scheme empowering women to start their own businesses with training, mentorship, seed funding.",
+      "Comprehensive skill-to-employment program providing training, tools, and market linkage for rural women.",
     eligibility: [
-      "Women aged 18-50",
-      "BPL or lower middle-income families",
-      "Completion of any DMVV skill training",
+      "Women aged 18-45",
+      "Rural or semi-urban resident",
+      "Class 5 minimum education",
+      "BPL or low-income family",
     ],
     benefits: [
-      "Seed funding up to ₹50,000",
-      "Business mentorship for 1 year",
+      "Free skill training",
+      "Tool kit worth ₹15,000",
       "Market linkage support",
+      "Monthly stipend during training",
     ],
-    howToApply:
-      "Apply at any DMVV community center with Aadhaar and training completion certificate.",
-    color: "border-ngo-orange",
+    howToApply: "Apply through DMVV Foundation website or nearest center.",
+    color: "border-orange-400",
     featured: true,
-    isActive: true,
-    sortOrder: 0,
-  },
-  {
-    id: "sc1",
-    name: "Beti Bachao Beti Padhao",
-    ministry: "Ministry of Women & Child Development",
-    description:
-      "National program to address the declining child sex ratio and promote education of the girl child.",
-    eligibility: [
-      "All families with girl children",
-      "Below poverty line families",
-    ],
-    benefits: [
-      "Free education support",
-      "Health care for girls",
-      "Cash incentive for education",
-    ],
-    howToApply: "Apply at district women and child development office.",
-    color: "border-pink-400",
-    featured: false,
     isActive: true,
     sortOrder: 1,
   },
   {
-    id: "sc2",
-    name: "PM Ujjwala Yojana",
-    ministry: "Ministry of Petroleum & Natural Gas",
-    description: "Provides free LPG connections to women from BPL households.",
-    eligibility: ["BPL families", "Women must be head or co-applicant"],
-    benefits: ["Free LPG connection", "First refill subsidy"],
-    howToApply: "Apply at nearest LPG distributor with Aadhaar and BPL card.",
-    color: "border-orange-400",
-    featured: false,
-    isActive: true,
-    sortOrder: 2,
-  },
-  {
-    id: "sc3",
-    name: "Stand-Up India",
-    ministry: "Ministry of Finance",
-    description:
-      "Bank loans between ₹10 lakh and ₹1 crore to SC/ST and women entrepreneurs.",
-    eligibility: ["Women entrepreneurs", "First-time enterprise (Greenfield)"],
-    benefits: ["Loan up to ₹1 crore", "7-year repayment period"],
-    howToApply: "Apply through any scheduled commercial bank.",
-    color: "border-blue-400",
-    featured: false,
-    isActive: true,
-    sortOrder: 3,
-  },
-  {
-    id: "sc4",
-    name: "Skill India Mission for Women",
-    ministry: "Ministry of Skill Development",
-    description:
-      "Vocational training and placement assistance to women in 40+ skill areas.",
-    eligibility: ["Women aged 15-45", "Any educational qualification"],
-    benefits: [
-      "Free certified training",
-      "Placement assistance",
-      "Stipend during training",
+    id: "s2",
+    name: "Mahila Udyam Yojana",
+    ministry: "Ministry of MSME",
+    description: "Business development support for women entrepreneurs.",
+    eligibility: [
+      "Women entrepreneurs",
+      "Existing or new business",
+      "Age 18-50",
     ],
-    howToApply: "Register at DMVV skill center with Aadhaar.",
+    benefits: [
+      "Business training",
+      "Seed capital assistance",
+      "Mentorship",
+      "Market access",
+    ],
+    howToApply: "Fill online application or visit any DMVV center.",
     color: "border-green-400",
     featured: false,
     isActive: true,
-    sortOrder: 4,
+    sortOrder: 2,
   },
 ];
 
 const initialLoanSchemes: LoanScheme[] = [
   {
     id: "ls1",
-    name: "Micro Enterprise Loan",
-    amount: "₹10,000 – ₹50,000",
-    interest: "4% per annum",
-    tenure: "12-24 months",
+    name: "Mahila Udyam Loan",
+    amount: "₹50,000 - ₹5,00,000",
+    interest: "7% per annum",
+    tenure: "1-5 years",
     description:
-      "Small loans for starting micro-enterprises like tailoring units, food processing, handicrafts.",
-    eligibility: ["DMVV member for 6+ months", "Completed skill training"],
-    color: "border-l-4 border-l-green-500",
+      "Business development loan for women entrepreneurs to start or expand their enterprise.",
+    eligibility: [
+      "Women aged 18-55",
+      "Approved DMVV member",
+      "Valid KYC documents",
+      "Bank account mandatory",
+    ],
+    color: "border-green-400",
     isActive: true,
     sortOrder: 1,
   },
   {
     id: "ls2",
-    name: "Self Help Group (SHG) Loan",
-    amount: "₹50,000 – ₹2,00,000",
+    name: "SHG Group Loan",
+    amount: "₹1,00,000 - ₹10,00,000",
     interest: "6% per annum",
-    tenure: "24-36 months",
+    tenure: "2-7 years",
     description:
-      "Group loans for SHGs to start joint ventures or purchase equipment.",
-    eligibility: ["Formed SHG with 10+ members", "6 months savings record"],
-    color: "border-l-4 border-l-blue-500",
+      "Collective loan for Self Help Groups to fund group enterprises and activities.",
+    eligibility: [
+      "Registered SHG with DMVV",
+      "Minimum 10 active members",
+      "6 months group savings record",
+      "Group KYC completed",
+    ],
+    color: "border-blue-400",
     isActive: true,
     sortOrder: 2,
   },
   {
     id: "ls3",
-    name: "Education Loan for Women",
-    amount: "₹25,000 – ₹1,00,000",
-    interest: "3% per annum",
-    tenure: "36-60 months",
+    name: "Emergency Micro Loan",
+    amount: "₹5,000 - ₹50,000",
+    interest: "8% per annum",
+    tenure: "6 months - 2 years",
     description:
-      "Interest-subsidized education loans for women pursuing higher education.",
-    eligibility: ["Women aged 18-35", "Admission confirmation letter"],
-    color: "border-l-4 border-l-orange-500",
+      "Quick disbursal micro loans for urgent financial needs of DMVV members.",
+    eligibility: ["Active DMVV member", "No existing default", "Approved KYC"],
+    color: "border-orange-400",
     isActive: true,
     sortOrder: 3,
   },
@@ -1291,168 +1270,144 @@ const initialLoanSchemes: LoanScheme[] = [
 const initialEmploymentPartners: EmploymentPartner[] = [
   {
     id: "ep1",
-    name: "Reliance Industries",
-    sector: "Retail & FMCG",
-    openings: 250,
+    name: "Fabindia",
+    sector: "Textile & Handicraft",
+    openings: 50,
     description:
-      "Partnered for placement of trained women in retail and back-office roles.",
+      "Sourcing handwoven textiles and crafts from DMVV artisan groups.",
     isActive: true,
     sortOrder: 1,
   },
   {
     id: "ep2",
-    name: "Tata Motors",
-    sector: "Manufacturing",
-    openings: 120,
-    description:
-      "Women-friendly manufacturing roles in assembly and quality control.",
+    name: "BigBasket",
+    sector: "Food Processing",
+    openings: 30,
+    description: "Procurement of organic produce and processed food items.",
     isActive: true,
     sortOrder: 2,
-  },
-  {
-    id: "ep3",
-    name: "Infosys BPO",
-    sector: "IT & ITeS",
-    openings: 350,
-    description:
-      "Work-from-home and office roles in data entry and customer support.",
-    isActive: true,
-    sortOrder: 3,
   },
 ];
 
 const initialSuccessStories: SuccessStory[] = [
   {
     id: "ss1",
-    name: "Meera Devi",
-    from: "Daily wage worker, Gorakhpur",
-    now: "Boutique owner employing 5 women",
-    income: "₹35,000/month",
+    name: "Kamla Devi",
+    from: "Daily wage laborer, Sitapur",
+    now: "Runs tailoring unit, 8 employees",
+    income: "₹45,000/month",
     quote:
-      "DMVV Foundation gave me a needle and thread — I stitched my own destiny.",
+      "DMVV Foundation gave me the skills and confidence to build my own business. Today I employ 8 other women.",
     imageUrl: "/assets/generated/employment-success.dim_600x400.jpg",
     isActive: true,
+    sortOrder: 1,
   },
   {
     id: "ss2",
-    name: "Sunita Kumari",
+    name: "Savita Singh",
     from: "School dropout, Varanasi",
-    now: "IT professional at a leading BPO",
-    income: "₹22,000/month",
+    now: "Computer institute owner",
+    income: "₹60,000/month",
     quote:
-      "I never thought a computer was for someone like me. DMVV showed me I was wrong.",
+      "The digital literacy program changed my life. I now run a computer training center for 40 students.",
     imageUrl: "/assets/generated/training-computer-skills.dim_600x400.jpg",
     isActive: true,
+    sortOrder: 2,
   },
 ];
 
 const initialAwardCategories: AwardCategory[] = [
   {
     id: "ac1",
-    name: "Entrepreneurship Excellence",
-    description: "Awarded to women who started and grew successful businesses",
+    name: "Best Entrepreneur",
+    category: "Business",
+    description: "Women who built successful businesses from scratch",
     icon: "🏆",
-    color: "bg-yellow-50 border-yellow-200",
+    color: "bg-yellow-50 border-yellow-400",
     isActive: true,
     sortOrder: 1,
+    prize: "₹25,000 + Certificate",
   },
   {
     id: "ac2",
-    name: "Social Leadership",
-    description: "For women who led community change and social impact",
+    name: "Community Leader",
+    category: "Leadership",
+    description: "Women who led community transformation initiatives",
     icon: "⭐",
-    color: "bg-purple-50 border-purple-200",
+    color: "bg-blue-50 border-blue-400",
     isActive: true,
     sortOrder: 2,
-  },
-  {
-    id: "ac3",
-    name: "Education Champion",
-    description: "Women who pursued education against all odds",
-    icon: "📚",
-    color: "bg-blue-50 border-blue-200",
-    isActive: true,
-    sortOrder: 3,
-  },
-  {
-    id: "ac4",
-    name: "Digital Innovator",
-    description: "Women excelling in technology and digital skills",
-    icon: "💻",
-    color: "bg-green-50 border-green-200",
-    isActive: true,
-    sortOrder: 4,
+    prize: "₹15,000 + Certificate",
   },
 ];
 
 const initialAwardWinners: AwardWinner[] = [
   {
     id: "aw1",
-    name: "Rekha Singh",
+    name: "Meera Devi",
     district: "Lucknow",
-    category: "Entrepreneurship Excellence",
-    achievement: "Started a tailoring cooperative employing 12 women",
+    state: "UP",
+    category: "Best Entrepreneur",
+    achievement: "Built a ₹50L annual revenue handicraft export business",
     year: "2024",
-    imageUrl: "/assets/generated/awards-ceremony.dim_600x400.jpg",
     isActive: true,
   },
   {
     id: "aw2",
-    name: "Priya Pandey",
+    name: "Sunita Tiwari",
     district: "Varanasi",
-    category: "Education Champion",
-    achievement:
-      "Completed B.Ed degree at 38 years of age while raising 3 children",
+    state: "UP",
+    category: "Community Leader",
+    achievement: "Organized 200+ women into SHG groups in 3 villages",
     year: "2024",
-    imageUrl: "/assets/generated/awards-ceremony.dim_600x400.jpg",
     isActive: true,
   },
 ];
 
-const initialApplyFormSubmissions: ApplyFormSubmission[] = [];
+const _initialApplyFormSubmissions: ApplyFormSubmission[] = [];
 
 const initialHomeHero: HomeHeroContent = {
-  heading: "Empowering Women\nTransforming India",
+  heading: "Empowering Women, Building India",
   subheading:
-    "DMVV Bhartiy Mahila Shakti Foundation — dedicated to skill development, financial inclusion, and holistic empowerment of women across India.",
-  primaryBtnText: "Know Our Mission",
-  secondaryBtnText: "Join as Member",
+    "DMVV Bhartiy Mahila Shakti Foundation — Providing skills, loans, and support to women across India since 2015.",
+  primaryBtnText: "Join Us Today",
+  secondaryBtnText: "Learn More",
 };
 
 const initialHomeStats: HomeStat[] = [
   {
     id: "hs1",
     number: "50,000+",
-    label: "Women Empowered",
+    label: "Women Trained",
     iconName: "Users",
-    color: "text-ngo-green",
+    color: "text-green-600",
     isActive: true,
     sortOrder: 1,
   },
   {
     id: "hs2",
-    number: "200+",
-    label: "Centers Active",
-    iconName: "MapPin",
-    color: "text-ngo-orange",
+    number: "₹35 Cr+",
+    label: "Loans Disbursed",
+    iconName: "IndianRupee",
+    color: "text-orange-500",
     isActive: true,
     sortOrder: 2,
   },
   {
     id: "hs3",
-    number: "8",
-    label: "States Covered",
-    iconName: "Globe",
-    color: "text-blue-500",
+    number: "8 States",
+    label: "Operational",
+    iconName: "MapPin",
+    color: "text-blue-600",
     isActive: true,
     sortOrder: 3,
   },
   {
     id: "hs4",
-    number: "₹12 Cr+",
-    label: "Loans Disbursed",
-    iconName: "Banknote",
-    color: "text-purple-500",
+    number: "200+",
+    label: "Centers",
+    iconName: "Building2",
+    color: "text-purple-600",
     isActive: true,
     sortOrder: 4,
   },
@@ -1461,49 +1416,49 @@ const initialHomeStats: HomeStat[] = [
 const initialHomeInitiatives: HomeInitiative[] = [
   {
     id: "hi1",
-    label: "Skill Training",
+    label: "Skill Development",
     iconName: "GraduationCap",
-    color: "text-ngo-green",
+    color: "bg-green-100 text-green-700",
     isActive: true,
     sortOrder: 1,
   },
   {
     id: "hi2",
-    label: "Micro Loans",
-    iconName: "Banknote",
-    color: "text-ngo-orange",
+    label: "Micro Finance",
+    iconName: "IndianRupee",
+    color: "bg-orange-100 text-orange-700",
     isActive: true,
     sortOrder: 2,
   },
   {
     id: "hi3",
-    label: "Legal Aid",
-    iconName: "Shield",
-    color: "text-blue-600",
+    label: "Community Centers",
+    iconName: "Building2",
+    color: "bg-blue-100 text-blue-700",
     isActive: true,
     sortOrder: 3,
   },
   {
     id: "hi4",
-    label: "Healthcare",
+    label: "Health & Wellness",
     iconName: "Heart",
-    color: "text-red-500",
+    color: "bg-pink-100 text-pink-700",
     isActive: true,
     sortOrder: 4,
   },
   {
     id: "hi5",
-    label: "Employment",
-    iconName: "Briefcase",
-    color: "text-purple-600",
+    label: "Legal Aid",
+    iconName: "Scale",
+    color: "bg-purple-100 text-purple-700",
     isActive: true,
     sortOrder: 5,
   },
   {
     id: "hi6",
-    label: "Education",
-    iconName: "BookOpen",
-    color: "text-yellow-600",
+    label: "Transport Support",
+    iconName: "Bus",
+    color: "bg-yellow-100 text-yellow-700",
     isActive: true,
     sortOrder: 6,
   },
@@ -1512,55 +1467,63 @@ const initialHomeInitiatives: HomeInitiative[] = [
 const initialHomeImpactStories: HomeImpactStory[] = [
   {
     id: "his1",
-    title: "Meera: From Worker to Boutique Owner",
-    subtitle: "Gorakhpur, UP — now earns ₹35,000/mo",
-    imageUrl: "/assets/generated/employment-success.dim_600x400.jpg",
-    bgColor: "bg-orange-50",
+    title: "Tailoring Success",
+    subtitle: "500+ women trained in Lucknow",
+    imageUrl: "/assets/generated/training-tailoring.dim_600x400.jpg",
+    bgColor: "bg-green-600",
     isActive: true,
     sortOrder: 1,
   },
   {
     id: "his2",
-    title: "Sunita: IT Professional at BPO",
-    subtitle: "Varanasi, UP — placed at Infosys BPO",
+    title: "Digital Revolution",
+    subtitle: "Computer literacy in rural UP",
     imageUrl: "/assets/generated/training-computer-skills.dim_600x400.jpg",
-    bgColor: "bg-blue-50",
+    bgColor: "bg-blue-600",
     isActive: true,
     sortOrder: 2,
+  },
+  {
+    id: "his3",
+    title: "Entrepreneurs Rise",
+    subtitle: "1,200 businesses launched",
+    imageUrl: "/assets/generated/employment-success.dim_600x400.jpg",
+    bgColor: "bg-orange-600",
+    isActive: true,
+    sortOrder: 3,
   },
 ];
 
 const initialHomeCTA: HomeCTAContent = {
-  heading: "Ready to Change Lives?",
+  heading: "Ready to Transform Your Life?",
   subtext:
-    "Join thousands of volunteers, donors, and partners who are building a stronger India — one woman at a time.",
-  primaryBtnText: "Become a Member",
-  secondaryBtnText: "Contact Us",
+    "Join 50,000+ women who have already changed their lives through DMVV Foundation programs.",
+  primaryBtnText: "Register Now - Free",
+  secondaryBtnText: "Talk to Us",
 };
 
 const initialCommunityCenters: CommunityCenter[] = [
   {
-    id: "mc1",
-    name: "Lucknow Women's Community Hub",
-    address: "23-B, Gomti Nagar, Lucknow",
+    id: "cm1",
+    name: "Lucknow Community Hub",
+    address: "45 Rajajipuram, Lucknow",
     state: "Uttar Pradesh",
     district: "Lucknow",
-    services:
-      "Skill training, health camps, legal aid, crèche, computer literacy",
-    contactPhone: "0522-4009876",
+    services: "Skill training, legal aid, health camps, SHG meetings",
+    contactPhone: "0522-5001234",
     imageUrl: "/assets/generated/community-center.dim_600x400.jpg",
     isActive: true,
     sortOrder: 1,
   },
   {
-    id: "mc2",
-    name: "Varanasi Mahila Kendra",
-    address: "67, Sigra Colony, Varanasi",
+    id: "cm2",
+    name: "Varanasi Community Hub",
+    address: "22 Orderly Bazar, Varanasi",
     state: "Uttar Pradesh",
     district: "Varanasi",
-    services: "Tailoring, beauty training, SHG meetings, medical check-ups",
-    contactPhone: "0542-4003210",
-    imageUrl: "/assets/generated/training-tailoring.dim_600x400.jpg",
+    services: "Skill training, counseling, microfinance, self-defense",
+    contactPhone: "0542-5001234",
+    imageUrl: "/assets/generated/community-center.dim_600x400.jpg",
     isActive: true,
     sortOrder: 2,
   },
@@ -1568,20 +1531,22 @@ const initialCommunityCenters: CommunityCenter[] = [
 
 const initialTransportInfo: TransportInfo[] = [
   {
-    id: "tr1",
-    vehicleType: "Mini Bus (20 Seater)",
-    route: "Lucknow Center ↔ Rural Areas (30 km radius)",
+    id: "t1",
+    vehicleType: "Mini Bus (20 seater)",
+    routeFrom: "Hazratganj",
+    routeTo: "DMVV Center Lucknow",
     capacity: 20,
-    contactPhone: "9876543210",
+    contactPhone: "9876500001",
     isActive: true,
     sortOrder: 1,
   },
   {
-    id: "tr2",
-    vehicleType: "Van (8 Seater)",
-    route: "Varanasi Center ↔ Nearby Villages",
-    capacity: 8,
-    contactPhone: "9123456789",
+    id: "t2",
+    vehicleType: "Tempo Traveller (12 seater)",
+    routeFrom: "Gomti Nagar",
+    routeTo: "DMVV Center Lucknow",
+    capacity: 12,
+    contactPhone: "9876500002",
     isActive: true,
     sortOrder: 2,
   },
@@ -1589,56 +1554,171 @@ const initialTransportInfo: TransportInfo[] = [
 
 const initialDownloadItems: DownloadItem[] = [
   {
-    id: "di1",
-    title: "DMVV Foundation Annual Report 2024",
-    description:
-      "Comprehensive annual report covering programs, financials, and impact metrics for 2024.",
+    id: "d1",
+    title: "Annual Report 2024-25",
+    description: "Complete annual report with financials and program outcomes",
     fileUrl: "#",
     fileType: "PDF",
     fileSize: "4.2 MB",
-    category: "Reports",
+    category: "Annual Reports",
     isActive: true,
-    uploadedAt: "2025-01-15",
     sortOrder: 1,
   },
   {
-    id: "di2",
-    title: "Membership Registration Form",
-    description: "Official form for new member registration.",
+    id: "d2",
+    title: "Member Registration Form",
+    description: "Offline registration form for new member enrollment",
     fileUrl: "#",
     fileType: "PDF",
-    fileSize: "0.8 MB",
+    fileSize: "256 KB",
     category: "Forms",
     isActive: true,
-    uploadedAt: "2025-01-10",
     sortOrder: 2,
   },
   {
-    id: "di3",
-    title: "Loan Application Form",
-    description: "Application form for micro-enterprise and SHG loans.",
+    id: "d3",
+    title: "SHG Formation Guidelines",
+    description: "Step-by-step guide to forming a Self Help Group",
     fileUrl: "#",
     fileType: "PDF",
-    fileSize: "1.2 MB",
-    category: "Forms",
+    fileSize: "1.1 MB",
+    category: "Guidelines",
     isActive: true,
-    uploadedAt: "2025-01-10",
     sortOrder: 3,
   },
+];
+
+// ─── New initial data ─────────────────────────────────────────────────────────
+
+const initialProducts: Product[] = [
   {
-    id: "di4",
-    title: "Training Program Brochure 2025",
+    id: "pr1",
+    name: "Handcrafted Salwar Kameez",
     description:
-      "Details of all training programs, eligibility, duration, and certification for 2025.",
-    fileUrl: "#",
-    fileType: "PDF",
-    fileSize: "2.5 MB",
-    category: "Brochures",
+      "Beautifully hand-stitched salwar kameez made by DMVV artisans. Available in multiple sizes and colors.",
+    price: "850",
+    category: "Clothing",
+    imageUrl: "",
+    centerName: "Lucknow Main Center",
+    centerId: "c1",
+    stock: 25,
     isActive: true,
-    uploadedAt: "2025-01-08",
-    sortOrder: 4,
+  },
+  {
+    id: "pr2",
+    name: "Embroidered Dupatta",
+    description:
+      "Exquisite hand-embroidered dupatta with traditional Chikankari work from Lucknow artisans.",
+    price: "450",
+    category: "Clothing",
+    imageUrl: "",
+    centerName: "Lucknow Main Center",
+    centerId: "c1",
+    stock: 40,
+    isActive: true,
+  },
+  {
+    id: "pr3",
+    name: "Handicraft Shoulder Bag",
+    description:
+      "Stylish handwoven shoulder bag made from sustainable cotton fabric by rural women artisans.",
+    price: "320",
+    category: "Accessories",
+    imageUrl: "",
+    centerName: "Varanasi Center",
+    centerId: "c2",
+    stock: 15,
+    isActive: true,
+  },
+  {
+    id: "pr4",
+    name: "Jute Basket (Set of 3)",
+    description:
+      "Eco-friendly jute baskets handmade by DMVV artisans. Perfect for home décor and storage.",
+    price: "280",
+    category: "Home Décor",
+    imageUrl: "",
+    centerName: "Varanasi Center",
+    centerId: "c2",
+    stock: 30,
+    isActive: true,
   },
 ];
+
+const initialInsuranceSchemes: InsuranceScheme[] = [
+  {
+    id: "ins1",
+    name: "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+    type: "life",
+    description:
+      "Government-backed life insurance scheme providing ₹2 lakh coverage at very affordable premium.",
+    premium: "₹436/year",
+    coverage: "₹2,00,000",
+    tenure: "1 year (renewable)",
+    eligibility: ["Age 18-50", "Bank account holder", "Active DMVV member"],
+    isActive: true,
+  },
+  {
+    id: "ins2",
+    name: "Pradhan Mantri Suraksha Bima Yojana",
+    type: "accident",
+    description:
+      "Accidental death and disability insurance at just ₹20 per year. Maximum coverage ₹2 lakh.",
+    premium: "₹20/year",
+    coverage: "₹2,00,000",
+    tenure: "1 year (renewable)",
+    eligibility: ["Age 18-70", "Bank account holder"],
+    isActive: true,
+  },
+  {
+    id: "ins3",
+    name: "Pradhan Mantri Fasal Bima Yojana",
+    type: "crop",
+    description:
+      "Crop insurance scheme for women farmers to protect against natural calamities and crop failure.",
+    premium: "2% of sum insured (Kharif)",
+    coverage: "Up to ₹2,00,000",
+    tenure: "Per season",
+    eligibility: [
+      "Women farmers",
+      "Land ownership or tenancy",
+      "Aadhaar linked bank account",
+    ],
+    isActive: true,
+  },
+];
+
+const initialUtilityServices: UtilityService[] = [
+  {
+    id: "us1",
+    name: "Electricity Bill Payment",
+    description:
+      "Pay your UPPCL electricity bill through DMVV centers. No extra charges.",
+    type: "electricity",
+    contactNumber: "1800-180-5025",
+    isActive: true,
+  },
+  {
+    id: "us2",
+    name: "Water Bill Payment",
+    description:
+      "Jal Nigam water bill payment facility available at all DMVV community centers.",
+    type: "water",
+    contactNumber: "0522-2610503",
+    isActive: true,
+  },
+  {
+    id: "us3",
+    name: "LPG Gas Booking",
+    description:
+      "Book Indane/HP/Bharat gas cylinder through DMVV centers with home delivery support.",
+    type: "gas",
+    contactNumber: "7718955555",
+    isActive: true,
+  },
+];
+
+// ─── Context Type ─────────────────────────────────────────────────────────────
 
 interface AppContextType {
   users: User[];
@@ -1678,6 +1758,17 @@ interface AppContextType {
   complaintSubmissions: ComplaintSubmission[];
   footerSettings: FooterSettings;
   currentUser: User | null;
+  // New state
+  loanApplications: LoanApplication[];
+  incomeSources: IncomeSource[];
+  trainingEnrollments: TrainingEnrollment[];
+  volunteerActivities: VolunteerActivity[];
+  products: Product[];
+  orders: Order[];
+  insuranceSchemes: InsuranceScheme[];
+  insuranceApplications: InsuranceApplication[];
+  walletTransactions: WalletTransaction[];
+  utilityServices: UtilityService[];
   setCurrentUser: (user: User | null) => void;
   addUser: (user: User) => void;
   updateUser: (id: string, updates: Partial<User>) => void;
@@ -1796,6 +1887,42 @@ interface AppContextType {
   ) => void;
   deleteComplaintSubmission: (id: string) => void;
   updateFooterSettings: (updates: Partial<FooterSettings>) => void;
+  // New actions
+  addLoanApplication: (a: LoanApplication) => void;
+  updateLoanApplication: (
+    id: string,
+    updates: Partial<LoanApplication>,
+  ) => void;
+  addIncomeSource: (s: IncomeSource) => void;
+  deleteIncomeSource: (id: string) => void;
+  addTrainingEnrollment: (e: TrainingEnrollment) => void;
+  updateTrainingEnrollment: (
+    id: string,
+    updates: Partial<TrainingEnrollment>,
+  ) => void;
+  addVolunteerActivity: (v: VolunteerActivity) => void;
+  updateVolunteerActivity: (
+    id: string,
+    updates: Partial<VolunteerActivity>,
+  ) => void;
+  addProduct: (p: Product) => void;
+  updateProduct: (id: string, updates: Partial<Product>) => void;
+  deleteProduct: (id: string) => void;
+  addOrder: (o: Order) => void;
+  updateOrder: (id: string, updates: Partial<Order>) => void;
+  addInsuranceScheme: (s: InsuranceScheme) => void;
+  updateInsuranceScheme: (
+    id: string,
+    updates: Partial<InsuranceScheme>,
+  ) => void;
+  deleteInsuranceScheme: (id: string) => void;
+  addInsuranceApplication: (a: InsuranceApplication) => void;
+  updateInsuranceApplication: (
+    id: string,
+    updates: Partial<InsuranceApplication>,
+  ) => void;
+  addWalletTransaction: (t: WalletTransaction) => void;
+  updateUtilityService: (id: string, updates: Partial<UtilityService>) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -1866,7 +1993,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
   const [applyFormSubmissions, setApplyFormSubmissions] = useLocalStorage<
     ApplyFormSubmission[]
-  >("dmvv_applyFormSubmissions", initialApplyFormSubmissions);
+  >("dmvv_applyFormSubmissions", []);
   const [homeHero, setHomeHero] = useLocalStorage<HomeHeroContent>(
     "dmvv_homeHero",
     initialHomeHero,
@@ -1927,6 +2054,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     "dmvv_currentUser",
     null,
   );
+  // New state
+  const [loanApplications, setLoanApplications] = useLocalStorage<
+    LoanApplication[]
+  >("dmvv_loanApplications", []);
+  const [incomeSources, setIncomeSources] = useLocalStorage<IncomeSource[]>(
+    "dmvv_incomeSources",
+    [],
+  );
+  const [trainingEnrollments, setTrainingEnrollments] = useLocalStorage<
+    TrainingEnrollment[]
+  >("dmvv_trainingEnrollments", []);
+  const [volunteerActivities, setVolunteerActivities] = useLocalStorage<
+    VolunteerActivity[]
+  >("dmvv_volunteerActivities", []);
+  const [products, setProducts] = useLocalStorage<Product[]>(
+    "dmvv_products",
+    initialProducts,
+  );
+  const [orders, setOrders] = useLocalStorage<Order[]>("dmvv_orders", []);
+  const [insuranceSchemes, setInsuranceSchemes] = useLocalStorage<
+    InsuranceScheme[]
+  >("dmvv_insuranceSchemes", initialInsuranceSchemes);
+  const [insuranceApplications, setInsuranceApplications] = useLocalStorage<
+    InsuranceApplication[]
+  >("dmvv_insuranceApplications", []);
+  const [walletTransactions, setWalletTransactions] = useLocalStorage<
+    WalletTransaction[]
+  >("dmvv_walletTransactions", []);
+  const [utilityServices, setUtilityServices] = useLocalStorage<
+    UtilityService[]
+  >("dmvv_utilityServices", initialUtilityServices);
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
   const updateUser = (id: string, updates: Partial<User>) =>
@@ -2189,6 +2347,76 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setComplaintSubmissions((prev) => prev.filter((c) => c.id !== id));
   const updateFooterSettings = (updates: Partial<FooterSettings>) =>
     setFooterSettings((prev) => ({ ...prev, ...updates }));
+  // New actions
+  const addLoanApplication = (a: LoanApplication) =>
+    setLoanApplications((prev) => [...prev, a]);
+  const updateLoanApplication = (
+    id: string,
+    updates: Partial<LoanApplication>,
+  ) =>
+    setLoanApplications((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+    );
+  const addIncomeSource = (s: IncomeSource) =>
+    setIncomeSources((prev) => [...prev, s]);
+  const deleteIncomeSource = (id: string) =>
+    setIncomeSources((prev) => prev.filter((s) => s.id !== id));
+  const addTrainingEnrollment = (e: TrainingEnrollment) =>
+    setTrainingEnrollments((prev) => [...prev, e]);
+  const updateTrainingEnrollment = (
+    id: string,
+    updates: Partial<TrainingEnrollment>,
+  ) =>
+    setTrainingEnrollments((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+    );
+  const addVolunteerActivity = (v: VolunteerActivity) =>
+    setVolunteerActivities((prev) => [...prev, v]);
+  const updateVolunteerActivity = (
+    id: string,
+    updates: Partial<VolunteerActivity>,
+  ) =>
+    setVolunteerActivities((prev) =>
+      prev.map((v) => (v.id === id ? { ...v, ...updates } : v)),
+    );
+  const addProduct = (p: Product) => setProducts((prev) => [...prev, p]);
+  const updateProduct = (id: string, updates: Partial<Product>) =>
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    );
+  const deleteProduct = (id: string) =>
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+  const addOrder = (o: Order) => setOrders((prev) => [...prev, o]);
+  const updateOrder = (id: string, updates: Partial<Order>) =>
+    setOrders((prev) =>
+      prev.map((o) => (o.id === id ? { ...o, ...updates } : o)),
+    );
+  const addInsuranceScheme = (s: InsuranceScheme) =>
+    setInsuranceSchemes((prev) => [...prev, s]);
+  const updateInsuranceScheme = (
+    id: string,
+    updates: Partial<InsuranceScheme>,
+  ) =>
+    setInsuranceSchemes((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, ...updates } : s)),
+    );
+  const deleteInsuranceScheme = (id: string) =>
+    setInsuranceSchemes((prev) => prev.filter((s) => s.id !== id));
+  const addInsuranceApplication = (a: InsuranceApplication) =>
+    setInsuranceApplications((prev) => [...prev, a]);
+  const updateInsuranceApplication = (
+    id: string,
+    updates: Partial<InsuranceApplication>,
+  ) =>
+    setInsuranceApplications((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+    );
+  const addWalletTransaction = (t: WalletTransaction) =>
+    setWalletTransactions((prev) => [...prev, t]);
+  const updateUtilityService = (id: string, updates: Partial<UtilityService>) =>
+    setUtilityServices((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, ...updates } : u)),
+    );
 
   return (
     <AppContext.Provider
@@ -2230,6 +2458,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         complaintSubmissions,
         footerSettings,
         currentUser,
+        loanApplications,
+        incomeSources,
+        trainingEnrollments,
+        volunteerActivities,
+        products,
+        orders,
+        insuranceSchemes,
+        insuranceApplications,
+        walletTransactions,
+        utilityServices,
         setCurrentUser,
         addUser,
         updateUser,
@@ -2324,6 +2562,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateComplaintSubmission,
         deleteComplaintSubmission,
         updateFooterSettings,
+        addLoanApplication,
+        updateLoanApplication,
+        addIncomeSource,
+        deleteIncomeSource,
+        addTrainingEnrollment,
+        updateTrainingEnrollment,
+        addVolunteerActivity,
+        updateVolunteerActivity,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        addOrder,
+        updateOrder,
+        addInsuranceScheme,
+        updateInsuranceScheme,
+        deleteInsuranceScheme,
+        addInsuranceApplication,
+        updateInsuranceApplication,
+        addWalletTransaction,
+        updateUtilityService,
       }}
     >
       {children}

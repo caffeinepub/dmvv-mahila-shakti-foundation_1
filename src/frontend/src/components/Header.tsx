@@ -27,6 +27,7 @@ const mainNavItems = [
 ];
 
 const moreNavItems = [
+  { label: "Franchise", path: "/franchise" },
   { label: "FAQ", path: "/faq" },
   { label: "Our Team", path: "/our-team" },
   { label: "Our Partners", path: "/our-partners" },

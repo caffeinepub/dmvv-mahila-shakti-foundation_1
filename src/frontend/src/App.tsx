@@ -14,6 +14,7 @@ import Contact from "@/pages/Contact";
 import Downloads from "@/pages/Downloads";
 import Employment from "@/pages/Employment";
 import FAQ from "@/pages/FAQ";
+import FranchisePage from "@/pages/FranchisePage";
 import Gallery from "@/pages/Gallery";
 import Home from "@/pages/Home";
 import Loan from "@/pages/Loan";
@@ -23,10 +24,12 @@ import OurPartners from "@/pages/OurPartners";
 import OurTeam from "@/pages/OurTeam";
 import Rewards from "@/pages/Rewards";
 import RulesRegulations from "@/pages/RulesRegulations";
+import SHGLoan from "@/pages/SHGLoan";
 import Schemes from "@/pages/Schemes";
 import Signup from "@/pages/Signup";
 import TermsConditions from "@/pages/TermsConditions";
 import Training from "@/pages/Training";
+import UdhyogLoan from "@/pages/UdhyogLoan";
 
 import LegalDocuments from "@/pages/LegalDocuments";
 import WishesLetters from "@/pages/WishesLetters";
@@ -45,19 +48,23 @@ import AdminDownloads from "@/pages/admin/AdminDownloads";
 import AdminEmployment from "@/pages/admin/AdminEmployment";
 import AdminFooter from "@/pages/admin/AdminFooter";
 import AdminFoundationEvents from "@/pages/admin/AdminFoundationEvents";
+import AdminFranchise from "@/pages/admin/AdminFranchise";
 import AdminGallery from "@/pages/admin/AdminGallery";
 import AdminHomePage from "@/pages/admin/AdminHomePage";
+import AdminInsurance from "@/pages/admin/AdminInsurance";
 import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminLeadership from "@/pages/admin/AdminLeadership";
 import AdminLegalDocs from "@/pages/admin/AdminLegalDocs";
 import AdminLoan from "@/pages/admin/AdminLoan";
+import AdminLoanApplications from "@/pages/admin/AdminLoanApplications";
 import AdminLoginManagement from "@/pages/admin/AdminLoginManagement";
 import AdminMedia from "@/pages/admin/AdminMedia";
 import AdminNews from "@/pages/admin/AdminNews";
 import AdminOurPartners from "@/pages/admin/AdminOurPartners";
 import AdminOurTeam from "@/pages/admin/AdminOurTeam";
 import AdminPages from "@/pages/admin/AdminPages";
+import AdminProducts from "@/pages/admin/AdminProducts";
 import AdminRewards from "@/pages/admin/AdminRewards";
 import AdminSchemes from "@/pages/admin/AdminSchemes";
 import AdminSettings from "@/pages/admin/AdminSettings";
@@ -65,6 +72,8 @@ import AdminTraining from "@/pages/admin/AdminTraining";
 import AdminTransport from "@/pages/admin/AdminTransport";
 import AdminUserFullProfile from "@/pages/admin/AdminUserFullProfile";
 import AdminUsers from "@/pages/admin/AdminUsers";
+import AdminVolunteers from "@/pages/admin/AdminVolunteers";
+import AdminWallet from "@/pages/admin/AdminWallet";
 import AdminWishes from "@/pages/admin/AdminWishes";
 import AdminYouTubeVideos from "@/pages/admin/AdminYouTubeVideos";
 
@@ -160,6 +169,22 @@ function AppRoutes() {
         element={
           <PublicLayout>
             <Loan />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/shg-loan"
+        element={
+          <PublicLayout>
+            <SHGLoan />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/udhyog-loan"
+        element={
+          <PublicLayout>
+            <UdhyogLoan />
           </PublicLayout>
         }
       />
@@ -283,6 +308,14 @@ function AppRoutes() {
           </PublicLayout>
         }
       />
+      <Route
+        path="/franchise"
+        element={
+          <PublicLayout>
+            <FranchisePage />
+          </PublicLayout>
+        }
+      />
 
       <Route path="/dashboard" element={<DashboardRedirect />} />
 
@@ -336,6 +369,12 @@ function AppRoutes() {
         <Route path="complaints" element={<AdminComplaints />} />
         <Route path="login-management" element={<AdminLoginManagement />} />
         <Route path="user-profile/:userId" element={<AdminUserFullProfile />} />
+        <Route path="loan-applications" element={<AdminLoanApplications />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="volunteers" element={<AdminVolunteers />} />
+        <Route path="insurance" element={<AdminInsurance />} />
+        <Route path="wallet" element={<AdminWallet />} />
+        <Route path="franchise" element={<AdminFranchise />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
 
