@@ -25,7 +25,6 @@ import {
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 
-// Icon lookup map for initiative & stat icons stored as strings
 const ICON_MAP: Record<string, React.ElementType> = {
   GraduationCap,
   BookOpen,
@@ -59,6 +58,8 @@ export default function Home() {
     homeInitiatives,
     homeImpactStories,
     homeCTA,
+    communityCenters,
+    youtubeVideos,
   } = useApp();
 
   const latestNews = news.filter((n) => n.isPublished).slice(0, 3);
@@ -71,10 +72,16 @@ export default function Home() {
   const activeImpactStories = homeImpactStories
     .filter((s) => s.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+  const activeYouTubeVideos = youtubeVideos
+    .filter((v) => v.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const featuredCenterImage =
+    communityCenters.find((c) => c.isActive)?.imageUrl ||
+    "/assets/generated/community-center.dim_600x400.jpg";
 
   return (
     <main>
-      {/* Hero Section */}
+      {/* Hero */}
       <section
         className="relative min-h-[88vh] flex items-center"
         style={{
@@ -84,7 +91,6 @@ export default function Home() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 w-full py-16 flex flex-col lg:flex-row items-center gap-8">
-          {/* Left: Hero text */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -135,7 +141,6 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Right: Floating panel */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -237,7 +242,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Preview */}
+      {/* About Preview - Community Center image */}
       <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -247,7 +252,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <img
-              src="/assets/generated/community-center.dim_600x400.jpg"
+              src={
+                featuredCenterImage ||
+                "/assets/generated/community-center.dim_600x400.jpg"
+              }
               alt="Community Center"
               className="rounded-2xl shadow-lg w-full object-cover h-72 md:h-80"
             />
@@ -284,6 +292,99 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* YouTube Videos Section */}
+      {activeYouTubeVideos.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-16">
+          <div className="text-center mb-10">
+            <Badge className="bg-red-100 text-red-600 mb-3">YouTube</Badge>
+            <h2 className="text-3xl font-extrabold text-gray-900">
+              Watch &amp; Learn
+            </h2>
+            <p className="text-gray-500 mt-2">
+              Videos from our programs and events
+            </p>
+          </div>
+          {activeYouTubeVideos.length === 1 ? (
+            <div className="max-w-3xl mx-auto">
+              <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                <iframe
+                  className="absolute inset-0 w-full h-full rounded-2xl shadow-xl"
+                  src={`https://www.youtube.com/embed/${activeYouTubeVideos[0].youtubeId}`}
+                  title={activeYouTubeVideos[0].title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mt-4 text-center">
+                {activeYouTubeVideos[0].title}
+              </h3>
+              {activeYouTubeVideos[0].description && (
+                <p className="text-gray-500 text-center mt-2">
+                  {activeYouTubeVideos[0].description}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-gray-50 rounded-2xl p-6">
+                <div
+                  className="relative w-full"
+                  style={{ paddingTop: "56.25%" }}
+                >
+                  <iframe
+                    className="absolute inset-0 w-full h-full rounded-xl shadow-lg"
+                    src={`https://www.youtube.com/embed/${activeYouTubeVideos[0].youtubeId}`}
+                    title={activeYouTubeVideos[0].title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div>
+                  <Badge className="bg-red-100 text-red-600 mb-2">
+                    Featured
+                  </Badge>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    {activeYouTubeVideos[0].title}
+                  </h3>
+                  <p className="text-gray-600">
+                    {activeYouTubeVideos[0].description}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {activeYouTubeVideos.slice(1).map((video) => (
+                  <div
+                    key={video.id}
+                    className="rounded-xl overflow-hidden shadow-md bg-white"
+                  >
+                    <div
+                      className="relative w-full"
+                      style={{ paddingTop: "56.25%" }}
+                    >
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
+                        title={video.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                    <div className="p-3">
+                      <h4 className="font-semibold text-gray-900 text-sm line-clamp-2">
+                        {video.title}
+                      </h4>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Schemes Overview */}
       <section className="bg-gray-50 py-16">
@@ -372,7 +473,7 @@ export default function Home() {
             Latest Updates
           </Badge>
           <h2 className="text-3xl font-extrabold text-gray-900">
-            News & Announcements
+            News &amp; Announcements
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

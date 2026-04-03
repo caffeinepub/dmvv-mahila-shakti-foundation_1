@@ -15,10 +15,10 @@ export default function Rewards() {
   const { awardCategories, awardWinners } = useApp();
   const activeCategories = awardCategories
     .filter((a) => a.isActive)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const activeWinners = awardWinners
     .filter((w) => w.isActive)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   return (
     <main className="min-h-screen">
@@ -53,7 +53,7 @@ export default function Rewards() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {activeCategories.map((award, idx) => {
-              const Icon = getAwardIcon(award.category);
+              const Icon = getAwardIcon(award.category || "");
               return (
                 <motion.div
                   key={award.id}

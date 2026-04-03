@@ -190,7 +190,7 @@ export default function AdminEmployment() {
       quote: s.quote,
       photoUrl: s.photoUrl || "",
       isActive: s.isActive,
-      sortOrder: s.sortOrder,
+      sortOrder: s.sortOrder || 0,
     });
     setEditStoryImage(s.photoUrl || null);
   };

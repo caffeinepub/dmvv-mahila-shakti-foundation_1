@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type GalleryItem, useApp } from "@/context/AppContext";
-import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import { ImageIcon, Pencil, Plus, Trash2, Video } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -42,6 +42,9 @@ export default function AdminGallery() {
   const [uploadFile, setUploadFile] = useState<string | null>(null);
   const [uploadCaption, setUploadCaption] = useState("");
   const [uploadCategory, setUploadCategory] = useState("Training");
+  const [uploadMediaType, setUploadMediaType] = useState<"photo" | "video">(
+    "photo",
+  );
   const uploadFileRef = useRef<HTMLInputElement>(null);
 
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
@@ -51,17 +54,17 @@ export default function AdminGallery() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const isVideo = file.type.startsWith("video/");
+    setUploadMediaType(isVideo ? "video" : "photo");
     const reader = new FileReader();
-    reader.onload = () => {
-      setUploadFile(reader.result as string);
-    };
+    reader.onload = () => setUploadFile(reader.result as string);
     reader.readAsDataURL(file);
     e.target.value = "";
   };
 
   const handleUpload = () => {
     if (!uploadFile) {
-      toast.error("Please select an image.");
+      toast.error("Please select a file.");
       return;
     }
     if (!uploadCaption.trim()) {
@@ -74,13 +77,17 @@ export default function AdminGallery() {
       category: uploadCategory,
       caption: uploadCaption.trim(),
       uploadedAt: new Date().toISOString().slice(0, 10),
+      mediaType: uploadMediaType,
     };
     addGalleryItem(item);
-    toast.success("Photo added to gallery.");
+    toast.success(
+      `${uploadMediaType === "video" ? "Video" : "Photo"} added to gallery.`,
+    );
     setUploadOpen(false);
     setUploadFile(null);
     setUploadCaption("");
     setUploadCategory("Training");
+    setUploadMediaType("photo");
   };
 
   const openEdit = (item: GalleryItem) => {
@@ -88,20 +95,18 @@ export default function AdminGallery() {
     setEditCaption(item.caption);
     setEditCategory(item.category);
   };
-
   const handleSaveEdit = () => {
     if (!editingItem) return;
     updateGalleryItem(editingItem.id, {
       caption: editCaption.trim(),
       category: editCategory,
     });
-    toast.success("Photo updated.");
+    toast.success("Updated.");
     setEditingItem(null);
   };
-
   const handleDelete = (id: string) => {
     deleteGalleryItem(id);
-    toast.success("Photo deleted from gallery.");
+    toast.success("Deleted from gallery.");
   };
 
   return (
@@ -115,8 +120,7 @@ export default function AdminGallery() {
           onClick={() => setUploadOpen(true)}
           data-ocid="admin_gallery.open_modal_button"
         >
-          <Plus size={16} className="mr-2" />
-          Upload Photo
+          <Plus size={16} className="mr-2" /> Upload Photo / Video
         </Button>
       </div>
 
@@ -126,9 +130,9 @@ export default function AdminGallery() {
           data-ocid="admin_gallery.empty_state"
         >
           <ImageIcon size={52} className="mb-4 opacity-30" />
-          <p className="text-lg font-medium">No photos yet</p>
+          <p className="text-lg font-medium">No items yet</p>
           <p className="text-sm mt-1">
-            Upload your first photo to get started.
+            Upload your first photo or video to get started.
           </p>
         </div>
       ) : (
@@ -139,11 +143,20 @@ export default function AdminGallery() {
               className="group relative rounded-xl overflow-hidden border border-gray-200 shadow-sm"
               data-ocid={`admin_gallery.item.${idx + 1}`}
             >
-              <img
-                src={item.src}
-                alt={item.caption}
-                className="w-full h-44 object-cover"
-              />
+              {item.mediaType === "video" ? (
+                // biome-ignore lint/a11y/useMediaCaption: admin upload preview
+                <video
+                  src={item.src}
+                  className="w-full h-44 object-cover"
+                  preload="metadata"
+                />
+              ) : (
+                <img
+                  src={item.src}
+                  alt={item.caption}
+                  className="w-full h-44 object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-end gap-1.5 p-2">
                 <Button
                   size="sm"
@@ -169,11 +182,10 @@ export default function AdminGallery() {
                   </AlertDialogTrigger>
                   <AlertDialogContent data-ocid="admin_gallery.dialog">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Photo</AlertDialogTitle>
+                      <AlertDialogTitle>Delete Item</AlertDialogTitle>
                       <AlertDialogDescription>
                         Are you sure you want to delete{" "}
-                        <strong>{item.caption}</strong>? This action cannot be
-                        undone.
+                        <strong>{item.caption}</strong>? This cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -192,9 +204,17 @@ export default function AdminGallery() {
                 </AlertDialog>
               </div>
               <div className="p-3 bg-white">
-                <Badge className="bg-ngo-orange/10 text-ngo-orange border-0 text-xs mb-1">
-                  {item.category}
-                </Badge>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Badge className="bg-ngo-orange/10 text-ngo-orange border-0 text-xs">
+                    {item.category}
+                  </Badge>
+                  {item.mediaType === "video" && (
+                    <Badge className="bg-blue-100 text-blue-700 border-0 text-xs">
+                      <Video size={9} className="mr-0.5" />
+                      Video
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm font-medium text-gray-800 line-clamp-1">
                   {item.caption}
                 </p>
@@ -211,11 +231,11 @@ export default function AdminGallery() {
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent className="max-w-md" data-ocid="admin_gallery.dialog">
           <DialogHeader>
-            <DialogTitle>Upload Photo</DialogTitle>
+            <DialogTitle>Upload Photo / Video</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label>Select Image</Label>
+              <Label>Select Photo or Video</Label>
               <button
                 type="button"
                 className="mt-2 w-full border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-ngo-green transition-colors"
@@ -223,32 +243,54 @@ export default function AdminGallery() {
                 data-ocid="admin_gallery.dropzone"
               >
                 {uploadFile ? (
-                  <img
-                    src={uploadFile}
-                    alt="Preview"
-                    className="w-full h-40 object-contain rounded"
-                  />
+                  uploadMediaType === "video" ? (
+                    // biome-ignore lint/a11y/useMediaCaption: user upload preview
+                    <video
+                      src={uploadFile}
+                      className="w-full h-40 object-contain rounded"
+                      controls
+                    />
+                  ) : (
+                    <img
+                      src={uploadFile}
+                      alt="Preview"
+                      className="w-full h-40 object-contain rounded"
+                    />
+                  )
                 ) : (
                   <div className="py-6 text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-2 opacity-40" />
-                    <p className="text-sm">Click to select an image</p>
+                    <p className="text-sm">Click to select an image or video</p>
                   </div>
                 )}
               </button>
               <input
                 ref={uploadFileRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 className="hidden"
                 onChange={handleFileSelect}
               />
             </div>
+            {uploadFile && (
+              <div className="flex items-center gap-2">
+                <Badge
+                  className={
+                    uploadMediaType === "video"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-green-100 text-green-700"
+                  }
+                >
+                  {uploadMediaType === "video" ? "Video" : "Photo"} selected
+                </Badge>
+              </div>
+            )}
             <div>
               <Label>Caption</Label>
               <Input
                 value={uploadCaption}
                 onChange={(e) => setUploadCaption(e.target.value)}
-                placeholder="Enter photo caption"
+                placeholder="Enter caption"
                 className="mt-1"
                 data-ocid="admin_gallery.input"
               />
@@ -285,7 +327,7 @@ export default function AdminGallery() {
               onClick={handleUpload}
               data-ocid="admin_gallery.submit_button"
             >
-              Upload Photo
+              Upload
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -298,7 +340,7 @@ export default function AdminGallery() {
       >
         <DialogContent className="max-w-sm" data-ocid="admin_gallery.dialog">
           <DialogHeader>
-            <DialogTitle>Edit Photo</DialogTitle>
+            <DialogTitle>Edit Item</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>

@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 import About from "@/pages/About";
 import Centers from "@/pages/Centers";
+import Complaint from "@/pages/Complaint";
 import Contact from "@/pages/Contact";
 import Downloads from "@/pages/Downloads";
 import Employment from "@/pages/Employment";
@@ -18,10 +19,17 @@ import Home from "@/pages/Home";
 import Loan from "@/pages/Loan";
 import Login from "@/pages/Login";
 import News from "@/pages/News";
+import OurPartners from "@/pages/OurPartners";
+import OurTeam from "@/pages/OurTeam";
 import Rewards from "@/pages/Rewards";
+import RulesRegulations from "@/pages/RulesRegulations";
 import Schemes from "@/pages/Schemes";
 import Signup from "@/pages/Signup";
+import TermsConditions from "@/pages/TermsConditions";
 import Training from "@/pages/Training";
+
+import LegalDocuments from "@/pages/LegalDocuments";
+import WishesLetters from "@/pages/WishesLetters";
 
 import KYCPage from "@/pages/user/KYCPage";
 import UserDashboard from "@/pages/user/UserDashboard";
@@ -30,26 +38,35 @@ import AdminApplyForm from "@/pages/admin/AdminApplyForm";
 import AdminCenters from "@/pages/admin/AdminCenters";
 import AdminCommunityCenter from "@/pages/admin/AdminCommunityCenter";
 import AdminCompanyProfile from "@/pages/admin/AdminCompanyProfile";
+import AdminComplaints from "@/pages/admin/AdminComplaints";
 import AdminComputerCenters from "@/pages/admin/AdminComputerCenters";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminDownloads from "@/pages/admin/AdminDownloads";
 import AdminEmployment from "@/pages/admin/AdminEmployment";
+import AdminFooter from "@/pages/admin/AdminFooter";
 import AdminFoundationEvents from "@/pages/admin/AdminFoundationEvents";
 import AdminGallery from "@/pages/admin/AdminGallery";
 import AdminHomePage from "@/pages/admin/AdminHomePage";
 import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminLeadership from "@/pages/admin/AdminLeadership";
+import AdminLegalDocs from "@/pages/admin/AdminLegalDocs";
 import AdminLoan from "@/pages/admin/AdminLoan";
+import AdminLoginManagement from "@/pages/admin/AdminLoginManagement";
 import AdminMedia from "@/pages/admin/AdminMedia";
 import AdminNews from "@/pages/admin/AdminNews";
+import AdminOurPartners from "@/pages/admin/AdminOurPartners";
+import AdminOurTeam from "@/pages/admin/AdminOurTeam";
 import AdminPages from "@/pages/admin/AdminPages";
 import AdminRewards from "@/pages/admin/AdminRewards";
 import AdminSchemes from "@/pages/admin/AdminSchemes";
 import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminTraining from "@/pages/admin/AdminTraining";
 import AdminTransport from "@/pages/admin/AdminTransport";
+import AdminUserFullProfile from "@/pages/admin/AdminUserFullProfile";
 import AdminUsers from "@/pages/admin/AdminUsers";
+import AdminWishes from "@/pages/admin/AdminWishes";
+import AdminYouTubeVideos from "@/pages/admin/AdminYouTubeVideos";
 
 import CenterDashboard from "@/pages/center/CenterDashboard";
 import HRDashboard from "@/pages/hr/HRDashboard";
@@ -90,7 +107,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public pages */}
       <Route
         path="/"
         element={
@@ -211,11 +227,65 @@ function AppRoutes() {
           </PublicLayout>
         }
       />
+      <Route
+        path="/legal-documents"
+        element={
+          <PublicLayout>
+            <LegalDocuments />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/wishes"
+        element={
+          <PublicLayout>
+            <WishesLetters />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/our-team"
+        element={
+          <PublicLayout>
+            <OurTeam />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/our-partners"
+        element={
+          <PublicLayout>
+            <OurPartners />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <PublicLayout>
+            <TermsConditions />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/rules"
+        element={
+          <PublicLayout>
+            <RulesRegulations />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/complaint"
+        element={
+          <PublicLayout>
+            <Complaint />
+          </PublicLayout>
+        }
+      />
 
-      {/* Dashboard redirect */}
       <Route path="/dashboard" element={<DashboardRedirect />} />
 
-      {/* User routes */}
       <Route
         path="/user/dashboard"
         element={
@@ -233,7 +303,6 @@ function AppRoutes() {
         }
       />
 
-      {/* Admin routes */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="homepage" element={<AdminHomePage />} />
@@ -258,10 +327,18 @@ function AppRoutes() {
         <Route path="community" element={<AdminCommunityCenter />} />
         <Route path="transport" element={<AdminTransport />} />
         <Route path="downloads" element={<AdminDownloads />} />
+        <Route path="legal-docs" element={<AdminLegalDocs />} />
+        <Route path="wishes" element={<AdminWishes />} />
+        <Route path="our-team" element={<AdminOurTeam />} />
+        <Route path="our-partners" element={<AdminOurPartners />} />
+        <Route path="youtube" element={<AdminYouTubeVideos />} />
+        <Route path="footer" element={<AdminFooter />} />
+        <Route path="complaints" element={<AdminComplaints />} />
+        <Route path="login-management" element={<AdminLoginManagement />} />
+        <Route path="user-profile/:userId" element={<AdminUserFullProfile />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
 
-      {/* Role-based dashboards */}
       <Route
         path="/center/dashboard"
         element={

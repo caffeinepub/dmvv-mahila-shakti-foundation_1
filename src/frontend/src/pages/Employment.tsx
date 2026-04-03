@@ -8,10 +8,10 @@ export default function Employment() {
   const { employmentPartners, successStories } = useApp();
   const activePartners = employmentPartners
     .filter((p) => p.isActive)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const activeStories = successStories
     .filter((s) => s.isActive)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   return (
     <main className="min-h-screen">

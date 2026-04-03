@@ -43,9 +43,11 @@ import {
   Pencil,
   ShieldCheck,
   Trash2,
+  UserCircle,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface EditForm {
@@ -58,6 +60,7 @@ interface EditForm {
 
 export default function AdminUsers() {
   const { users, updateUser, deleteUser } = useApp();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState<EditForm>({
@@ -328,6 +331,19 @@ export default function AdminUsers() {
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
+                            {/* Full Profile */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-8 w-8 p-0 border-green-400 text-green-700 hover:bg-green-50"
+                              title="Full Profile"
+                              onClick={() =>
+                                navigate(`/admin/user-profile/${user.id}`)
+                              }
+                              data-ocid="admin_users.button"
+                            >
+                              <UserCircle size={13} />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>

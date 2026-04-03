@@ -110,9 +110,9 @@ export default function AdminRewards() {
   const openEditCat = (a: AwardCategory) => {
     setEditCat(a);
     setEditCatForm({
-      category: a.category,
+      category: a.category || "",
       description: a.description,
-      prize: a.prize,
+      prize: a.prize || "",
       color: a.color,
       isActive: a.isActive,
       sortOrder: a.sortOrder,
@@ -153,10 +153,10 @@ export default function AdminRewards() {
     setEditWinnerForm({
       name: w.name,
       year: w.year,
-      category: w.category,
-      state: w.state,
+      category: w.category || "",
+      state: w.state || "",
       isActive: w.isActive,
-      sortOrder: w.sortOrder,
+      sortOrder: w.sortOrder || 0,
     });
   };
 

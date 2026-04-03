@@ -80,10 +80,13 @@ export default function AdminTransport() {
     setEditItem(item);
     setEditForm({
       vehicleType: item.vehicleType,
-      routeFrom: item.routeFrom,
-      routeTo: item.routeTo,
-      capacity: item.capacity,
-      contactPhone: item.contactPhone,
+      routeFrom: item.routeFrom || "",
+      routeTo: item.routeTo || "",
+      capacity:
+        typeof item.capacity === "number"
+          ? String(item.capacity)
+          : item.capacity || "",
+      contactPhone: item.contactPhone || "",
       isActive: item.isActive,
       sortOrder: item.sortOrder,
     });

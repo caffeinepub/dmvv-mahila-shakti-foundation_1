@@ -104,11 +104,11 @@ export default function AdminDownloads() {
   const openEdit = (item: DownloadItem) => {
     setEditItem(item);
     setEditForm({
-      name: item.name,
-      type: item.type,
-      size: item.size,
+      name: item.name || "",
+      type: item.type || "",
+      size: item.size || "",
       category: item.category,
-      desc: item.desc,
+      desc: item.desc || "",
       fileUrl: item.fileUrl,
       isActive: item.isActive,
       sortOrder: item.sortOrder,
@@ -186,7 +186,7 @@ export default function AdminDownloads() {
           </div>
         ) : (
           downloadItems.map((item, idx) => {
-            const Icon = typeIcon(item.type);
+            const Icon = typeIcon(item.type || "");
             return (
               <Card key={item.id} data-ocid={`admin_downloads.item.${idx + 1}`}>
                 <CardContent className="p-4">

@@ -12,21 +12,27 @@ import {
   FileCheck,
   FileText,
   GraduationCap,
+  Heart,
   Home,
   Image,
   Images,
   IndianRupee,
+  KeyRound,
   LayoutDashboard,
+  LayoutTemplate,
   ListChecks,
   LogOut,
   Menu,
+  MessageSquare,
   Monitor,
   Newspaper,
+  ScrollText,
   Settings,
   Trophy,
   UserCheck,
   Users,
   X,
+  Youtube,
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
@@ -35,6 +41,11 @@ const adminNav = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Home Page", path: "/admin/homepage", icon: Home },
   { label: "User Management", path: "/admin/users", icon: Users },
+  {
+    label: "Login Management",
+    path: "/admin/login-management",
+    icon: KeyRound,
+  },
   { label: "KYC Management", path: "/admin/kyc", icon: FileCheck },
   { label: "Center Management", path: "/admin/centers", icon: Building2 },
   { label: "News Management", path: "/admin/news", icon: Newspaper },
@@ -49,6 +60,13 @@ const adminNav = [
   { label: "Community Center", path: "/admin/community", icon: Building },
   { label: "Transport", path: "/admin/transport", icon: Bus },
   { label: "Downloads", path: "/admin/downloads", icon: Download },
+  { label: "Legal Documents", path: "/admin/legal-docs", icon: ScrollText },
+  { label: "Wishes Letters", path: "/admin/wishes", icon: Heart },
+  { label: "Our Team", path: "/admin/our-team", icon: Users },
+  { label: "Our Partners", path: "/admin/our-partners", icon: Building2 },
+  { label: "YouTube Videos", path: "/admin/youtube", icon: Youtube },
+  { label: "Footer Settings", path: "/admin/footer", icon: LayoutTemplate },
+  { label: "Complaints", path: "/admin/complaints", icon: MessageSquare },
   { label: "Training Programs", path: "/admin/training", icon: GraduationCap },
   { label: "Gallery Management", path: "/admin/gallery", icon: Images },
   { label: "Page Builder", path: "/admin/pages", icon: FileText },
@@ -73,11 +91,8 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar text-sidebar-foreground flex flex-col transition-transform duration-300 lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-sidebar text-sidebar-foreground flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           <div>
@@ -98,11 +113,7 @@ export default function AdminLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                  isActive
-                    ? "bg-sidebar-accent text-white font-semibold"
-                    : "text-green-200 hover:bg-sidebar-accent hover:text-white"
-                }`
+                `flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${isActive ? "bg-sidebar-accent text-white font-semibold" : "text-green-200 hover:bg-sidebar-accent hover:text-white"}`
               }
               onClick={() => setSidebarOpen(false)}
               data-ocid="admin_nav.link"
@@ -125,7 +136,6 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Overlay */}
       {sidebarOpen && (
         <button
           type="button"
@@ -135,9 +145,7 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* Main content */}
       <div className="flex-1 lg:ml-64 flex flex-col">
-        {/* Top bar */}
         <div className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
           <button
             type="button"
@@ -152,7 +160,6 @@ export default function AdminLayout() {
             Logged in as: <strong>{currentUser.email}</strong>
           </span>
         </div>
-
         <main className="flex-1 p-6">
           <Outlet />
         </main>

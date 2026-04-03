@@ -10,18 +10,18 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const socialLinks = [
-  { Icon: Facebook, label: "Facebook", href: "https://facebook.com" },
-  { Icon: Twitter, label: "Twitter", href: "https://twitter.com" },
-  { Icon: Youtube, label: "Youtube", href: "https://youtube.com" },
-  { Icon: Instagram, label: "Instagram", href: "https://instagram.com" },
-];
-
 export default function Footer() {
-  const { settings } = useApp();
+  const { settings, footerSettings } = useApp();
   const year = new Date().getFullYear();
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "dmvv.org";
+
+  const socialLinks = [
+    { Icon: Facebook, label: "Facebook", href: footerSettings.facebookUrl },
+    { Icon: Twitter, label: "Twitter", href: footerSettings.twitterUrl },
+    { Icon: Youtube, label: "Youtube", href: footerSettings.youtubeUrl },
+    { Icon: Instagram, label: "Instagram", href: footerSettings.instagramUrl },
+  ];
 
   return (
     <footer className="bg-ngo-green text-white">
@@ -45,7 +45,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm text-green-200 leading-relaxed">
-              {settings.footerText}
+              {footerSettings.footerText || settings.footerText}
             </p>
             <div className="flex gap-3 mt-4">
               {socialLinks.map(({ Icon, label, href }) => (
@@ -64,55 +64,63 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-base mb-3 text-ngo-orange">
-              Quick Links
-            </h3>
-            <ul className="space-y-2 text-sm text-green-200">
-              {[
-                "/about",
-                "/schemes",
-                "/centers",
-                "/training",
-                "/employment",
-              ].map((path) => (
-                <li key={path}>
-                  <Link
-                    to={path}
-                    className="hover:text-white transition-colors capitalize"
-                  >
-                    {path.replace("/", "").replace("-", " ")}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {footerSettings.showQuickLinks && (
+            <div>
+              <h3 className="font-semibold text-base mb-3 text-ngo-orange">
+                Quick Links
+              </h3>
+              <ul className="space-y-2 text-sm text-green-200">
+                {[
+                  "/about",
+                  "/schemes",
+                  "/centers",
+                  "/training",
+                  "/employment",
+                  "/our-team",
+                  "/our-partners",
+                ].map((path) => (
+                  <li key={path}>
+                    <Link
+                      to={path}
+                      className="hover:text-white transition-colors capitalize"
+                    >
+                      {path.replace("/", "").replace(/-/g, " ")}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Programs */}
-          <div>
-            <h3 className="font-semibold text-base mb-3 text-ngo-orange">
-              Programs
-            </h3>
-            <ul className="space-y-2 text-sm text-green-200">
-              {[
-                "/loan",
-                "/rewards",
-                "/news",
-                "/gallery",
-                "/downloads",
-                "/faq",
-              ].map((path) => (
-                <li key={path}>
-                  <Link
-                    to={path}
-                    className="hover:text-white transition-colors capitalize"
-                  >
-                    {path.replace("/", "").replace("-", " ")}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {footerSettings.showPrograms && (
+            <div>
+              <h3 className="font-semibold text-base mb-3 text-ngo-orange">
+                Programs &amp; Pages
+              </h3>
+              <ul className="space-y-2 text-sm text-green-200">
+                {[
+                  "/loan",
+                  "/rewards",
+                  "/gallery",
+                  "/legal-documents",
+                  "/wishes",
+                  "/terms",
+                  "/rules",
+                  "/complaint",
+                ].map((path) => (
+                  <li key={path}>
+                    <Link
+                      to={path}
+                      className="hover:text-white transition-colors capitalize"
+                    >
+                      {path.replace("/", "").replace(/-/g, " ")}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Contact */}
           <div>
@@ -145,8 +153,8 @@ export default function Footer() {
       <div className="border-t border-green-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between text-xs text-green-300">
           <span>
-            © {year} DMVV Bhartiy Mahila Shakti Foundation™. All Rights
-            Reserved.
+            {footerSettings.copyrightText ||
+              `© ${year} DMVV Bhartiy Mahila Shakti Foundation™. All Rights Reserved.`}
           </span>
           <span>
             Built with ❤️ using{" "}
