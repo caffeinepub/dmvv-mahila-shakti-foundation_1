@@ -1,4 +1,5 @@
 import { useApp } from "@/context/AppContext";
+import { useLanguage } from "@/context/LanguageContext";
 import {
   Facebook,
   Instagram,
@@ -12,6 +13,7 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   const { settings, footerSettings } = useApp();
+  const { t } = useLanguage();
   const year = new Date().getFullYear();
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "dmvv.org";
@@ -47,7 +49,10 @@ export default function Footer() {
             <p className="text-sm text-green-200 leading-relaxed">
               {footerSettings.footerText || settings.footerText}
             </p>
-            <div className="flex gap-3 mt-4">
+            <div className="mt-3 mb-1 text-xs text-green-300 font-semibold uppercase tracking-wider">
+              {t("footer.followUs")}
+            </div>
+            <div className="flex gap-3">
               {socialLinks.map(({ Icon, label, href }) => (
                 <a
                   key={label}
@@ -125,7 +130,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="font-semibold text-base mb-3 text-ngo-orange">
-              Contact Us
+              {t("contact.title")}
             </h3>
             <ul className="space-y-3 text-sm text-green-200">
               <li className="flex items-start gap-2">
@@ -154,7 +159,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between text-xs text-green-300">
           <span>
             {footerSettings.copyrightText ||
-              `© ${year} DMVV Bhartiy Mahila Shakti Foundation™. All Rights Reserved.`}
+              `© ${year} DMVV Bhartiy Mahila Shakti Foundation™. ${t("footer.rights")}.`}
           </span>
           <span>
             Built with ❤️ using{" "}

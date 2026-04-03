@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { AppProvider } from "@/context/AppContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Footer from "@/components/Footer";
@@ -419,11 +420,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <AppProvider>
-      <HashRouter>
-        <AppRoutes />
-        <Toaster richColors position="top-right" />
-        <PWAInstallPrompt />
-      </HashRouter>
+      <LanguageProvider>
+        <HashRouter>
+          <AppRoutes />
+          <Toaster richColors position="top-right" />
+          <PWAInstallPrompt />
+        </HashRouter>
+      </LanguageProvider>
     </AppProvider>
   );
 }
