@@ -99,6 +99,19 @@ export interface CompanyProfile {
   website: string;
 }
 
+export interface TrainingProgram {
+  id: string;
+  title: string;
+  duration: string;
+  eligibility: string;
+  certification: string;
+  description: string;
+  outcomes: string[];
+  image: string;
+  color: string;
+  isActive: boolean;
+}
+
 const initialUsers: User[] = [
   {
     id: "admin1",
@@ -465,6 +478,104 @@ const initialGalleryItems: GalleryItem[] = [
   },
 ];
 
+const initialTrainingPrograms: TrainingProgram[] = [
+  {
+    id: "tp1",
+    title: "Tailoring & Fashion Design",
+    duration: "3-6 Months",
+    eligibility: "Women aged 18-45, minimum 8th standard",
+    certification: "NSQF Level 4 - Apparel Sector Skill Council",
+    description:
+      "Comprehensive training in stitching, garment making, embroidery, and fashion design. Includes machine operation, pattern making, and quality finishing techniques.",
+    outcomes: [
+      "Sewing machine operation",
+      "Pattern making & cutting",
+      "Garment construction",
+      "Embroidery & decorative work",
+      "Quality control & finishing",
+    ],
+    image: "/assets/generated/training-tailoring.dim_600x400.jpg",
+    color: "border-pink-400",
+    isActive: true,
+  },
+  {
+    id: "tp2",
+    title: "Computer & Digital Literacy",
+    duration: "1-3 Months",
+    eligibility: "Women aged 18-50, minimum 5th standard",
+    certification: "NIELIT O Level & CCC Certificate",
+    description:
+      "Basic to intermediate computer skills including MS Office, internet, email, digital payment, and online government services access.",
+    outcomes: [
+      "MS Office (Word, Excel, PowerPoint)",
+      "Internet & email usage",
+      "Digital payment methods (UPI, NEFT)",
+      "Online government portal navigation",
+      "E-commerce basics",
+    ],
+    image: "/assets/generated/training-computer-skills.dim_600x400.jpg",
+    color: "border-blue-400",
+    isActive: true,
+  },
+  {
+    id: "tp3",
+    title: "Beauty & Wellness",
+    duration: "3 Months",
+    eligibility: "Women aged 18-40, minimum 8th standard",
+    certification: "Beauty & Wellness Sector Skill Council Level 3",
+    description:
+      "Professional training in beauty treatments, skincare, hair styling, and wellness services.",
+    outcomes: [
+      "Facial & skincare treatments",
+      "Hair cutting & styling",
+      "Mehendi application",
+      "Makeup & bridal services",
+      "Salon management basics",
+    ],
+    image: "/assets/generated/employment-success.dim_600x400.jpg",
+    color: "border-purple-400",
+    isActive: true,
+  },
+  {
+    id: "tp4",
+    title: "Food Processing & Packaging",
+    duration: "2 Months",
+    eligibility: "Women aged 18-45, minimum 5th standard",
+    certification: "FICSI Certificate",
+    description:
+      "Training in food preservation, processing, and packaging techniques for pickles, papads, jams, and agro-products.",
+    outcomes: [
+      "Food safety & hygiene (FSSAI)",
+      "Pickle & jam preparation",
+      "Packaging & labeling",
+      "Food business registration",
+      "Marketing & selling food products",
+    ],
+    image: "/assets/generated/community-center.dim_600x400.jpg",
+    color: "border-orange-400",
+    isActive: true,
+  },
+  {
+    id: "tp5",
+    title: "Handicrafts & Embroidery",
+    duration: "3 Months",
+    eligibility: "Women aged 18-50, no minimum education",
+    certification: "MSME & DC-Handicrafts Artisan Certificate",
+    description:
+      "Traditional and contemporary handicraft training including chikan embroidery, block printing, pottery, and tribal art.",
+    outcomes: [
+      "Chikan & Zardosi embroidery",
+      "Block printing techniques",
+      "Pottery & clay work",
+      "Product finishing & pricing",
+      "Online selling through e-commerce",
+    ],
+    image: "/assets/generated/training-tailoring.dim_600x400.jpg",
+    color: "border-yellow-400",
+    isActive: true,
+  },
+];
+
 const initialCompanyProfile: CompanyProfile = {
   orgName: "DMVV Bhartiy Mahila Shakti Foundation™",
   description:
@@ -484,6 +595,7 @@ interface AppContextType {
   pages: PageContent[];
   media: MediaFile[];
   galleryItems: GalleryItem[];
+  trainingPrograms: TrainingProgram[];
   companyProfile: CompanyProfile;
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
@@ -508,6 +620,12 @@ interface AppContextType {
   updateGalleryItem: (id: string, updates: Partial<GalleryItem>) => void;
   deleteGalleryItem: (id: string) => void;
   updateCompanyProfile: (updates: Partial<CompanyProfile>) => void;
+  addTrainingProgram: (program: TrainingProgram) => void;
+  updateTrainingProgram: (
+    id: string,
+    updates: Partial<TrainingProgram>,
+  ) => void;
+  deleteTrainingProgram: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -523,6 +641,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [media, setMedia] = useState<MediaFile[]>(initialMedia);
   const [galleryItems, setGalleryItems] =
     useState<GalleryItem[]>(initialGalleryItems);
+  const [trainingPrograms, setTrainingPrograms] = useState<TrainingProgram[]>(
+    initialTrainingPrograms,
+  );
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>(
     initialCompanyProfile,
   );
@@ -582,6 +703,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const deleteGalleryItem = (id: string) =>
     setGalleryItems((prev) => prev.filter((g) => g.id !== id));
 
+  const addTrainingProgram = (program: TrainingProgram) =>
+    setTrainingPrograms((prev) => [...prev, program]);
+  const updateTrainingProgram = (
+    id: string,
+    updates: Partial<TrainingProgram>,
+  ) =>
+    setTrainingPrograms((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+    );
+  const deleteTrainingProgram = (id: string) =>
+    setTrainingPrograms((prev) => prev.filter((t) => t.id !== id));
+
   const updateCompanyProfile = (updates: Partial<CompanyProfile>) =>
     setCompanyProfile((prev) => ({ ...prev, ...updates }));
 
@@ -597,6 +730,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         pages,
         media,
         galleryItems,
+        trainingPrograms,
         companyProfile,
         currentUser,
         setCurrentUser,
@@ -621,6 +755,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateGalleryItem,
         deleteGalleryItem,
         updateCompanyProfile,
+        addTrainingProgram,
+        updateTrainingProgram,
+        deleteTrainingProgram,
       }}
     >
       {children}

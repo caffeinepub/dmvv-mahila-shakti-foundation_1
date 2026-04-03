@@ -6,14 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useApp } from "@/context/AppContext";
-import {
-  ChevronDown,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  User,
-  X,
-} from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, User, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -50,6 +43,30 @@ function getDashboardPath(role: string): string {
   }
 }
 
+// Descending hamburger: line1 large, line2 small, line3 smaller than line2
+function HamburgerIcon() {
+  return (
+    <svg
+      role="img"
+      aria-label="Menu"
+      width="28"
+      height="22"
+      viewBox="0 0 28 22"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+    >
+      <title>Menu</title>
+      {/* Line 1 - Bada (large, full width) */}
+      <line x1="0" y1="3" x2="28" y2="3" strokeWidth="3" />
+      {/* Line 2 - Chota (small, medium width) */}
+      <line x1="0" y1="11" x2="18" y2="11" strokeWidth="2.5" />
+      {/* Line 3 - Sabse chota (smallest) */}
+      <line x1="0" y1="19" x2="11" y2="19" strokeWidth="2" />
+    </svg>
+  );
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentUser, setCurrentUser, settings } = useApp();
@@ -66,25 +83,19 @@ export default function Header() {
 
   return (
     <header className="w-full sticky top-0 z-50 shadow-md">
-      {/* Top utility strip */}
+      {/* Top strip - ONLY LOGO + Login/Signup buttons */}
       <div className="bg-white border-b border-gray-200 px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          {/* Only Logo */}
+          <div className="flex items-center">
             <img
               src={logoSrc}
               alt="DMVV Foundation Logo"
-              className="h-12 w-12 object-contain"
+              className="h-14 w-14 object-contain flex-shrink-0"
             />
-            <div>
-              <div className="font-bold text-sm md:text-base text-gray-900 leading-tight">
-                DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
-              </div>
-              <div className="text-xs text-gray-500">
-                महिला सशक्तिकरण की ओर एक कदम
-              </div>
-            </div>
           </div>
-          <div className="flex items-center gap-2">
+          {/* Login / Signup buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
             {currentUser ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -144,12 +155,37 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Primary navigation bar */}
+      {/* Primary navigation bar - Title + Nav links */}
       <nav className="bg-ngo-green">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between">
-            {/* Desktop nav */}
-            <div className="hidden lg:flex items-center overflow-x-auto">
+          {/* Title row on green bar */}
+          <div className="flex items-center justify-between py-1 border-b border-green-700">
+            <div className="flex flex-col leading-tight">
+              <span className="text-white font-bold text-sm md:text-base lg:text-lg whitespace-nowrap tracking-wide">
+                DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
+              </span>
+              <span className="text-green-200 text-xs whitespace-nowrap">
+                महिला सशक्तिकरण की ओर एक कदम
+              </span>
+            </div>
+
+            {/* Mobile: hamburger on same title row */}
+            <div className="lg:hidden flex items-center gap-2">
+              <button
+                type="button"
+                className="text-white p-2"
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-label="Toggle menu"
+                data-ocid="nav.hamburger_button"
+              >
+                {menuOpen ? <X size={22} /> : <HamburgerIcon />}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop nav links */}
+          <div className="hidden lg:flex items-center justify-between">
+            <div className="flex items-center overflow-x-auto">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
@@ -161,9 +197,7 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-
-            {/* Donate Now CTA */}
-            <div className="hidden lg:block py-2">
+            <div className="py-2 flex-shrink-0">
               <Link to="/contact">
                 <Button
                   className="bg-ngo-orange text-white hover:bg-ngo-orange-dark font-semibold"
@@ -173,17 +207,6 @@ export default function Header() {
                 </Button>
               </Link>
             </div>
-
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              className="lg:hidden text-white p-3 ml-auto"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
-              data-ocid="nav.hamburger_button"
-            >
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
           </div>
 
           {/* Mobile menu */}

@@ -98,7 +98,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder="Email address daalen"
                 className="mt-1"
                 autoComplete="email"
                 data-ocid="login.input"
@@ -111,7 +111,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password"
+                placeholder="Password daalen"
                 className="mt-1"
                 autoComplete="current-password"
                 data-ocid="login.input"
@@ -126,14 +126,6 @@ export default function Login() {
               {loading ? "Signing in..." : "Login"}
             </Button>
           </form>
-
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
-            <strong>Demo Credentials:</strong>
-            <br />
-            Admin: admin@dmvv.org / Admin@123
-            <br />
-            User: sunita@example.com / User@123
-          </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Don't have an account?{" "}

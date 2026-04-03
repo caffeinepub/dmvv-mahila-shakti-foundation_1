@@ -33,8 +33,10 @@ import AdminGallery from "@/pages/admin/AdminGallery";
 import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminMedia from "@/pages/admin/AdminMedia";
+import AdminNews from "@/pages/admin/AdminNews";
 import AdminPages from "@/pages/admin/AdminPages";
 import AdminSettings from "@/pages/admin/AdminSettings";
+import AdminTraining from "@/pages/admin/AdminTraining";
 import AdminUsers from "@/pages/admin/AdminUsers";
 
 import CenterDashboard from "@/pages/center/CenterDashboard";
@@ -228,7 +230,9 @@ function AppRoutes() {
         <Route path="centers" element={<AdminCenters />} />
         <Route path="pages" element={<AdminPages />} />
         <Route path="media" element={<AdminMedia />} />
+        <Route path="news" element={<AdminNews />} />
         <Route path="gallery" element={<AdminGallery />} />
+        <Route path="training" element={<AdminTraining />} />
         <Route path="company" element={<AdminCompanyProfile />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

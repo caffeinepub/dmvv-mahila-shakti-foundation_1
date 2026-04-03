@@ -5,6 +5,28 @@ import { motion } from "motion/react";
 
 const schemes = [
   {
+    name: "Self Employment Revulation Scheme",
+    ministry: "Mahila Sashaktikaran Yojana",
+    description:
+      "DMVV Bhartiy Mahila Shakti Foundation ki yeh flagship yojana mahilaon ko swavlambi banane ke liye design ki gayi hai. Yeh scheme rural aur semi-urban mahilaon ko vyavsayik prashikshan, aarthik sahayata, aur bazaar se seedha jodne ka avsar deti hai. Apna kaam shuru karen, apni pehchan banayein.",
+    eligibility: [
+      "18-55 aadhar registered mahila",
+      "BPL ya lower middle class parivar",
+      "Minimum 5th class pass",
+      "SHG member ya individual apply kar sakti hain",
+    ],
+    benefits: [
+      "Rup ₹50,000 tak seed capital sahayata",
+      "Nishulk vyavsayik prashikshan (3-6 maah)",
+      "Marketing aur bazaar linkage",
+      "Mentorship aur follow-up support",
+    ],
+    howToApply:
+      "Nazdiki DMVV Mahila Kendra mein sampark karen ya website par online aavedan karen. Aadhaar card, bank passbook, aur ek passport photo saath laye.",
+    color: "border-ngo-orange",
+    featured: true,
+  },
+  {
     name: "Pradhan Mantri Ujjwala Yojana",
     ministry: "Ministry of Petroleum & Natural Gas",
     description:
@@ -24,6 +46,7 @@ const schemes = [
     howToApply:
       "Visit nearest LPG distributor or apply online on the PMUY portal with Aadhaar, BPL ration card, and bank account details.",
     color: "border-orange-400",
+    featured: false,
   },
   {
     name: "Beti Bachao Beti Padhao",
@@ -45,6 +68,7 @@ const schemes = [
     howToApply:
       "Register at Anganwadi centers or apply through BBBP portal. Open bank account under Sukanya Samriddhi Yojana at post office or designated banks.",
     color: "border-pink-400",
+    featured: false,
   },
   {
     name: "Mahila Shakti Kendra",
@@ -66,6 +90,7 @@ const schemes = [
     howToApply:
       "Contact nearest Anganwadi or District Women & Child Development Officer (DWCDO) to register and access services.",
     color: "border-green-400",
+    featured: false,
   },
   {
     name: "Stand-Up India Scheme",
@@ -87,6 +112,7 @@ const schemes = [
     howToApply:
       "Apply online at standupmitra.in or visit any bank branch with business plan, identity proof, address proof, and project report.",
     color: "border-blue-400",
+    featured: false,
   },
   {
     name: "Skill India for Women",
@@ -108,6 +134,7 @@ const schemes = [
     howToApply:
       "Visit nearest PMKVY Training Centre or register online at skillindiadigital.gov.in. Aadhaar card required for enrollment.",
     color: "border-purple-400",
+    featured: false,
   },
 ];
 
@@ -127,80 +154,175 @@ export default function Schemes() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-14 space-y-10">
-        {schemes.map((scheme, idx) => (
-          <motion.div
-            key={scheme.name}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.05 }}
-          >
-            <Card
-              className={`border-l-4 ${scheme.color} hover:shadow-lg transition-shadow`}
+        {schemes.map((scheme, idx) =>
+          scheme.featured ? (
+            // Featured: Self Employment Revulation Scheme - big, left-aligned, 3-line title
+            <motion.div
+              key={scheme.name}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0 }}
             >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <h2 className="text-xl font-extrabold text-gray-900">
-                    {scheme.name}
-                  </h2>
-                  <Badge
-                    variant="outline"
-                    className="text-xs ml-4 whitespace-nowrap"
-                  >
-                    {scheme.ministry}
-                  </Badge>
-                </div>
-                <p className="text-gray-600 mb-5">{scheme.description}</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <h3 className="font-bold text-gray-800 mb-2 text-sm">
-                      Eligibility Criteria
-                    </h3>
-                    <ul className="space-y-1">
-                      {scheme.eligibility.map((e) => (
-                        <li
-                          key={e}
-                          className="flex items-start gap-2 text-sm text-gray-600"
-                        >
-                          <CheckCircle
-                            size={14}
-                            className="text-green-500 mt-0.5 flex-shrink-0"
-                          />
-                          {e}
-                        </li>
-                      ))}
-                    </ul>
+              <Card className="border-l-8 border-ngo-orange shadow-xl bg-gradient-to-br from-orange-50 via-white to-amber-50">
+                <CardContent className="p-8">
+                  {/* 3-line title block - left aligned */}
+                  <div className="mb-6 text-left">
+                    {/* Line 1: Large heading */}
+                    <h2 className="text-3xl md:text-4xl font-black text-ngo-orange leading-tight tracking-tight">
+                      Self Employment
+                    </h2>
+                    {/* Line 2: Small subtitle */}
+                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mt-1">
+                      Revulation Scheme
+                    </p>
+                    {/* Line 3: Medium description tagline */}
+                    <p className="text-lg md:text-xl font-semibold text-gray-700 mt-2">
+                      Swayam Rozgar — Mahila Sashaktikaran ki Nayi Raah
+                    </p>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-gray-800 mb-2 text-sm">
-                      Benefits
-                    </h3>
-                    <ul className="space-y-1">
-                      {scheme.benefits.map((b) => (
-                        <li
-                          key={b}
-                          className="flex items-start gap-2 text-sm text-gray-600"
-                        >
-                          <CheckCircle
-                            size={14}
-                            className="text-orange-500 mt-0.5 flex-shrink-0"
-                          />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
+
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <Badge className="bg-ngo-orange text-white">
+                      Flagship Scheme
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {scheme.ministry}
+                    </Badge>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-gray-800 mb-2 text-sm">
-                      How to Apply
-                    </h3>
-                    <p className="text-sm text-gray-600">{scheme.howToApply}</p>
+
+                  <p className="text-gray-700 mb-6 text-base leading-relaxed">
+                    {scheme.description}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-orange-100">
+                      <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">
+                        Eligibility Criteria
+                      </h3>
+                      <ul className="space-y-2">
+                        {scheme.eligibility.map((e) => (
+                          <li
+                            key={e}
+                            className="flex items-start gap-2 text-sm text-gray-600"
+                          >
+                            <CheckCircle
+                              size={14}
+                              className="text-ngo-orange mt-0.5 flex-shrink-0"
+                            />
+                            {e}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-orange-100">
+                      <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">
+                        Benefits
+                      </h3>
+                      <ul className="space-y-2">
+                        {scheme.benefits.map((b) => (
+                          <li
+                            key={b}
+                            className="flex items-start gap-2 text-sm text-gray-600"
+                          >
+                            <CheckCircle
+                              size={14}
+                              className="text-green-500 mt-0.5 flex-shrink-0"
+                            />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-orange-100">
+                      <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">
+                        How to Apply
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {scheme.howToApply}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ) : (
+            <motion.div
+              key={scheme.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.05 }}
+            >
+              <Card
+                className={`border-l-4 ${scheme.color} hover:shadow-lg transition-shadow`}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-2">
+                    <h2 className="text-xl font-extrabold text-gray-900">
+                      {scheme.name}
+                    </h2>
+                    <Badge
+                      variant="outline"
+                      className="text-xs ml-4 whitespace-nowrap"
+                    >
+                      {scheme.ministry}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-600 mb-5">{scheme.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <h3 className="font-bold text-gray-800 mb-2 text-sm">
+                        Eligibility Criteria
+                      </h3>
+                      <ul className="space-y-1">
+                        {scheme.eligibility.map((e) => (
+                          <li
+                            key={e}
+                            className="flex items-start gap-2 text-sm text-gray-600"
+                          >
+                            <CheckCircle
+                              size={14}
+                              className="text-green-500 mt-0.5 flex-shrink-0"
+                            />
+                            {e}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800 mb-2 text-sm">
+                        Benefits
+                      </h3>
+                      <ul className="space-y-1">
+                        {scheme.benefits.map((b) => (
+                          <li
+                            key={b}
+                            className="flex items-start gap-2 text-sm text-gray-600"
+                          >
+                            <CheckCircle
+                              size={14}
+                              className="text-orange-500 mt-0.5 flex-shrink-0"
+                            />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800 mb-2 text-sm">
+                        How to Apply
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {scheme.howToApply}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ),
+        )}
       </section>
     </main>
   );
