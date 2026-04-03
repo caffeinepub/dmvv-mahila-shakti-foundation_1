@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+
+    /* Background white */
+    --background: 1 0 0;
+    --foreground: 0.18 0.02 264;
+
+    /* Card white */
+    --card: 1 0 0;
+    --card-foreground: 0.18 0.02 264;
+
+    /* Popover white */
+    --popover: 1 0 0;
+    --popover-foreground: 0.18 0.02 264;
+
+    /* Primary dark green #0F4A2E -> oklch ~0.35 0.12 152 */
+    --primary: 0.35 0.12 152;
+    --primary-foreground: 1 0 0;
+
+    /* Secondary light green tint */
+    --secondary: 0.95 0.025 152;
+    --secondary-foreground: 0.35 0.12 152;
+
+    /* Muted gray */
+    --muted: 0.965 0.004 264;
+    --muted-foreground: 0.5 0.015 264;
+
+    /* Accent orange #F28C28 -> oklch ~0.72 0.17 55 */
+    --accent: 0.72 0.17 55;
+    --accent-foreground: 1 0 0;
+
+    /* Destructive red */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    /* Border light gray */
+    --border: 0.91 0.008 264;
+    --input: 0.91 0.008 264;
+    --ring: 0.35 0.12 152;
+
+    /* Chart colors */
+    --chart-1: 0.35 0.12 152;
+    --chart-2: 0.72 0.17 55;
+    --chart-3: 0.6 0.118 184;
+    --chart-4: 0.828 0.189 84;
+    --chart-5: 0.769 0.188 70;
+
+    /* Sidebar dark green */
+    --sidebar: 0.28 0.1 152;
+    --sidebar-foreground: 0.95 0.01 152;
+    --sidebar-primary: 0.72 0.17 55;
+    --sidebar-primary-foreground: 1 0 0;
+    --sidebar-accent: 0.32 0.11 152;
+    --sidebar-accent-foreground: 0.95 0.01 152;
+    --sidebar-border: 0.32 0.11 152;
+    --sidebar-ring: 0.72 0.17 55;
+
+    /* Custom tokens */
+    --ngo-green: 0.35 0.12 152;
+    --ngo-green-dark: 0.28 0.1 152;
+    --ngo-orange: 0.72 0.17 55;
+    --ngo-orange-dark: 0.65 0.17 52;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+    font-weight: 700;
+  }
+}
+
+/* Utility: ngo-green bg/text */
+.bg-ngo-green {
+  background-color: oklch(var(--ngo-green));
+}
+.bg-ngo-green-dark {
+  background-color: oklch(var(--ngo-green-dark));
+}
+.text-ngo-green {
+  color: oklch(var(--ngo-green));
+}
+.bg-ngo-orange {
+  background-color: oklch(var(--ngo-orange));
+}
+.text-ngo-orange {
+  color: oklch(var(--ngo-orange));
+}
+.border-ngo-green {
+  border-color: oklch(var(--ngo-green));
+}
+.hover\:bg-ngo-green-dark:hover {
+  background-color: oklch(var(--ngo-green-dark));
+}
+.hover\:bg-ngo-orange-dark:hover {
+  background-color: oklch(var(--ngo-orange-dark));
+}
