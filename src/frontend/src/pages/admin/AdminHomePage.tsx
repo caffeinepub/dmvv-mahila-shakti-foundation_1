@@ -25,6 +25,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  type HomeCard,
   type HomeImpactStory,
   type HomeInitiative,
   type HomeStat,
@@ -476,6 +477,352 @@ function SliderImagesTab({
   );
 }
 
+// ---- Home Cards Management Component ----
+function HomeCardsTab({
+  homeCards,
+  galleryItems,
+  addHomeCard,
+  updateHomeCard,
+  deleteHomeCard,
+}: {
+  homeCards: HomeCard[];
+  galleryItems: {
+    id: string;
+    src: string;
+    caption: string;
+    mediaType?: string;
+  }[];
+  addHomeCard: (c: HomeCard) => void;
+  updateHomeCard: (id: string, updates: Partial<HomeCard>) => void;
+  deleteHomeCard: (id: string) => void;
+}) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editCard, setEditCard] = useState<HomeCard | null>(null);
+  const [form, setForm] = useState<Partial<HomeCard>>({});
+  const [galleryPickerOpen, setGalleryPickerOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const imageGallery = galleryItems.filter(
+    (g) => !g.mediaType || g.mediaType === "photo",
+  );
+
+  const openAdd = () => {
+    setEditCard(null);
+    setForm({ icon: "🏠", isActive: true, sortOrder: homeCards.length + 1 });
+    setDialogOpen(true);
+  };
+
+  const openEdit = (c: HomeCard) => {
+    setEditCard(c);
+    setForm({ ...c });
+    setDialogOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!form.name?.trim()) return;
+    if (editCard) {
+      updateHomeCard(editCard.id, form);
+    } else {
+      addHomeCard({
+        id: `hc${Date.now()}`,
+        name: form.name ?? "",
+        description: form.description ?? "",
+        icon: form.icon ?? "🏠",
+        imageUrl: form.imageUrl ?? "",
+        isActive: form.isActive ?? true,
+        sortOrder: form.sortOrder ?? homeCards.length + 1,
+      });
+    }
+    setDialogOpen(false);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm((f) => ({ ...f, imageUrl: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-bold text-lg text-gray-900">
+            Home Cards (Schemes Section)
+          </h3>
+          <p className="text-gray-500 text-sm">
+            These cards appear in the "Programs We Support" section on the home
+            page.
+          </p>
+        </div>
+        <Button
+          onClick={openAdd}
+          className="bg-ngo-green hover:bg-green-700 text-white"
+          data-ocid="admin_homecards.open_modal_button"
+        >
+          + Add Card
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {homeCards
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((card, idx) => (
+            <div
+              key={card.id}
+              className={`border rounded-xl overflow-hidden transition-shadow hover:shadow-md ${card.isActive ? "border-gray-200" : "border-gray-100 opacity-60"}`}
+              data-ocid={`admin_homecards.item.${idx + 1}`}
+            >
+              {card.imageUrl && (
+                <img
+                  src={card.imageUrl}
+                  alt={card.name}
+                  className="w-full h-32 object-cover"
+                />
+              )}
+              <div className="p-4">
+                {!card.imageUrl && (
+                  <div className="text-3xl mb-2">{card.icon}</div>
+                )}
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-bold text-gray-900 text-sm">
+                      {card.name}
+                    </div>
+                    <div className="text-gray-500 text-xs mt-1 line-clamp-2">
+                      {card.description}
+                    </div>
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openEdit(card)}
+                      data-ocid={`admin_homecards.edit_button.${idx + 1}`}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        if (window.confirm(`Delete "${card.name}"?`))
+                          deleteHomeCard(card.id);
+                      }}
+                      data-ocid={`admin_homecards.delete_button.${idx + 1}`}
+                    >
+                      Del
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-400">
+                    Order: {card.sortOrder}
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${card.isActive ? "text-green-600" : "text-gray-400"}`}
+                  >
+                    {card.isActive ? "Active" : "Hidden"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-lg" data-ocid="admin_homecards.dialog">
+          <DialogHeader>
+            <DialogTitle>{editCard ? "Edit Card" : "Add New Card"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Card Name *</Label>
+              <Input
+                value={form.name ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
+                placeholder="e.g. Beti Bachao Beti Padhao"
+                className="mt-1"
+                data-ocid="admin_homecards.input"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={form.description ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
+                placeholder="Short description of the scheme"
+                rows={2}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Icon (Emoji)</Label>
+              <Input
+                value={form.icon ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, icon: e.target.value }))
+                }
+                placeholder="e.g. 👧 🔥 🏠"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Card Image</Label>
+              <div className="mt-1 space-y-2">
+                {form.imageUrl && (
+                  <div className="relative">
+                    <img
+                      src={form.imageUrl}
+                      alt="preview"
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-2 right-2 text-xs"
+                      onClick={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileRef.current?.click()}
+                    data-ocid="admin_homecards.upload_button"
+                  >
+                    <ImageIcon size={14} className="mr-1" /> Upload Image
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setGalleryPickerOpen(true)}
+                    data-ocid="admin_homecards.secondary_button"
+                  >
+                    Pick from Gallery
+                  </Button>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                <p className="text-xs text-gray-400">
+                  If no image is set, the emoji icon will be shown instead.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Label>Sort Order</Label>
+                <Input
+                  type="number"
+                  value={form.sortOrder ?? ""}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      sortOrder: Number(e.target.value),
+                    }))
+                  }
+                  min={1}
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex items-end gap-2 pb-1">
+                <Switch
+                  checked={form.isActive ?? true}
+                  onCheckedChange={(v) =>
+                    setForm((f) => ({ ...f, isActive: v }))
+                  }
+                  data-ocid="admin_homecards.switch"
+                />
+                <Label>Active</Label>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+              data-ocid="admin_homecards.cancel_button"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="bg-ngo-green hover:bg-green-700 text-white"
+              disabled={!form.name?.trim()}
+              data-ocid="admin_homecards.save_button"
+            >
+              {editCard ? "Save Changes" : "Add Card"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Gallery Picker Dialog */}
+      <Dialog open={galleryPickerOpen} onOpenChange={setGalleryPickerOpen}>
+        <DialogContent className="max-w-2xl" data-ocid="admin_homecards.modal">
+          <DialogHeader>
+            <DialogTitle>Pick Image from Gallery</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-3 gap-3 max-h-96 overflow-y-auto py-2">
+            {imageGallery.length === 0 && (
+              <p className="col-span-3 text-center text-gray-500 py-8">
+                No images in gallery yet.
+              </p>
+            )}
+            {imageGallery.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                className="rounded-lg overflow-hidden border-2 border-transparent hover:border-ngo-green transition-all cursor-pointer"
+                onClick={() => {
+                  setForm((f) => ({ ...f, imageUrl: g.src }));
+                  setGalleryPickerOpen(false);
+                }}
+              >
+                <img
+                  src={g.src}
+                  alt={g.caption}
+                  className="w-full h-24 object-cover"
+                />
+                <p className="text-xs text-gray-500 p-1 truncate">
+                  {g.caption}
+                </p>
+              </button>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setGalleryPickerOpen(false)}
+              data-ocid="admin_homecards.close_button"
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export default function AdminHomePage() {
   const {
     homeHero,
@@ -498,6 +845,11 @@ export default function AdminHomePage() {
     addSliderImage,
     updateSliderImage,
     deleteSliderImage,
+    homeCards,
+    addHomeCard,
+    updateHomeCard,
+    deleteHomeCard,
+    galleryItems,
   } = useApp();
 
   // --- Hero editing ---
@@ -699,6 +1051,9 @@ export default function AdminHomePage() {
           </TabsTrigger>
           <TabsTrigger value="slider" data-ocid="admin_homepage.tab">
             Image Slider
+          </TabsTrigger>
+          <TabsTrigger value="homecards" data-ocid="admin_homepage.tab">
+            Home Cards
           </TabsTrigger>
         </TabsList>
 
@@ -1095,6 +1450,16 @@ export default function AdminHomePage() {
             addSliderImage={addSliderImage}
             updateSliderImage={updateSliderImage}
             deleteSliderImage={deleteSliderImage}
+          />
+        </TabsContent>
+        {/* HOME CARDS TAB */}
+        <TabsContent value="homecards">
+          <HomeCardsTab
+            homeCards={homeCards}
+            galleryItems={galleryItems}
+            addHomeCard={addHomeCard}
+            updateHomeCard={updateHomeCard}
+            deleteHomeCard={deleteHomeCard}
           />
         </TabsContent>
       </Tabs>

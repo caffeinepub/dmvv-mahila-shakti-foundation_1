@@ -703,6 +703,117 @@ export interface MachineRecord {
   remarks?: string;
 }
 
+export interface Review {
+  id: string;
+  name: string;
+  profileInitial: string;
+  avatarColor: string;
+  stars: number;
+  text: string;
+  date: string;
+  isApproved: boolean;
+}
+
+export interface HomeCard {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  imageUrl: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+const initialReviews: Review[] = [
+  {
+    id: "rv1",
+    name: "Sunita Devi",
+    profileInitial: "S",
+    avatarColor: "bg-green-500",
+    stars: 5,
+    text: "DMVV Foundation has changed my life. With their help I started my own small business and now I can support my family independently.",
+    date: "2024-12-15",
+    isApproved: true,
+  },
+  {
+    id: "rv2",
+    name: "Priya Sharma",
+    profileInitial: "P",
+    avatarColor: "bg-orange-500",
+    stars: 5,
+    text: "The skill development training I received from DMVV Foundation helped me get a job in the textile industry. I am very grateful.",
+    date: "2024-11-20",
+    isApproved: true,
+  },
+  {
+    id: "rv3",
+    name: "Meena Kumari",
+    profileInitial: "M",
+    avatarColor: "bg-blue-500",
+    stars: 4,
+    text: "Excellent support for women like me. They helped me access government schemes and provided guidance throughout the process.",
+    date: "2025-01-08",
+    isApproved: true,
+  },
+];
+
+const initialHomeCards: HomeCard[] = [
+  {
+    id: "hc1",
+    name: "Beti Bachao Beti Padhao",
+    description: "Protecting and educating the girl child across India",
+    icon: "👧",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    id: "hc2",
+    name: "PM Ujjwala Yojana",
+    description: "Clean cooking fuel for women from BPL households",
+    icon: "🔥",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    id: "hc3",
+    name: "Mahila Shakti Kendra",
+    description: "Strengthening rural women through community participation",
+    icon: "🏠",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 3,
+  },
+  {
+    id: "hc4",
+    name: "Stand-Up India",
+    description: "Loans for women entrepreneurs to set up enterprises",
+    icon: "📊",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 4,
+  },
+  {
+    id: "hc5",
+    name: "Skill India for Women",
+    description: "Vocational training and placement for women",
+    icon: "🎓",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 5,
+  },
+  {
+    id: "hc6",
+    name: "MUDRA Yojana",
+    description: "Micro-financing for small businesses run by women",
+    icon: "💰",
+    imageUrl: "",
+    isActive: true,
+    sortOrder: 6,
+  },
+];
+
 // ─── Initial Data ───
 
 const initialLegalDocuments: LegalDocument[] = [
@@ -2486,6 +2597,16 @@ interface AppContextType {
   addMachineRecord: (m: MachineRecord) => void;
   updateMachineRecord: (id: string, updates: Partial<MachineRecord>) => void;
   deleteMachineRecord: (id: string) => void;
+  // Reviews
+  reviews: Review[];
+  addReview: (r: Review) => void;
+  updateReview: (id: string, updates: Partial<Review>) => void;
+  deleteReview: (id: string) => void;
+  // Home Cards
+  homeCards: HomeCard[];
+  addHomeCard: (c: HomeCard) => void;
+  updateHomeCard: (id: string, updates: Partial<HomeCard>) => void;
+  deleteHomeCard: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -2679,6 +2800,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     "dmvv_machineRecords",
     initialMachineRecords,
   );
+  const [reviews, setReviews] = useLocalStorage<Review[]>(
+    "dmvv_reviews",
+    initialReviews,
+  );
+  const [homeCards, setHomeCards] = useLocalStorage<HomeCard[]>(
+    "dmvv_homeCards",
+    initialHomeCards,
+  );
 
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   // On mount: load all content from backend canister (server-side persistent storage)
@@ -2795,6 +2924,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setProductionEntries(data.dmvv_productionEntries as ProductionEntry[]);
       if (data.dmvv_machineRecords)
         setMachineRecords(data.dmvv_machineRecords as MachineRecord[]);
+      if (data.dmvv_reviews) setReviews(data.dmvv_reviews as Review[]);
+      if (data.dmvv_homeCards) setHomeCards(data.dmvv_homeCards as HomeCard[]);
     });
   }, []);
 
@@ -2958,6 +3089,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_machineRecords", machineRecords);
   }, [machineRecords]);
+  useEffect(() => {
+    saveToBackend("dmvv_reviews", reviews);
+  }, [reviews]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeCards", homeCards);
+  }, [homeCards]);
   // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
@@ -3351,6 +3488,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
   const deleteMachineRecord = (id: string) =>
     setMachineRecords((prev) => prev.filter((m) => m.id !== id));
+  const addReview = (r: Review) => setReviews((prev) => [...prev, r]);
+  const updateReview = (id: string, updates: Partial<Review>) =>
+    setReviews((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+    );
+  const deleteReview = (id: string) =>
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+  const addHomeCard = (c: HomeCard) => setHomeCards((prev) => [...prev, c]);
+  const updateHomeCard = (id: string, updates: Partial<HomeCard>) =>
+    setHomeCards((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updates } : c)),
+    );
+  const deleteHomeCard = (id: string) =>
+    setHomeCards((prev) => prev.filter((c) => c.id !== id));
 
   return (
     <AppContext.Provider
@@ -3543,6 +3694,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addMachineRecord,
         updateMachineRecord,
         deleteMachineRecord,
+        reviews,
+        addReview,
+        updateReview,
+        deleteReview,
+        homeCards,
+        addHomeCard,
+        updateHomeCard,
+        deleteHomeCard,
       }}
     >
       {children}

@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useApp } from "@/context/AppContext";
+import { Textarea } from "@/components/ui/textarea";
+import { type Review, useApp } from "@/context/AppContext";
 import {
   ArrowRight,
   Award,
@@ -50,6 +51,234 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 function getIcon(name: string): React.ElementType {
   return ICON_MAP[name] ?? Star;
+}
+
+// ---- Reviews Section ----
+const AVATAR_COLORS = [
+  "bg-green-500",
+  "bg-orange-500",
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-red-500",
+  "bg-teal-500",
+  "bg-pink-500",
+  "bg-yellow-500",
+];
+
+function StarDisplay({ stars, size = 16 }: { stars: number; size?: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <span
+          key={s}
+          style={{ fontSize: size, color: s <= stars ? "#f59e0b" : "#d1d5db" }}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function ReviewsSection({
+  reviews,
+  addReview,
+}: {
+  reviews: Review[];
+  addReview: (r: Review) => void;
+}) {
+  const approvedReviews = reviews.filter((r) => r.isApproved).slice(0, 6);
+  const [showForm, setShowForm] = useState(false);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewStars, setReviewStars] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewText.trim()) return;
+    const randomColor =
+      AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+    addReview({
+      id: `rv${Date.now()}`,
+      name: reviewName.trim(),
+      profileInitial: reviewName.trim()[0].toUpperCase(),
+      avatarColor: randomColor,
+      stars: reviewStars,
+      text: reviewText.trim(),
+      date: new Date().toISOString().split("T")[0],
+      isApproved: false,
+    });
+    setReviewName("");
+    setReviewStars(5);
+    setReviewText("");
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 4000);
+    setShowForm(false);
+  };
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 py-16">
+      <div className="text-center mb-10">
+        <Badge className="bg-yellow-100 text-yellow-700 mb-3">
+          Testimonials
+        </Badge>
+        <h2 className="text-3xl font-extrabold text-gray-900">
+          What People Say
+        </h2>
+        <p className="text-gray-500 mt-2">
+          Real stories from real beneficiaries
+        </p>
+      </div>
+      {approvedReviews.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {approvedReviews.map((review, idx) => (
+            <motion.div
+              key={review.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              data-ocid={`reviews.item.${idx + 1}`}
+            >
+              <Card className="h-full hover:shadow-lg transition-shadow border border-gray-100">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg ${review.avatarColor}`}
+                    >
+                      {review.profileInitial}
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 text-sm">
+                        {review.name}
+                      </div>
+                      <StarDisplay stars={review.stars} size={14} />
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
+                  <div className="text-xs text-gray-400 mt-3">
+                    {new Date(review.date).toLocaleDateString("en-IN", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 mb-10">
+          No reviews yet. Be the first to share your experience!
+        </p>
+      )}
+
+      {submitted && (
+        <div className="text-center mb-4 text-green-600 font-semibold bg-green-50 py-3 rounded-lg">
+          ✅ Thank you for your review! It will appear after admin approval.
+        </div>
+      )}
+
+      <div className="text-center">
+        <Button
+          variant="outline"
+          className="border-ngo-green text-ngo-green hover:bg-green-50"
+          onClick={() => setShowForm(!showForm)}
+          data-ocid="reviews.open_modal_button"
+        >
+          {showForm ? "Close" : "Write a Review"}
+        </Button>
+      </div>
+
+      {showForm && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="mt-6 max-w-xl mx-auto"
+        >
+          <Card className="border-ngo-green/30">
+            <CardContent className="p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-lg">
+                Share Your Experience
+              </h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="review-name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Your Name *
+                  </label>
+                  <input
+                    id="review-name"
+                    type="text"
+                    value={reviewName}
+                    onChange={(e) => setReviewName(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    placeholder="Enter your name"
+                    required
+                    data-ocid="reviews.input"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="review-rating"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Rating *
+                  </label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setReviewStars(s)}
+                        style={{
+                          fontSize: 28,
+                          color: s <= reviewStars ? "#f59e0b" : "#d1d5db",
+                        }}
+                        className="hover:scale-110 transition-transform"
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="review-text"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Your Review *
+                  </label>
+                  <Textarea
+                    id="review-text"
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                    placeholder="Share your experience with DMVV Foundation..."
+                    rows={4}
+                    required
+                    data-ocid="reviews.textarea"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-ngo-green hover:bg-green-700 text-white"
+                  data-ocid="reviews.submit_button"
+                >
+                  Submit Review
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+    </section>
+  );
 }
 
 // ---- Image Slider Component ----
@@ -194,6 +423,9 @@ export default function Home() {
     communityCenters,
     youtubeVideos,
     sliderImages,
+    reviews,
+    addReview,
+    homeCards,
   } = useApp();
 
   const latestNews = news.filter((n) => n.isPublished).slice(0, 3);
@@ -539,7 +771,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Government Schemes Section */}
+      {/* Government Schemes Section - Dynamic Home Cards */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10">
@@ -554,56 +786,40 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Beti Bachao Beti Padhao",
-                desc: "Protecting and educating the girl child across India",
-                icon: "👧",
-              },
-              {
-                name: "PM Ujjwala Yojana",
-                desc: "Clean cooking fuel for women from BPL households",
-                icon: "🔥",
-              },
-              {
-                name: "Mahila Shakti Kendra",
-                desc: "Strengthening rural women through community participation",
-                icon: "🏠",
-              },
-              {
-                name: "Stand-Up India",
-                desc: "Loans for women entrepreneurs to set up enterprises",
-                icon: "📊",
-              },
-              {
-                name: "Skill India for Women",
-                desc: "Vocational training and placement for women",
-                icon: "🎓",
-              },
-              {
-                name: "MUDRA Yojana",
-                desc: "Micro-financing for small businesses run by women",
-                icon: "💰",
-              },
-            ].map((scheme) => (
-              <motion.div
-                key={scheme.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="hover:shadow-lg transition-shadow border border-gray-200">
-                  <CardContent className="p-5">
-                    <div className="text-3xl mb-3">{scheme.icon}</div>
-                    <h3 className="font-bold text-gray-900 mb-2">
-                      {scheme.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">{scheme.desc}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {homeCards
+              .filter((c) => c.isActive)
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((card, idx) => (
+                <motion.div
+                  key={card.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.07 }}
+                  data-ocid={`schemes.item.${idx + 1}`}
+                >
+                  <Card className="hover:shadow-lg transition-shadow border border-gray-200 h-full">
+                    {card.imageUrl && (
+                      <img
+                        src={card.imageUrl}
+                        alt={card.name}
+                        className="w-full h-36 object-cover rounded-t-lg"
+                      />
+                    )}
+                    <CardContent className="p-5">
+                      {!card.imageUrl && (
+                        <div className="text-3xl mb-3">{card.icon}</div>
+                      )}
+                      <h3 className="font-bold text-gray-900 mb-2">
+                        {card.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {card.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
           </div>
           <div className="text-center mt-8">
             <Link to="/schemes">
@@ -681,6 +897,9 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Reviews / Testimonials Section */}
+      <ReviewsSection reviews={reviews} addReview={addReview} />
 
       {/* CTA Banner */}
       <section className="bg-ngo-green py-14">

@@ -34,6 +34,7 @@ import {
   ScrollText,
   Settings,
   Shield,
+  Star,
   Store,
   Trophy,
   UserCheck,
@@ -48,6 +49,7 @@ import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 const adminNav = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Home Page", path: "/admin/homepage", icon: Home },
+  { label: "Reviews", path: "/admin/reviews", icon: Star },
   { label: "User Management", path: "/admin/users", icon: Users },
   {
     label: "Login Management",

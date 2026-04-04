@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 import About from "@/pages/About";
 import Centers from "@/pages/Centers";
@@ -68,6 +69,7 @@ import AdminOurPartners from "@/pages/admin/AdminOurPartners";
 import AdminOurTeam from "@/pages/admin/AdminOurTeam";
 import AdminPages from "@/pages/admin/AdminPages";
 import AdminProducts from "@/pages/admin/AdminProducts";
+import AdminReviews from "@/pages/admin/AdminReviews";
 import AdminRewards from "@/pages/admin/AdminRewards";
 import AdminSchemes from "@/pages/admin/AdminSchemes";
 import AdminSettings from "@/pages/admin/AdminSettings";
@@ -396,6 +398,7 @@ function AppRoutes() {
         <Route path="insurance" element={<AdminInsurance />} />
         <Route path="wallet" element={<AdminWallet />} />
         <Route path="franchise" element={<AdminFranchise />} />
+        <Route path="reviews" element={<AdminReviews />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
 
@@ -444,6 +447,7 @@ export default function App() {
         <HashRouter>
           <AppRoutes />
           <Toaster richColors position="top-right" />
+          <WhatsAppButton />
           <PWAInstallPrompt />
         </HashRouter>
       </LanguageProvider>
