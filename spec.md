@@ -1,34 +1,30 @@
 # DMVV Mahila Shakti Foundation
 
 ## Current State
-The app is a large React frontend with 50+ pages (admin, user, public). All dynamic content (gallery, news, schemes, settings, team, partners, complaints, etc.) is stored in `localStorage`. This means admin updates ONLY appear on the admin's device -- other users (especially APK installs) see no updates.
-
-Backend currently only has blob-storage (file uploads) + user-approval + authorization. No content storage in Motoko.
+- Signup form saves data to `users` array via `addUser` in AppContext
+- AdminUsers page shows all users with edit/update capability
+- AdminLoanApplications page shows all loan applications with approve/reject
+- AdminLoan page has a shareable loan apply link with "Copy Link" button
+- No dedicated "Signup Submissions" view with shareable signup link in admin
 
 ## Requested Changes (Diff)
 
 ### Add
-- Motoko stable storage for ALL content types: SiteSettings, News, Gallery, Training, Centers, Schemes, Employment, LoanTypes, Rewards, Downloads, LegalDocuments, Wishes, ImpactStories, Leadership, FoundationEvents, ComputerCenters, CommunityCenter, Transport, Team, Partners, Complaints, FranchiseMachines, FranchiseRawMaterials, FranchiseBlueprint, FranchisePlans, LoanApplications, Products, Volunteers, YouTubeVideos, CoreInitiatives
-- Motoko CRUD functions for each content type
-- Motoko user authentication: login (email+password hash), session tokens, user profiles, KYC
-- Frontend `BackendService` utility that wraps backend calls with localStorage fallback simulation
-- Language translation: Google Translate widget or i18n with full page translation
+- **Shareable Signup Link** in AdminUsers page: a prominent green/blue box at the top showing the signup page URL with "Copy Link" button -- same style as the loan link in AdminLoan
+- **Signup Submissions Tab/Section**: In AdminUsers, add a "New Registrations" highlight -- show pending signups at top with all submitted form fields visible (Name, Mobile, Email, Role, Father's Name, DOB, Gender, Address, District, State, Pincode, Aadhaar, PAN, Nominee Name, Nominee Relation, createdAt)
+- **Full Details Expand**: Each signup submission expandable to show all KYC/personal details submitted, with inline Edit + Approve/Reject buttons
+- **Loan Applications Enhancement**: Add shareable loan apply link box to AdminLoanApplications page too (mirroring AdminLoan), full details visible for each loan application
 
 ### Modify
-- AppContext to read/write from backend canister instead of localStorage
-- All admin pages to call backend save/load functions
-- All public pages to load data from backend
-- LanguageSwitcher to actually translate page content
+- AdminUsers: add shareable signup link box at top, improve pending registrations visibility with "New" badge and full form data display
+- AdminLoanApplications: add shareable loan link box at top
 
 ### Remove
-- Dependency on localStorage for content persistence (use it only for session caching)
+- Nothing removed
 
 ## Implementation Plan
-1. Extend Motoko main.mo with all content storage functions (stable vars, CRUD)
-2. Add user auth (login, register, session management)
-3. Update backend.d.ts with all new types
-4. Create a BackendDataService.ts that provides read/write for all content types using the Motoko backend
-5. Update AppContext to use BackendDataService
-6. Update all admin pages to save to backend
-7. Update all public pages to load from backend
-8. Fix language switcher to use Google Translate integration
+1. Add shareable signup link box in AdminUsers (copy window.location.origin + /signup)
+2. Enhance pending registrations display -- show all fields in expandable detail view
+3. Add "New Registrations" tab as first tab in AdminUsers showing only pending with full data
+4. Add shareable loan link box in AdminLoanApplications (same link as AdminLoan uses)
+5. Ensure all edit/update options are accessible from the detailed view

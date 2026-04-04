@@ -42,12 +42,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { type User, useApp } from "@/context/AppContext";
 import {
   CheckCircle,
+  Copy,
   CreditCard,
+  ExternalLink,
+  Link,
   Pencil,
   ShieldCheck,
   Trash2,
   UserCircle,
   User as UserIcon,
+  UserPlus,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -78,7 +82,7 @@ interface EditForm {
 export default function AdminUsers() {
   const { users, updateUser, deleteUser } = useApp();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("new_registrations");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState<EditForm>({
     fullName: "",
@@ -99,8 +103,19 @@ export default function AdminUsers() {
     nomineeRelation: "",
   });
 
+  const signupUrl = `${window.location.origin}/signup`;
+  const pendingCount = users.filter(
+    (u) => u.role !== "admin" && u.status === "pending",
+  ).length;
+
+  const handleCopySignupLink = () => {
+    navigator.clipboard.writeText(signupUrl);
+    toast.success("Link copied!");
+  };
+
   const filtered = users.filter((u) => {
     if (u.role === "admin") return false;
+    if (activeTab === "new_registrations") return u.status === "pending";
     if (activeTab === "all") return true;
     return u.status === activeTab;
   });
@@ -186,8 +201,70 @@ export default function AdminUsers() {
         User Management
       </h1>
 
+      {/* ── Shareable Signup Link Box ── */}
+      <div
+        className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6"
+        data-ocid="admin_users.panel"
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600">
+            <UserPlus size={16} className="text-white" />
+          </div>
+          <div>
+            <h3 className="font-bold text-green-800 text-sm">
+              Share Signup Link / साइनअप लिंक शेयर करें
+            </h3>
+            <p className="text-xs text-green-700">
+              Is link ko share karein — jo bhi form bharega uski poori details
+              yahan dikhegi
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 mt-3">
+          <Input
+            readOnly
+            value={signupUrl}
+            className="bg-white border-green-300 text-gray-700 text-sm flex-1 font-mono"
+            data-ocid="admin_users.input"
+          />
+          <Button
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white gap-1.5 shrink-0"
+            onClick={handleCopySignupLink}
+            data-ocid="admin_users.primary_button"
+          >
+            <Copy size={14} />
+            Copy Link
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-green-400 text-green-700 hover:bg-green-50 gap-1.5 shrink-0"
+            onClick={() => window.open(signupUrl, "_blank")}
+            data-ocid="admin_users.secondary_button"
+          >
+            <ExternalLink size={14} />
+            Open
+          </Button>
+        </div>
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 flex-wrap h-auto gap-1">
+          {/* New Registrations Tab */}
+          <TabsTrigger
+            value="new_registrations"
+            className="relative gap-1.5"
+            data-ocid="admin_users.tab"
+          >
+            <UserPlus size={13} />
+            New Registrations
+            {pendingCount > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold">
+                {pendingCount}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="all" data-ocid="admin_users.tab">
             All ({users.filter((u) => u.role !== "admin").length})
           </TabsTrigger>
@@ -207,214 +284,509 @@ export default function AdminUsers() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeTab}>
-          <Card>
-            <CardContent className="p-0 overflow-x-auto">
-              {filtered.length === 0 ? (
-                <div
-                  className="text-center py-12 text-gray-400"
-                  data-ocid="admin_users.empty_state"
+        {/* ── New Registrations Tab (Card layout) ── */}
+        <TabsContent value="new_registrations">
+          {filtered.length === 0 ? (
+            <div
+              className="text-center py-16 text-gray-400 bg-white rounded-xl border border-dashed border-gray-200"
+              data-ocid="admin_users.empty_state"
+            >
+              <UserPlus size={36} className="mx-auto mb-3 text-gray-300" />
+              <p className="font-medium">No new registrations</p>
+              <p className="text-sm mt-1">
+                Share the signup link to get new members.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filtered.map((user, idx) => (
+                <Card
+                  key={user.id}
+                  className="border-l-4 border-l-orange-400 shadow-sm"
+                  data-ocid={`admin_users.item.${idx + 1}`}
                 >
-                  No users found.
-                </div>
-              ) : (
-                <Table data-ocid="admin_users.table">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Full Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Mobile</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Registered</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filtered.map((user, idx) => (
-                      <TableRow
-                        key={user.id}
-                        data-ocid={`admin_users.row.${idx + 1}`}
-                      >
-                        <TableCell className="font-medium">
+                  <CardContent className="p-5">
+                    {/* Header row */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold text-lg">
+                          {user.fullName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
                           <div className="flex items-center gap-2">
-                            <span>{user.fullName}</span>
-                            {user.isVerified && (
-                              <Badge className="bg-green-100 text-green-700 text-xs px-1.5 py-0.5">
-                                ✓ Verified
-                              </Badge>
-                            )}
+                            <span className="font-bold text-gray-900">
+                              {user.fullName}
+                            </span>
+                            <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 font-bold uppercase tracking-wider">
+                              NEW
+                            </Badge>
                             {user.aadhaarNumber && (
-                              <Badge className="bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5">
+                              <Badge className="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5">
                                 KYC
                               </Badge>
                             )}
                           </div>
-                        </TableCell>
-                        <TableCell className="text-sm">{user.email}</TableCell>
-                        <TableCell className="text-sm">{user.mobile}</TableCell>
-                        <TableCell>
-                          <Select
-                            defaultValue={user.role}
-                            onValueChange={(v) =>
-                              handleRoleChange(user.id, v as User["role"])
-                            }
+                          <div className="text-xs text-gray-500 mt-0.5">
+                            Registered: {user.createdAt}
+                          </div>
+                        </div>
+                      </div>
+                      {/* Action buttons */}
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white gap-1"
+                          onClick={() => handleApprove(user.id, user.fullName)}
+                          disabled={user.status === "approved"}
+                          data-ocid={`admin_users.confirm_button.${idx + 1}`}
+                        >
+                          <CheckCircle size={13} />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="gap-1"
+                          onClick={() => handleReject(user.id, user.fullName)}
+                          disabled={user.status === "rejected"}
+                          data-ocid={`admin_users.delete_button.${idx + 1}`}
+                        >
+                          <XCircle size={13} />
+                          Reject
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-blue-300 text-blue-600 hover:bg-blue-50 gap-1"
+                          onClick={() => openEdit(user)}
+                          data-ocid={`admin_users.edit_button.${idx + 1}`}
+                        >
+                          <Pencil size={13} />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-green-400 text-green-700 hover:bg-green-50 gap-1"
+                          onClick={() =>
+                            navigate(`/admin/user-profile/${user.id}`)
+                          }
+                          data-ocid={`admin_users.button.${idx + 1}`}
+                        >
+                          <UserCircle size={13} />
+                          Full Profile
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Details grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Basic Details */}
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                          <UserIcon size={10} /> Basic Info
+                        </p>
+                        <dl className="space-y-1">
+                          <div className="flex gap-1">
+                            <dt className="text-xs text-gray-400 w-16 shrink-0">
+                              Mobile:
+                            </dt>
+                            <dd className="text-xs font-medium text-gray-700">
+                              {user.mobile}
+                            </dd>
+                          </div>
+                          <div className="flex gap-1">
+                            <dt className="text-xs text-gray-400 w-16 shrink-0">
+                              Email:
+                            </dt>
+                            <dd className="text-xs font-medium text-gray-700 break-all">
+                              {user.email}
+                            </dd>
+                          </div>
+                          <div className="flex gap-1">
+                            <dt className="text-xs text-gray-400 w-16 shrink-0">
+                              Role:
+                            </dt>
+                            <dd className="text-xs font-medium text-gray-700 capitalize">
+                              {user.role}
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+
+                      {/* Personal Details */}
+                      <div className="bg-orange-50 rounded-lg p-3">
+                        <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">
+                          Personal Details
+                        </p>
+                        <dl className="space-y-1">
+                          {user.fatherName && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                Father:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.fatherName}
+                              </dd>
+                            </div>
+                          )}
+                          {user.dob && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                DOB:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.dob}
+                              </dd>
+                            </div>
+                          )}
+                          {user.gender && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                Gender:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.gender}
+                              </dd>
+                            </div>
+                          )}
+                          {user.address && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                Address:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.address}
+                              </dd>
+                            </div>
+                          )}
+                          {user.district && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                District:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.district}
+                              </dd>
+                            </div>
+                          )}
+                          {user.state && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                State:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.state}
+                              </dd>
+                            </div>
+                          )}
+                          {user.pincode && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-16 shrink-0">
+                                Pincode:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.pincode}
+                              </dd>
+                            </div>
+                          )}
+                          {!user.fatherName && !user.dob && !user.gender && (
+                            <p className="text-xs text-gray-400 italic">
+                              Not provided
+                            </p>
+                          )}
+                        </dl>
+                      </div>
+
+                      {/* KYC Details */}
+                      <div className="bg-blue-50 rounded-lg p-3">
+                        <p className="text-[10px] font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                          <CreditCard size={10} /> KYC Details
+                        </p>
+                        <dl className="space-y-1">
+                          {user.aadhaarNumber && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-20 shrink-0">
+                                Aadhaar:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700 font-mono">
+                                {user.aadhaarNumber.replace(
+                                  /(\d{4})(\d{4})(\d{4})/,
+                                  "$1 $2 $3",
+                                )}
+                              </dd>
+                            </div>
+                          )}
+                          {user.panNumber && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-20 shrink-0">
+                                PAN:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700 font-mono uppercase">
+                                {user.panNumber}
+                              </dd>
+                            </div>
+                          )}
+                          {user.nomineeName && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-20 shrink-0">
+                                Nominee:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.nomineeName}
+                              </dd>
+                            </div>
+                          )}
+                          {user.nomineeRelation && (
+                            <div className="flex gap-1">
+                              <dt className="text-xs text-gray-400 w-20 shrink-0">
+                                Relation:
+                              </dt>
+                              <dd className="text-xs font-medium text-gray-700">
+                                {user.nomineeRelation}
+                              </dd>
+                            </div>
+                          )}
+                          {!user.aadhaarNumber && !user.panNumber && (
+                            <p className="text-xs text-gray-400 italic">
+                              KYC not submitted
+                            </p>
+                          )}
+                        </dl>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* ── Other tabs (table layout) ── */}
+        {["all", "pending", "approved", "rejected"].map((tab) => (
+          <TabsContent key={tab} value={tab}>
+            <Card>
+              <CardContent className="p-0 overflow-x-auto">
+                {users.filter((u) => {
+                  if (u.role === "admin") return false;
+                  if (tab === "all") return true;
+                  return u.status === tab;
+                }).length === 0 ? (
+                  <div
+                    className="text-center py-12 text-gray-400"
+                    data-ocid="admin_users.empty_state"
+                  >
+                    No users found.
+                  </div>
+                ) : (
+                  <Table data-ocid="admin_users.table">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Full Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Mobile</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Registered</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users
+                        .filter((u) => {
+                          if (u.role === "admin") return false;
+                          if (tab === "all") return true;
+                          return u.status === tab;
+                        })
+                        .map((user, idx) => (
+                          <TableRow
+                            key={user.id}
+                            data-ocid={`admin_users.row.${idx + 1}`}
                           >
-                            <SelectTrigger
-                              className="h-8 w-28"
-                              data-ocid="admin_users.select"
-                            >
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="center">Center</SelectItem>
-                              <SelectItem value="supervisor">
-                                Supervisor
-                              </SelectItem>
-                              <SelectItem value="transport">
-                                Transport
-                              </SelectItem>
-                              <SelectItem value="hr">HR</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={`capitalize ${
-                              user.status === "approved"
-                                ? "bg-green-100 text-green-700"
-                                : user.status === "rejected"
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                            }`}
-                          >
-                            {user.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {user.createdAt}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1.5">
-                            {/* Approve */}
-                            <Button
-                              size="sm"
-                              className="bg-green-600 text-white hover:bg-green-700 h-8 w-8 p-0"
-                              onClick={() =>
-                                handleApprove(user.id, user.fullName)
-                              }
-                              disabled={user.status === "approved"}
-                              title="Approve"
-                              data-ocid="admin_users.confirm_button"
-                            >
-                              <CheckCircle size={13} />
-                            </Button>
-                            {/* Reject */}
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              className="h-8 w-8 p-0"
-                              onClick={() =>
-                                handleReject(user.id, user.fullName)
-                              }
-                              disabled={user.status === "rejected"}
-                              title="Reject"
-                              data-ocid="admin_users.delete_button"
-                            >
-                              <XCircle size={13} />
-                            </Button>
-                            {/* Verify */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className={`h-8 w-8 p-0 ${
-                                user.isVerified
-                                  ? "border-green-500 text-green-600 bg-green-50"
-                                  : "border-gray-300 text-gray-400"
-                              }`}
-                              onClick={() => handleToggleVerify(user)}
-                              title={
-                                user.isVerified
-                                  ? "Remove Verification"
-                                  : "Verify User"
-                              }
-                              data-ocid="admin_users.toggle"
-                            >
-                              <ShieldCheck size={13} />
-                            </Button>
-                            {/* Edit */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-8 w-8 p-0 border-blue-300 text-blue-600 hover:bg-blue-50"
-                              title="Edit User"
-                              onClick={() => openEdit(user)}
-                              data-ocid="admin_users.edit_button"
-                            >
-                              <Pencil size={13} />
-                            </Button>
-                            {/* Delete */}
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <span>{user.fullName}</span>
+                                {user.isVerified && (
+                                  <Badge className="bg-green-100 text-green-700 text-xs px-1.5 py-0.5">
+                                    ✓ Verified
+                                  </Badge>
+                                )}
+                                {user.aadhaarNumber && (
+                                  <Badge className="bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5">
+                                    KYC
+                                  </Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {user.email}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {user.mobile}
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                defaultValue={user.role}
+                                onValueChange={(v) =>
+                                  handleRoleChange(user.id, v as User["role"])
+                                }
+                              >
+                                <SelectTrigger
+                                  className="h-8 w-28"
+                                  data-ocid="admin_users.select"
+                                >
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="user">User</SelectItem>
+                                  <SelectItem value="center">Center</SelectItem>
+                                  <SelectItem value="supervisor">
+                                    Supervisor
+                                  </SelectItem>
+                                  <SelectItem value="transport">
+                                    Transport
+                                  </SelectItem>
+                                  <SelectItem value="hr">HR</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                className={`capitalize ${
+                                  user.status === "approved"
+                                    ? "bg-green-100 text-green-700"
+                                    : user.status === "rejected"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-yellow-100 text-yellow-700"
+                                }`}
+                              >
+                                {user.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {user.createdAt}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1.5">
+                                {/* Approve */}
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 text-white hover:bg-green-700 h-8 w-8 p-0"
+                                  onClick={() =>
+                                    handleApprove(user.id, user.fullName)
+                                  }
+                                  disabled={user.status === "approved"}
+                                  title="Approve"
+                                  data-ocid="admin_users.confirm_button"
+                                >
+                                  <CheckCircle size={13} />
+                                </Button>
+                                {/* Reject */}
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() =>
+                                    handleReject(user.id, user.fullName)
+                                  }
+                                  disabled={user.status === "rejected"}
+                                  title="Reject"
+                                  data-ocid="admin_users.delete_button"
+                                >
+                                  <XCircle size={13} />
+                                </Button>
+                                {/* Verify */}
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 w-8 p-0 border-red-300 text-red-600 hover:bg-red-50"
-                                  title="Delete User"
-                                  data-ocid="admin_users.open_modal_button"
+                                  className={`h-8 w-8 p-0 ${
+                                    user.isVerified
+                                      ? "border-green-500 text-green-600 bg-green-50"
+                                      : "border-gray-300 text-gray-400"
+                                  }`}
+                                  onClick={() => handleToggleVerify(user)}
+                                  title={
+                                    user.isVerified
+                                      ? "Remove Verification"
+                                      : "Verify User"
+                                  }
+                                  data-ocid="admin_users.toggle"
                                 >
-                                  <Trash2 size={13} />
+                                  <ShieldCheck size={13} />
                                 </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent data-ocid="admin_users.dialog">
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Delete User
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete{" "}
-                                    <strong>{user.fullName}</strong>? This
-                                    action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel data-ocid="admin_users.cancel_button">
-                                    Cancel
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    className="bg-red-600 text-white hover:bg-red-700"
-                                    onClick={() => handleDelete(user.id)}
-                                    data-ocid="admin_users.confirm_button"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                            {/* Full Profile */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-8 w-8 p-0 border-green-400 text-green-700 hover:bg-green-50"
-                              title="Full Profile"
-                              onClick={() =>
-                                navigate(`/admin/user-profile/${user.id}`)
-                              }
-                              data-ocid="admin_users.button"
-                            >
-                              <UserCircle size={13} />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                                {/* Edit */}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0 border-blue-300 text-blue-600 hover:bg-blue-50"
+                                  title="Edit User"
+                                  onClick={() => openEdit(user)}
+                                  data-ocid="admin_users.edit_button"
+                                >
+                                  <Pencil size={13} />
+                                </Button>
+                                {/* Delete */}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 w-8 p-0 border-red-300 text-red-600 hover:bg-red-50"
+                                      title="Delete User"
+                                      data-ocid="admin_users.open_modal_button"
+                                    >
+                                      <Trash2 size={13} />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent data-ocid="admin_users.dialog">
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Delete User
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete{" "}
+                                        <strong>{user.fullName}</strong>? This
+                                        action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel data-ocid="admin_users.cancel_button">
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="bg-red-600 text-white hover:bg-red-700"
+                                        onClick={() => handleDelete(user.id)}
+                                        data-ocid="admin_users.confirm_button"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                                {/* Full Profile */}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0 border-green-400 text-green-700 hover:bg-green-50"
+                                  title="Full Profile"
+                                  onClick={() =>
+                                    navigate(`/admin/user-profile/${user.id}`)
+                                  }
+                                  data-ocid="admin_users.button"
+                                >
+                                  <UserCircle size={13} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ))}
       </Tabs>
 
       {/* Edit User Dialog */}

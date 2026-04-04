@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/context/AppContext";
+import { Copy, ExternalLink, Link } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -21,6 +22,13 @@ export default function AdminLoanApplications() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [remark, setRemark] = useState("");
+
+  const loanApplyUrl = `${window.location.origin}/loan-apply`;
+
+  const handleCopyLoanLink = () => {
+    navigator.clipboard.writeText(loanApplyUrl);
+    toast.success("Link copied!");
+  };
 
   const filtered = loanApplications.filter((a) => {
     const typeMatch = typeFilter === "all" || a.loanType === typeFilter;
@@ -50,6 +58,54 @@ export default function AdminLoanApplications() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
         Loan Applications
       </h1>
+
+      {/* ── Shareable Loan Apply Link Box ── */}
+      <div
+        className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6"
+        data-ocid="admin_loan_apps.panel"
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600">
+            <Link size={16} className="text-white" />
+          </div>
+          <div>
+            <h3 className="font-bold text-green-800 text-sm">
+              Share Loan Apply Link / लोन अप्लाई लिंक शेयर करें
+            </h3>
+            <p className="text-xs text-green-700">
+              Is link ko share karein — jo bhi loan apply karega uski poori
+              details yahan dikhegi
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 mt-3">
+          <Input
+            readOnly
+            value={loanApplyUrl}
+            className="bg-white border-green-300 text-gray-700 text-sm flex-1 font-mono"
+            data-ocid="admin_loan_apps.input"
+          />
+          <Button
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white gap-1.5 shrink-0"
+            onClick={handleCopyLoanLink}
+            data-ocid="admin_loan_apps.primary_button"
+          >
+            <Copy size={14} />
+            Copy Link
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-green-400 text-green-700 hover:bg-green-50 gap-1.5 shrink-0"
+            onClick={() => window.open(loanApplyUrl, "_blank")}
+            data-ocid="admin_loan_apps.secondary_button"
+          >
+            <ExternalLink size={14} />
+            Open
+          </Button>
+        </div>
+      </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
         <div>
