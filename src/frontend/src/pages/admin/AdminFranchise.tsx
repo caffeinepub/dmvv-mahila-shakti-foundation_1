@@ -1,8 +1,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -12,6 +25,7 @@ import {
 import {
   Award,
   Box,
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
   Edit2,
@@ -22,17 +36,55 @@ import {
   IndianRupee,
   Megaphone,
   Package,
-  Plus,
+  Printer,
   Save,
+  Search,
   Settings2,
   Trash2,
   TrendingUp,
+  UserCheck,
   Users,
+  XCircle,
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+type FranchiseApplication = {
+  id: string;
+  name: string;
+  fatherName?: string;
+  dob?: string;
+  gender?: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  district: string;
+  state: string;
+  pincode?: string;
+  aadhaar?: string;
+  pan?: string;
+  bankAccount?: string;
+  ifsc?: string;
+  bankName?: string;
+  passportPhoto?: string;
+  aadhaarDoc?: string;
+  panDoc?: string;
+  additionalDoc?: string;
+  category?: string;
+  plan?: string;
+  message?: string;
+  status: "pending" | "approved" | "rejected" | "forwarded";
+  kycStatus: "pending" | "approved" | "rejected";
+  date: string;
+  approvedDate?: string;
+  rejectedDate?: string;
+  forwardedTo?: string;
+  adminNotes?: string;
+};
+
+// ─── Default Data ─────────────────────────────────────────────────────────────
 const DEFAULT_DATA = {
   hero: {
     title: "Anshika Udhyog Centre — Franchise Program",
@@ -108,7 +160,7 @@ const DEFAULT_DATA = {
       id: "3",
       step: 3,
       title: "Agreement Signing",
-      description: "Sign the franchise agreement",
+      description: "Sign franchise agreement",
       duration: "Day 6–10",
     },
   ],
@@ -117,20 +169,26 @@ const DEFAULT_DATA = {
       id: "1",
       item: "Franchise Registration Fee",
       amount: "₹5,000",
-      note: "One-time",
+      note: "One-time, non-refundable",
     },
     {
       id: "2",
       item: "Machine & Equipment Cost",
       amount: "₹50,000 – ₹2,00,000",
-      note: "Varies by product",
+      note: "Depends on product category",
+    },
+    {
+      id: "3",
+      item: "Training Fee",
+      amount: "₹2,000",
+      note: "5-day comprehensive training",
     },
   ],
   marketingSupport: [
     {
       id: "1",
       title: "Digital Marketing",
-      description: "Social media and WhatsApp campaigns",
+      description: "Social media promotion and WhatsApp campaigns",
     },
     {
       id: "2",
@@ -145,7 +203,7 @@ const DEFAULT_DATA = {
       price: "₹75,000",
       duration: "1 Year",
       color: "blue",
-      features: ["1 Machine", "Basic Training", "Branding Board"],
+      features: ["1 Machine", "Basic Training (3 Days)", "Branding Board"],
       recommended: false,
     },
     {
@@ -173,15 +231,15 @@ const DEFAULT_DATA = {
       product: "Agarbatti",
       type: "Paper Box",
       size: "19 cm",
-      weight: "90g / 200g",
+      weight: "90g",
       qtyPerBox: "12 packets",
     },
     {
       id: "2",
       product: "Papad",
-      type: "Polypropylene Pouch",
+      type: "PP Pouch",
       size: "30x20 cm",
-      weight: "200g / 500g",
+      weight: "200g",
       qtyPerBox: "24 pouches",
     },
   ],
@@ -189,19 +247,19 @@ const DEFAULT_DATA = {
     {
       id: "1",
       name: "Agarbatti Udhyog",
-      description: "Incense stick manufacturing",
+      description: "Complete incense stick manufacturing unit",
       badge: "Popular",
     },
     {
       id: "2",
       name: "Papad Udhyog",
-      description: "Traditional papad making",
+      description: "Traditional papad making with modern equipment",
       badge: "",
     },
     {
       id: "3",
       name: "Masala Udhyog",
-      description: "Spice grinding and packaging",
+      description: "Spice grinding and packaging unit",
       badge: "",
     },
   ],
@@ -228,22 +286,658 @@ function genId() {
   return Date.now().toString();
 }
 
+// ─── Letter Modal ─────────────────────────────────────────────────────────────
+function LetterModal({
+  type,
+  app,
+  onClose,
+}: {
+  type: "approval" | "rejection" | "cancellation";
+  app: FranchiseApplication;
+  onClose: () => void;
+}) {
+  const today = new Date().toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const titles = {
+    approval: "Franchise Approval Letter",
+    rejection: "Franchise Rejection Letter",
+    cancellation: "Franchise Cancellation Letter",
+  };
+
+  const bodies = {
+    approval: `Dear ${app.name},
+
+Congratulations! We are pleased to inform you that your franchise application (Application ID: ${app.id}) for DMVV Anshika Udhyog Centre has been APPROVED.
+
+Your selected franchise category: ${app.category || "N/A"}
+Investment Plan: ${app.plan || "N/A"}
+
+Please complete the Franchise Fee Payment at the earliest to initiate the work process. Your franchise unit will be set up within the following timeline:
+• Minimum Time: 7 Working Days
+• Maximum Time: 30 Working Days
+
+For further assistance, please contact our franchise support team.
+
+We look forward to a successful business partnership with you.
+
+Welcome to the DMVV Bhartiy Mahila Shakti Foundation family!`,
+    rejection: `Dear ${app.name},
+
+Thank you for your interest in the DMVV Anshika Udhyog Centre Franchise Program.
+
+We regret to inform you that your franchise application (Application ID: ${app.id}) has been REJECTED after careful review by our team.
+
+This decision may be due to eligibility requirements, documentation issues, or capacity constraints in your area.
+
+You are welcome to reapply after addressing the concerns. For clarification, please contact our office.
+
+We appreciate your interest in DMVV Bhartiy Mahila Shakti Foundation.`,
+    cancellation: `Dear ${app.name},
+
+This letter is to inform you that your franchise application / agreement (Application ID: ${app.id}) with DMVV Anshika Udhyog Centre has been CANCELLED as per our records.
+
+If you believe this is in error or wish to discuss this matter, please contact our office immediately.
+
+All associated documents and records related to this application have been duly noted and archived.
+
+Thank you for your understanding.`,
+  };
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        data-ocid="franchise.dialog"
+      >
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileText size={18} />
+            {titles[type]}
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Letter preview */}
+        <div
+          id="letter-content"
+          className="border border-gray-300 rounded-lg p-6 bg-white text-sm"
+        >
+          {/* Letterhead */}
+          <div className="text-center border-b-2 border-green-700 pb-4 mb-4">
+            <div className="flex items-center justify-center gap-3 mb-1">
+              <img
+                src="/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png"
+                alt="DMVV Logo"
+                className="w-12 h-12 object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <div>
+                <div className="font-extrabold text-green-800 text-base">
+                  DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
+                </div>
+                <div className="text-xs text-gray-500">
+                  Anshika Udhyog Centre Franchise Program
+                </div>
+              </div>
+            </div>
+            <div className="text-xs text-gray-400">
+              Registered NGO | ISO Certified | Est. 2018
+            </div>
+          </div>
+
+          <div className="flex justify-between text-xs text-gray-600 mb-4">
+            <div>
+              Application ID: <strong>{app.id}</strong>
+            </div>
+            <div>
+              Date: <strong>{today}</strong>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="font-semibold">To,</div>
+            <div>{app.name}</div>
+            {app.address && <div className="text-gray-600">{app.address}</div>}
+            <div className="text-gray-600">
+              {app.district}
+              {app.district && app.state ? ", " : ""}
+              {app.state}
+              {app.pincode ? ` - ${app.pincode}` : ""}
+            </div>
+          </div>
+
+          <div className="font-bold underline text-center mb-3">
+            Subject: {titles[type]}
+          </div>
+
+          <pre className="whitespace-pre-wrap font-sans text-gray-800 leading-relaxed">
+            {bodies[type]}
+          </pre>
+
+          <div className="mt-8 flex justify-between">
+            <div className="text-center">
+              <div className="w-32 border-t border-gray-400 mt-8 pt-1 text-xs text-gray-500">
+                Applicant Signature
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="w-32 border-t border-gray-400 mt-8 pt-1 text-xs text-gray-500">
+                Authorized Signatory
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 text-center text-xs text-gray-400">
+            DMVV Bhartiy Mahila Shakti Foundation™ | Official Document
+          </div>
+        </div>
+
+        <div className="flex gap-3 mt-3">
+          <Button
+            className="flex-1 bg-green-700 text-white hover:bg-green-800"
+            onClick={() => window.print()}
+            data-ocid="franchise.primary_button"
+          >
+            <Printer size={14} className="mr-2" /> Print Letter
+          </Button>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            data-ocid="franchise.close_button"
+          >
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Application Card ─────────────────────────────────────────────────────────
+function ApplicationCard({
+  app,
+  onUpdate,
+}: {
+  app: FranchiseApplication;
+  onUpdate: (updated: FranchiseApplication) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [forwardTo, setForwardTo] = useState(app.forwardedTo || "");
+  const [showForwardInput, setShowForwardInput] = useState(false);
+  const [adminNotes, setAdminNotes] = useState(app.adminNotes || "");
+  const [letterType, setLetterType] = useState<
+    "approval" | "rejection" | "cancellation" | null
+  >(null);
+
+  const statusColors = {
+    pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
+    approved: "bg-green-100 text-green-800 border-green-300",
+    rejected: "bg-red-100 text-red-800 border-red-300",
+    forwarded: "bg-blue-100 text-blue-800 border-blue-300",
+  };
+  const kycColors = {
+    pending: "bg-yellow-50 text-yellow-700",
+    approved: "bg-green-50 text-green-700",
+    rejected: "bg-red-50 text-red-700",
+  };
+
+  const today = new Date().toLocaleDateString("en-IN");
+
+  const handleApprove = () => {
+    onUpdate({ ...app, status: "approved", approvedDate: today });
+    toast.success(`${app.name}'s application approved!`);
+  };
+  const handleReject = () => {
+    onUpdate({ ...app, status: "rejected", rejectedDate: today });
+    toast.error(`${app.name}'s application rejected.`);
+  };
+  const handleForward = () => {
+    if (!forwardTo.trim()) {
+      toast.error("Enter forward destination");
+      return;
+    }
+    onUpdate({ ...app, status: "forwarded", forwardedTo: forwardTo.trim() });
+    setShowForwardInput(false);
+    toast.success(`Application forwarded to ${forwardTo}`);
+  };
+  const handleKycApprove = () => {
+    onUpdate({ ...app, kycStatus: "approved" });
+    toast.success("KYC approved!");
+  };
+  const handleKycReject = () => {
+    onUpdate({ ...app, kycStatus: "rejected" });
+    toast.error("KYC rejected.");
+  };
+  const handleSaveNotes = () => {
+    onUpdate({ ...app, adminNotes });
+    toast.success("Notes saved!");
+  };
+
+  const isImage = (val?: string) => val?.startsWith("data:image");
+  const isPdf = (val?: string) => val?.startsWith("data:application/pdf");
+
+  return (
+    <>
+      {letterType && (
+        <LetterModal
+          type={letterType}
+          app={app}
+          onClose={() => setLetterType(null)}
+        />
+      )}
+
+      <div className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+        {/* Card Header */}
+        <button
+          type="button"
+          className="flex items-center gap-3 p-4 w-full text-left hover:bg-gray-50"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {/* Passport Photo */}
+          <div className="w-10 h-10 rounded-full bg-green-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+            {isImage(app.passportPhoto) ? (
+              <img
+                src={app.passportPhoto}
+                alt={app.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Users size={18} className="text-green-500" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-gray-900">{app.name}</span>
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full border font-semibold ${
+                  statusColors[app.status]
+                }`}
+              >
+                {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+              </span>
+              <span
+                className={`text-xs px-2 py-0.5 rounded font-medium ${
+                  kycColors[app.kycStatus]
+                }`}
+              >
+                KYC: {app.kycStatus}
+              </span>
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5">
+              {app.phone} • {app.district}, {app.state} • {app.date}
+            </div>
+          </div>
+          <div className="text-gray-400 flex-shrink-0">
+            {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </div>
+        </button>
+
+        {/* Expanded Content */}
+        {expanded && (
+          <div className="border-t border-gray-100 p-4 space-y-5">
+            {/* Basic Details */}
+            <div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                Basic Details
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+                {app.fatherName && (
+                  <div>
+                    <span className="text-gray-400 text-xs">
+                      Father&apos;s Name
+                    </span>
+                    <div className="font-medium">{app.fatherName}</div>
+                  </div>
+                )}
+                {app.dob && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Date of Birth</span>
+                    <div className="font-medium">{app.dob}</div>
+                  </div>
+                )}
+                {app.gender && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Gender</span>
+                    <div className="font-medium">{app.gender}</div>
+                  </div>
+                )}
+                {app.email && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Email</span>
+                    <div className="font-medium">{app.email}</div>
+                  </div>
+                )}
+                {app.address && (
+                  <div className="col-span-2">
+                    <span className="text-gray-400 text-xs">Address</span>
+                    <div className="font-medium">{app.address}</div>
+                  </div>
+                )}
+                {app.pincode && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Pincode</span>
+                    <div className="font-medium">{app.pincode}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* KYC Details */}
+            <div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                KYC Details
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
+                {app.aadhaar && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Aadhaar</span>
+                    <div className="font-medium font-mono">{app.aadhaar}</div>
+                  </div>
+                )}
+                {app.pan && (
+                  <div>
+                    <span className="text-gray-400 text-xs">PAN</span>
+                    <div className="font-medium font-mono">{app.pan}</div>
+                  </div>
+                )}
+                {app.bankAccount && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Account No.</span>
+                    <div className="font-medium">{app.bankAccount}</div>
+                  </div>
+                )}
+                {app.ifsc && (
+                  <div>
+                    <span className="text-gray-400 text-xs">IFSC</span>
+                    <div className="font-medium font-mono">{app.ifsc}</div>
+                  </div>
+                )}
+                {app.bankName && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Bank Name</span>
+                    <div className="font-medium">{app.bankName}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Documents */}
+            <div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                Documents
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {isImage(app.passportPhoto) && (
+                  <div className="text-center">
+                    <img
+                      src={app.passportPhoto}
+                      alt="Applicant"
+                      className="w-16 h-20 object-cover rounded border border-gray-200"
+                    />
+                    <div className="text-xs text-gray-400 mt-1">
+                      Passport Photo
+                    </div>
+                  </div>
+                )}
+                {isImage(app.aadhaarDoc) && (
+                  <div className="text-center">
+                    <img
+                      src={app.aadhaarDoc}
+                      alt="Aadhaar"
+                      className="w-20 h-14 object-cover rounded border border-gray-200"
+                    />
+                    <div className="text-xs text-gray-400 mt-1">
+                      Aadhaar Card
+                    </div>
+                  </div>
+                )}
+                {isPdf(app.aadhaarDoc) && (
+                  <a
+                    href={app.aadhaarDoc}
+                    download="aadhaar.pdf"
+                    className="flex items-center gap-1 text-xs text-blue-600 underline"
+                  >
+                    <FileText size={14} /> Aadhaar PDF
+                  </a>
+                )}
+                {isImage(app.panDoc) && (
+                  <div className="text-center">
+                    <img
+                      src={app.panDoc}
+                      alt="PAN"
+                      className="w-20 h-14 object-cover rounded border border-gray-200"
+                    />
+                    <div className="text-xs text-gray-400 mt-1">PAN Card</div>
+                  </div>
+                )}
+                {isPdf(app.panDoc) && (
+                  <a
+                    href={app.panDoc}
+                    download="pan.pdf"
+                    className="flex items-center gap-1 text-xs text-blue-600 underline"
+                  >
+                    <FileText size={14} /> PAN PDF
+                  </a>
+                )}
+                {app.additionalDoc && (
+                  <a
+                    href={app.additionalDoc}
+                    download="additional-doc"
+                    className="flex items-center gap-1 text-xs text-blue-600 underline"
+                  >
+                    <FileText size={14} /> Additional Doc
+                  </a>
+                )}
+                {!app.passportPhoto && !app.aadhaarDoc && !app.panDoc && (
+                  <span className="text-xs text-gray-400">
+                    No documents uploaded
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Application Details */}
+            <div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                Application Details
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {app.category && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Category</span>
+                    <div className="font-medium">{app.category}</div>
+                  </div>
+                )}
+                {app.plan && (
+                  <div>
+                    <span className="text-gray-400 text-xs">Plan</span>
+                    <div className="font-medium">{app.plan}</div>
+                  </div>
+                )}
+                {app.message && (
+                  <div className="col-span-2">
+                    <span className="text-gray-400 text-xs">Message</span>
+                    <div className="font-medium italic">
+                      &ldquo;{app.message}&rdquo;
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* KYC Approval */}
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="text-xs font-bold text-gray-600 mb-2">
+                KYC Verification
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded font-semibold ${
+                    kycColors[app.kycStatus]
+                  }`}
+                >
+                  Status: {app.kycStatus}
+                </span>
+                <Button
+                  size="sm"
+                  className="bg-green-600 text-white hover:bg-green-700 text-xs"
+                  onClick={handleKycApprove}
+                  data-ocid="franchise.primary_button"
+                >
+                  <UserCheck size={13} className="mr-1" /> Approve KYC
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="text-xs"
+                  onClick={handleKycReject}
+                  data-ocid="franchise.secondary_button"
+                >
+                  <XCircle size={13} className="mr-1" /> Reject KYC
+                </Button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="text-xs font-bold text-gray-600 mb-2">
+                Application Actions
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  className="bg-green-600 text-white hover:bg-green-700"
+                  onClick={handleApprove}
+                  disabled={app.status === "approved"}
+                  data-ocid="franchise.primary_button"
+                >
+                  <CheckCircle2 size={13} className="mr-1" /> Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleReject}
+                  disabled={app.status === "rejected"}
+                  data-ocid="franchise.delete_button"
+                >
+                  <XCircle size={13} className="mr-1" /> Reject
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={() => setShowForwardInput((v) => !v)}
+                  data-ocid="franchise.secondary_button"
+                >
+                  ➡️ Forward
+                </Button>
+              </div>
+              {showForwardInput && (
+                <div className="flex gap-2 mt-2">
+                  <Input
+                    placeholder="Forward to (dept / person name)"
+                    value={forwardTo}
+                    onChange={(e) => setForwardTo(e.target.value)}
+                    className="text-sm"
+                    data-ocid="franchise.input"
+                  />
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 text-white"
+                    onClick={handleForward}
+                    data-ocid="franchise.confirm_button"
+                  >
+                    Send
+                  </Button>
+                </div>
+              )}
+              {app.forwardedTo && (
+                <div className="text-xs text-blue-600 mt-1">
+                  Forwarded to: {app.forwardedTo}
+                </div>
+              )}
+            </div>
+
+            {/* Admin Notes */}
+            <div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+                Admin Notes
+              </div>
+              <Textarea
+                rows={2}
+                placeholder="Add internal notes about this application..."
+                value={adminNotes}
+                onChange={(e) => setAdminNotes(e.target.value)}
+                className="text-sm"
+                data-ocid="franchise.textarea"
+              />
+              <Button
+                size="sm"
+                className="mt-2 bg-gray-700 text-white hover:bg-gray-800"
+                onClick={handleSaveNotes}
+                data-ocid="franchise.save_button"
+              >
+                <Save size={13} className="mr-1" /> Save Notes
+              </Button>
+            </div>
+
+            {/* Letter Generation */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div className="text-xs font-bold text-green-800 mb-2">
+                📄 Generate Official Letters
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  className="bg-green-700 text-white hover:bg-green-800"
+                  onClick={() => setLetterType("approval")}
+                  data-ocid="franchise.primary_button"
+                >
+                  <FileText size={13} className="mr-1" /> Approval Letter
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-red-700 text-white hover:bg-red-800"
+                  onClick={() => setLetterType("rejection")}
+                  data-ocid="franchise.secondary_button"
+                >
+                  <FileText size={13} className="mr-1" /> Rejection Letter
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-orange-600 text-white hover:bg-orange-700"
+                  onClick={() => setLetterType("cancellation")}
+                  data-ocid="franchise.secondary_button"
+                >
+                  <FileText size={13} className="mr-1" /> Cancellation Letter
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ─── Main AdminFranchise Component ───────────────────────────────────────────
 export default function AdminFranchise() {
   const [data, setData] = useLocalStorage<FranchiseData>(
     "dmvv_franchise_data",
     DEFAULT_DATA,
   );
-  const [applications, _setApplications] = useLocalStorage<
-    {
-      id: string;
-      name: string;
-      phone: string;
-      district: string;
-      state: string;
-      message: string;
-      date: string;
-    }[]
+
+  const [applications, setApplications] = useLocalStorage<
+    FranchiseApplication[]
   >("dmvv_franchise_applications", []);
+
+  // Search + Filter state for applications
+  const [appSearch, setAppSearch] = useState("");
+  const [appFilter, setAppFilter] = useState("all");
 
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   const franchiseBackendLoadedRef = useRef(false);
@@ -254,18 +948,34 @@ export default function AdminFranchise() {
       if (backendData.dmvv_franchise_data) {
         setData(backendData.dmvv_franchise_data as FranchiseData);
       }
+      if (backendData.dmvv_franchise_applications) {
+        setApplications(
+          backendData.dmvv_franchise_applications as FranchiseApplication[],
+        );
+      }
     });
-  }, [setData]);
+  }, [setData, setApplications]);
 
   useEffect(() => {
     saveToBackend("dmvv_franchise_data", data);
   }, [data]);
-  // ─────────────────────────────────────────────────────────────────────────────
 
-  // Hero edit
+  const updateApplications = (updated: FranchiseApplication[]) => {
+    setApplications(updated);
+    saveToBackend("dmvv_franchise_applications", updated);
+  };
+
+  const handleUpdateApp = (updatedApp: FranchiseApplication) => {
+    const next = applications.map((a) =>
+      a.id === updatedApp.id ? updatedApp : a,
+    );
+    updateApplications(next);
+  };
+
+  // ─── Hero edit ────────────────────────────────────────────────────────────
   const [heroEdit, setHeroEdit] = useState(data.hero);
 
-  // Machine form
+  // ─── Machine form ─────────────────────────────────────────────────────────
   const [machineForm, setMachineForm] = useState({
     id: "",
     name: "",
@@ -275,7 +985,7 @@ export default function AdminFranchise() {
   });
   const [machineEditing, setMachineEditing] = useState(false);
 
-  // Raw material form
+  // ─── Raw material form ────────────────────────────────────────────────────
   const [rmForm, setRmForm] = useState({
     id: "",
     name: "",
@@ -284,7 +994,7 @@ export default function AdminFranchise() {
   });
   const [rmEditing, setRmEditing] = useState(false);
 
-  // Blueprint form
+  // ─── Blueprint form ───────────────────────────────────────────────────────
   const [bpForm, setBpForm] = useState({
     id: "",
     step: 0,
@@ -293,7 +1003,7 @@ export default function AdminFranchise() {
   });
   const [bpEditing, setBpEditing] = useState(false);
 
-  // Roadmap form
+  // ─── Roadmap form ─────────────────────────────────────────────────────────
   const [roadmapForm, setRoadmapForm] = useState({
     id: "",
     step: 0,
@@ -303,7 +1013,7 @@ export default function AdminFranchise() {
   });
   const [roadmapEditing, setRoadmapEditing] = useState(false);
 
-  // Charges form
+  // ─── Charges form ─────────────────────────────────────────────────────────
   const [chargeForm, setChargeForm] = useState({
     id: "",
     item: "",
@@ -312,11 +1022,11 @@ export default function AdminFranchise() {
   });
   const [chargeEditing, setChargeEditing] = useState(false);
 
-  // Marketing form
+  // ─── Marketing form ───────────────────────────────────────────────────────
   const [msForm, setMsForm] = useState({ id: "", title: "", description: "" });
   const [msEditing, setMsEditing] = useState(false);
 
-  // Plans form
+  // ─── Plans form ───────────────────────────────────────────────────────────
   const [planForm, setPlanForm] = useState({
     id: "",
     name: "",
@@ -328,7 +1038,7 @@ export default function AdminFranchise() {
   });
   const [planEditing, setPlanEditing] = useState(false);
 
-  // Packaging form
+  // ─── Packaging form ───────────────────────────────────────────────────────
   const [pkgForm, setPkgForm] = useState({
     id: "",
     product: "",
@@ -339,7 +1049,7 @@ export default function AdminFranchise() {
   });
   const [pkgEditing, setPkgEditing] = useState(false);
 
-  // Program form
+  // ─── Program form ─────────────────────────────────────────────────────────
   const [progForm, setProgForm] = useState({
     id: "",
     name: "",
@@ -348,12 +1058,12 @@ export default function AdminFranchise() {
   });
   const [progEditing, setProgEditing] = useState(false);
 
+  // ─── Save helpers ─────────────────────────────────────────────────────────
   const saveHero = () => {
     setData({ ...data, hero: heroEdit });
     toast.success("Hero section updated!");
   };
 
-  // --- Machine helpers ---
   const startMachineEdit = (m: (typeof data.machines)[0]) => {
     setMachineForm({ ...m });
     setMachineEditing(true);
@@ -393,7 +1103,6 @@ export default function AdminFranchise() {
     reader.readAsDataURL(file);
   };
 
-  // --- Raw Material helpers ---
   const saveRm = () => {
     if (!rmForm.name || !rmForm.rate) {
       toast.error("Name and rate are required");
@@ -417,7 +1126,6 @@ export default function AdminFranchise() {
     toast.success("Raw material saved!");
   };
 
-  // --- Blueprint helpers ---
   const saveBp = () => {
     if (!bpForm.title) {
       toast.error("Title is required");
@@ -446,7 +1154,6 @@ export default function AdminFranchise() {
     toast.success("Blueprint step saved!");
   };
 
-  // --- Roadmap helpers ---
   const saveRoadmap = () => {
     if (!roadmapForm.title) {
       toast.error("Title is required");
@@ -483,7 +1190,6 @@ export default function AdminFranchise() {
     toast.success("Roadmap step saved!");
   };
 
-  // --- Charge helpers ---
   const saveCharge = () => {
     if (!chargeForm.item || !chargeForm.amount) {
       toast.error("Item and amount are required");
@@ -507,7 +1213,6 @@ export default function AdminFranchise() {
     toast.success("Charge saved!");
   };
 
-  // --- Marketing Support helpers ---
   const saveMs = () => {
     if (!msForm.title) {
       toast.error("Title is required");
@@ -534,7 +1239,6 @@ export default function AdminFranchise() {
     toast.success("Marketing support saved!");
   };
 
-  // --- Plan helpers ---
   const savePlan = () => {
     if (!planForm.name || !planForm.price) {
       toast.error("Name and price are required");
@@ -570,7 +1274,6 @@ export default function AdminFranchise() {
     toast.success("Plan saved!");
   };
 
-  // --- Packaging helpers ---
   const savePkg = () => {
     if (!pkgForm.product) {
       toast.error("Product name is required");
@@ -601,7 +1304,6 @@ export default function AdminFranchise() {
     toast.success("Packaging detail saved!");
   };
 
-  // --- Program helpers ---
   const saveProg = () => {
     if (!progForm.name) {
       toast.error("Program name is required");
@@ -625,6 +1327,23 @@ export default function AdminFranchise() {
     toast.success("Program saved!");
   };
 
+  // ─── Filtered applications ────────────────────────────────────────────────
+  const filteredApps = applications.filter((a) => {
+    const matchSearch =
+      !appSearch ||
+      a.name.toLowerCase().includes(appSearch.toLowerCase()) ||
+      a.phone.includes(appSearch) ||
+      a.district.toLowerCase().includes(appSearch.toLowerCase());
+    const matchFilter = appFilter === "all" || a.status === appFilter;
+    return matchSearch && matchFilter;
+  });
+
+  const approvedApps = applications.filter((a) => a.status === "approved");
+  const pendingApps = applications.filter((a) => a.status === "pending");
+  const rejectedForwardedApps = applications.filter(
+    (a) => a.status === "rejected" || a.status === "forwarded",
+  );
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -638,7 +1357,7 @@ export default function AdminFranchise() {
         </div>
         <a href="/#/franchise" target="_blank" rel="noreferrer">
           <Button variant="outline" className="border-green-600 text-green-700">
-            <FileText size={15} className="mr-2" /> Live Page Dekhein
+            <FileText size={15} className="mr-2" /> View Live Page
           </Button>
         </a>
       </div>
@@ -655,7 +1374,15 @@ export default function AdminFranchise() {
           <TabsTrigger value="plans">Plans</TabsTrigger>
           <TabsTrigger value="packaging">Packaging</TabsTrigger>
           <TabsTrigger value="programs">Programs</TabsTrigger>
-          <TabsTrigger value="applications">Applications</TabsTrigger>
+          <TabsTrigger value="applications">
+            Applications
+            {pendingApps.length > 0 && (
+              <span className="ml-1.5 bg-yellow-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {pendingApps.length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="recruitment">Recruitment</TabsTrigger>
         </TabsList>
 
         {/* HERO */}
@@ -677,7 +1404,7 @@ export default function AdminFranchise() {
                 />
               </div>
               <div>
-                <Label>Hindi Subtitle</Label>
+                <Label>Subtitle</Label>
                 <Input
                   value={heroEdit.subtitle}
                   onChange={(e) =>
@@ -686,7 +1413,7 @@ export default function AdminFranchise() {
                 />
               </div>
               <div>
-                <Label>Tagline (English)</Label>
+                <Label>Tagline</Label>
                 <Textarea
                   rows={2}
                   value={heroEdit.tagline}
@@ -698,8 +1425,9 @@ export default function AdminFranchise() {
               <Button
                 onClick={saveHero}
                 className="bg-green-700 text-white hover:bg-green-800"
+                data-ocid="franchise.save_button"
               >
-                <Save size={14} className="mr-2" /> Hero Save Karein
+                <Save size={14} className="mr-2" /> Save Hero
               </Button>
             </CardContent>
           </Card>
@@ -711,9 +1439,7 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings2 size={18} />{" "}
-                {machineEditing
-                  ? "Machine Edit Karein"
-                  : "Nayi Machine Add Karein"}
+                {machineEditing ? "Edit Machine" : "Add New Machine"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -743,7 +1469,7 @@ export default function AdminFranchise() {
                 <Label>Description</Label>
                 <Textarea
                   rows={2}
-                  placeholder="Machine ki details"
+                  placeholder="Machine details"
                   value={machineForm.description}
                   onChange={(e) =>
                     setMachineForm({
@@ -775,6 +1501,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveMachine}
                   className="bg-green-700 text-white hover:bg-green-800"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />{" "}
                   {machineEditing ? "Update" : "Add Machine"}
@@ -792,6 +1519,7 @@ export default function AdminFranchise() {
                       });
                       setMachineEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -828,10 +1556,8 @@ export default function AdminFranchise() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => {
-                    startMachineEdit(m);
-                    setMachineEditing(true);
-                  }}
+                  onClick={() => startMachineEdit(m)}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -839,6 +1565,7 @@ export default function AdminFranchise() {
                   size="sm"
                   variant="destructive"
                   onClick={() => deleteMachine(m.id)}
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -893,6 +1620,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveRm}
                   className="bg-yellow-600 text-white hover:bg-yellow-700"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {rmEditing ? "Update" : "Add"}
@@ -904,6 +1632,7 @@ export default function AdminFranchise() {
                       setRmForm({ id: "", name: "", unit: "", rate: "" });
                       setRmEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -915,7 +1644,7 @@ export default function AdminFranchise() {
             <table className="w-full text-sm">
               <thead className="bg-yellow-50">
                 <tr>
-                  <th className="px-4 py-2 text-left">Naam</th>
+                  <th className="px-4 py-2 text-left">Name</th>
                   <th className="px-4 py-2 text-center">Unit</th>
                   <th className="px-4 py-2 text-right">Rate</th>
                   <th className="px-4 py-2">Action</th>
@@ -940,6 +1669,7 @@ export default function AdminFranchise() {
                             setRmForm({ ...rm });
                             setRmEditing(true);
                           }}
+                          data-ocid="franchise.edit_button"
                         >
                           <Edit2 size={13} />
                         </Button>
@@ -954,6 +1684,7 @@ export default function AdminFranchise() {
                               ),
                             })
                           }
+                          data-ocid="franchise.delete_button"
                         >
                           <Trash2 size={13} />
                         </Button>
@@ -999,6 +1730,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveBp}
                   className="bg-purple-700 text-white hover:bg-purple-800"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {bpEditing ? "Update" : "Add Step"}
@@ -1015,6 +1747,7 @@ export default function AdminFranchise() {
                       });
                       setBpEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1042,6 +1775,7 @@ export default function AdminFranchise() {
                     setBpForm({ ...b });
                     setBpEditing(true);
                   }}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -1054,6 +1788,7 @@ export default function AdminFranchise() {
                       blueprint: data.blueprint.filter((x) => x.id !== b.id),
                     })
                   }
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -1114,6 +1849,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveRoadmap}
                   className="bg-teal-700 text-white hover:bg-teal-800"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {roadmapEditing ? "Update" : "Add Step"}
@@ -1131,6 +1867,7 @@ export default function AdminFranchise() {
                       });
                       setRoadmapEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1163,6 +1900,7 @@ export default function AdminFranchise() {
                     setRoadmapForm({ ...r });
                     setRoadmapEditing(true);
                   }}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -1175,6 +1913,7 @@ export default function AdminFranchise() {
                       roadmap: data.roadmap.filter((x) => x.id !== r.id),
                     })
                   }
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -1228,7 +1967,8 @@ export default function AdminFranchise() {
               <div className="flex gap-2">
                 <Button
                   onClick={saveCharge}
-                  className="bg-red-600 text-white hover:bg-red-700"
+                  className="bg-green-700 text-white hover:bg-green-800"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {chargeEditing ? "Update" : "Add Charge"}
@@ -1240,6 +1980,7 @@ export default function AdminFranchise() {
                       setChargeForm({ id: "", item: "", amount: "", note: "" });
                       setChargeEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1249,26 +1990,24 @@ export default function AdminFranchise() {
           </Card>
           <div className="overflow-x-auto rounded-lg border bg-white">
             <table className="w-full text-sm">
-              <thead className="bg-red-50">
+              <thead className="bg-yellow-50">
                 <tr>
-                  <th className="px-4 py-2 text-left">Item</th>
-                  <th className="px-4 py-2 text-right">Amount</th>
-                  <th className="px-4 py-2 text-left">Note</th>
-                  <th className="px-4 py-2">Action</th>
+                  <th className="text-left p-3">Item</th>
+                  <th className="text-right p-3">Amount</th>
+                  <th className="text-left p-3">Note</th>
+                  <th className="p-3">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {data.charges.map((c) => (
                   <tr key={c.id} className="border-t">
-                    <td className="px-4 py-2 font-medium">{c.item}</td>
-                    <td className="px-4 py-2 text-right font-bold text-green-700">
+                    <td className="p-3 font-medium">{c.item}</td>
+                    <td className="p-3 text-right font-bold text-green-700">
                       {c.amount}
                     </td>
-                    <td className="px-4 py-2 text-xs text-gray-400">
-                      {c.note}
-                    </td>
-                    <td className="px-4 py-2">
-                      <div className="flex gap-2">
+                    <td className="p-3 text-xs text-gray-500">{c.note}</td>
+                    <td className="p-3">
+                      <div className="flex gap-2 justify-center">
                         <Button
                           size="sm"
                           variant="outline"
@@ -1276,6 +2015,7 @@ export default function AdminFranchise() {
                             setChargeForm({ ...c });
                             setChargeEditing(true);
                           }}
+                          data-ocid="franchise.edit_button"
                         >
                           <Edit2 size={13} />
                         </Button>
@@ -1290,6 +2030,7 @@ export default function AdminFranchise() {
                               ),
                             })
                           }
+                          data-ocid="franchise.delete_button"
                         >
                           <Trash2 size={13} />
                         </Button>
@@ -1336,6 +2077,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveMs}
                   className="bg-pink-600 text-white hover:bg-pink-700"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {msEditing ? "Update" : "Add"}
@@ -1347,6 +2089,7 @@ export default function AdminFranchise() {
                       setMsForm({ id: "", title: "", description: "" });
                       setMsEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1371,6 +2114,7 @@ export default function AdminFranchise() {
                     setMsForm({ ...ms });
                     setMsEditing(true);
                   }}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -1385,6 +2129,7 @@ export default function AdminFranchise() {
                       ),
                     })
                   }
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -1445,7 +2190,7 @@ export default function AdminFranchise() {
                 </div>
               </div>
               <div>
-                <Label>Features (one feature per line)</Label>
+                <Label>Features (one per line)</Label>
                 <Textarea
                   rows={4}
                   placeholder={"1 Machine\n5-Day Training\nFull Branding Kit"}
@@ -1472,6 +2217,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={savePlan}
                   className="bg-green-700 text-white hover:bg-green-800"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {planEditing ? "Update" : "Add Plan"}
@@ -1491,6 +2237,7 @@ export default function AdminFranchise() {
                       });
                       setPlanEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1508,18 +2255,15 @@ export default function AdminFranchise() {
                   <div className="flex items-center gap-2">
                     <span className="font-bold">{plan.name}</span>
                     {plan.recommended && (
-                      <Badge className="bg-orange-500 text-white text-xs">
+                      <Badge className="bg-green-600 text-white text-xs">
                         Recommended
                       </Badge>
                     )}
-                    <span className="text-green-700 font-bold">
-                      {plan.price}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {plan.duration}
-                    </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-sm text-green-700 font-semibold">
+                    {plan.price}
+                  </div>
+                  <div className="text-xs text-gray-500">
                     {plan.features.join(" • ")}
                   </div>
                 </div>
@@ -1533,6 +2277,7 @@ export default function AdminFranchise() {
                     });
                     setPlanEditing(true);
                   }}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -1542,9 +2287,10 @@ export default function AdminFranchise() {
                   onClick={() =>
                     setData({
                       ...data,
-                      plans: data.plans.filter((p) => p.id !== plan.id),
+                      plans: data.plans.filter((x) => x.id !== plan.id),
                     })
                   }
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -1559,15 +2305,15 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Box size={18} />{" "}
-                {pkgEditing ? "Edit Packaging" : "Add New Packaging Detail"}
+                {pkgEditing ? "Edit Packaging" : "Add New Packaging"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <Label>Product *</Label>
                   <Input
-                    placeholder="Agarbatti"
+                    placeholder="e.g. Agarbatti"
                     value={pkgForm.product}
                     onChange={(e) =>
                       setPkgForm({ ...pkgForm, product: e.target.value })
@@ -1577,7 +2323,7 @@ export default function AdminFranchise() {
                 <div>
                   <Label>Packaging Type</Label>
                   <Input
-                    placeholder="Paper Box"
+                    placeholder="e.g. Paper Box"
                     value={pkgForm.type}
                     onChange={(e) =>
                       setPkgForm({ ...pkgForm, type: e.target.value })
@@ -1587,7 +2333,7 @@ export default function AdminFranchise() {
                 <div>
                   <Label>Size</Label>
                   <Input
-                    placeholder="19 cm"
+                    placeholder="e.g. 19 cm"
                     value={pkgForm.size}
                     onChange={(e) =>
                       setPkgForm({ ...pkgForm, size: e.target.value })
@@ -1597,7 +2343,7 @@ export default function AdminFranchise() {
                 <div>
                   <Label>Weight</Label>
                   <Input
-                    placeholder="90g / 200g"
+                    placeholder="e.g. 90g"
                     value={pkgForm.weight}
                     onChange={(e) =>
                       setPkgForm({ ...pkgForm, weight: e.target.value })
@@ -1607,7 +2353,7 @@ export default function AdminFranchise() {
                 <div>
                   <Label>Qty Per Box</Label>
                   <Input
-                    placeholder="12 packets"
+                    placeholder="e.g. 12 packets"
                     value={pkgForm.qtyPerBox}
                     onChange={(e) =>
                       setPkgForm({ ...pkgForm, qtyPerBox: e.target.value })
@@ -1618,7 +2364,8 @@ export default function AdminFranchise() {
               <div className="flex gap-2">
                 <Button
                   onClick={savePkg}
-                  className="bg-indigo-600 text-white hover:bg-indigo-700"
+                  className="bg-teal-600 text-white hover:bg-teal-700"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {pkgEditing ? "Update" : "Add"}
@@ -1637,6 +2384,7 @@ export default function AdminFranchise() {
                       });
                       setPkgEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1646,33 +2394,40 @@ export default function AdminFranchise() {
           </Card>
           <div className="overflow-x-auto rounded-lg border bg-white">
             <table className="w-full text-sm">
-              <thead className="bg-indigo-50">
+              <thead className="bg-teal-50">
                 <tr>
-                  <th className="px-3 py-2 text-left">Product</th>
-                  <th className="px-3 py-2 text-left">Type</th>
-                  <th className="px-3 py-2">Size</th>
-                  <th className="px-3 py-2">Weight</th>
-                  <th className="px-3 py-2">Qty/Box</th>
-                  <th className="px-3 py-2">Action</th>
+                  {[
+                    "Product",
+                    "Type",
+                    "Size",
+                    "Weight",
+                    "Qty/Box",
+                    "Action",
+                  ].map((h) => (
+                    <th key={h} className="text-left p-3">
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {data.packaging.map((p) => (
-                  <tr key={p.id} className="border-t">
-                    <td className="px-3 py-2 font-medium">{p.product}</td>
-                    <td className="px-3 py-2 text-gray-600">{p.type}</td>
-                    <td className="px-3 py-2 text-center">{p.size}</td>
-                    <td className="px-3 py-2 text-center">{p.weight}</td>
-                    <td className="px-3 py-2 text-center">{p.qtyPerBox}</td>
-                    <td className="px-3 py-2">
+                {data.packaging.map((pkg) => (
+                  <tr key={pkg.id} className="border-t">
+                    <td className="p-3 font-medium">{pkg.product}</td>
+                    <td className="p-3 text-gray-600">{pkg.type}</td>
+                    <td className="p-3 text-gray-600">{pkg.size}</td>
+                    <td className="p-3 text-gray-600">{pkg.weight}</td>
+                    <td className="p-3 text-gray-600">{pkg.qtyPerBox}</td>
+                    <td className="p-3">
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            setPkgForm({ ...p });
+                            setPkgForm({ ...pkg });
                             setPkgEditing(true);
                           }}
+                          data-ocid="franchise.edit_button"
                         >
                           <Edit2 size={13} />
                         </Button>
@@ -1683,10 +2438,11 @@ export default function AdminFranchise() {
                             setData({
                               ...data,
                               packaging: data.packaging.filter(
-                                (x) => x.id !== p.id,
+                                (x) => x.id !== pkg.id,
                               ),
                             })
                           }
+                          data-ocid="franchise.delete_button"
                         >
                           <Trash2 size={13} />
                         </Button>
@@ -1745,6 +2501,7 @@ export default function AdminFranchise() {
                 <Button
                   onClick={saveProg}
                   className="bg-orange-600 text-white hover:bg-orange-700"
+                  data-ocid="franchise.save_button"
                 >
                   <Save size={14} className="mr-2" />
                   {progEditing ? "Update" : "Add Program"}
@@ -1761,6 +2518,7 @@ export default function AdminFranchise() {
                       });
                       setProgEditing(false);
                     }}
+                    data-ocid="franchise.cancel_button"
                   >
                     Cancel
                   </Button>
@@ -1792,6 +2550,7 @@ export default function AdminFranchise() {
                     setProgForm({ ...p });
                     setProgEditing(true);
                   }}
+                  data-ocid="franchise.edit_button"
                 >
                   <Edit2 size={13} />
                 </Button>
@@ -1804,6 +2563,7 @@ export default function AdminFranchise() {
                       programs: data.programs.filter((x) => x.id !== p.id),
                     })
                   }
+                  data-ocid="franchise.delete_button"
                 >
                   <Trash2 size={13} />
                 </Button>
@@ -1812,58 +2572,187 @@ export default function AdminFranchise() {
           </div>
         </TabsContent>
 
-        {/* APPLICATIONS */}
-        <TabsContent value="applications">
+        {/* APPLICATIONS — Full Upgrade */}
+        <TabsContent value="applications" data-ocid="franchise.panel">
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+            <div className="bg-white border rounded-xl p-3 text-center shadow-sm">
+              <div className="text-2xl font-extrabold text-gray-900">
+                {applications.length}
+              </div>
+              <div className="text-xs text-gray-500">Total Applications</div>
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-center">
+              <div className="text-2xl font-extrabold text-yellow-700">
+                {pendingApps.length}
+              </div>
+              <div className="text-xs text-yellow-600">Pending</div>
+            </div>
+            <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
+              <div className="text-2xl font-extrabold text-green-700">
+                {approvedApps.length}
+              </div>
+              <div className="text-xs text-green-600">Approved</div>
+            </div>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+              <div className="text-2xl font-extrabold text-red-700">
+                {rejectedForwardedApps.length}
+              </div>
+              <div className="text-xs text-red-600">Rejected / Forwarded</div>
+            </div>
+          </div>
+
+          {/* Search + Filter */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-5">
+            <div className="relative flex-1">
+              <Search
+                size={15}
+                className="absolute left-3 top-2.5 text-gray-400"
+              />
+              <Input
+                className="pl-9"
+                placeholder="Search by name, phone, district..."
+                value={appSearch}
+                onChange={(e) => setAppSearch(e.target.value)}
+                data-ocid="franchise.search_input"
+              />
+            </div>
+            <Select value={appFilter} onValueChange={setAppFilter}>
+              <SelectTrigger className="w-40" data-ocid="franchise.select">
+                <SelectValue placeholder="Filter status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="forwarded">Forwarded</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Application Cards */}
+          {filteredApps.length === 0 ? (
+            <div
+              className="text-center py-16 text-gray-400"
+              data-ocid="franchise.empty_state"
+            >
+              <Handshake size={48} className="mx-auto mb-3 opacity-30" />
+              <p className="font-medium">
+                {applications.length === 0
+                  ? "No applications received yet"
+                  : "No applications match your search/filter"}
+              </p>
+              <p className="text-xs mt-1">
+                {applications.length === 0
+                  ? "When someone applies for a franchise, it will appear here"
+                  : "Try adjusting your search terms or filter"}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3" data-ocid="franchise.list">
+              {filteredApps.map((app, idx) => (
+                <div key={app.id} data-ocid={`franchise.item.${idx + 1}`}>
+                  <ApplicationCard app={app} onUpdate={handleUpdateApp} />
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* RECRUITMENT */}
+        <TabsContent value="recruitment" data-ocid="franchise.panel">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <Users size={18} /> Franchise Applications
+                  <Users size={18} /> Franchise Partners Directory
                 </span>
-                <Badge variant="secondary">{applications.length} Total</Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.print()}
+                  data-ocid="franchise.primary_button"
+                >
+                  <Printer size={14} className="mr-1" /> Print List
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {applications.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                  <Handshake size={48} className="mx-auto mb-3 opacity-30" />
-                  <p>No applications received yet</p>
+              {approvedApps.length === 0 ? (
+                <div
+                  className="text-center py-12 text-gray-400"
+                  data-ocid="franchise.empty_state"
+                >
+                  <UserCheck size={48} className="mx-auto mb-3 opacity-30" />
+                  <p>No approved franchise partners yet</p>
                   <p className="text-xs mt-1">
-                    When someone applies for a franchise, it will appear here
+                    Approved applications will appear here as active franchise
+                    partners
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {applications.map((app) => (
-                    <div
-                      key={app.id}
-                      className="p-4 border border-green-100 rounded-lg bg-green-50"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-bold text-gray-900">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" data-ocid="franchise.table">
+                    <thead className="bg-green-50">
+                      <tr>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          #
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Name
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Phone
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Category
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Plan
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Location
+                        </th>
+                        <th className="text-left p-3 font-semibold text-gray-700">
+                          Approved Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {approvedApps.map((app, i) => (
+                        <tr
+                          key={app.id}
+                          className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                          data-ocid={`franchise.row.${i + 1}`}
+                        >
+                          <td className="p-3 text-gray-400">{i + 1}</td>
+                          <td className="p-3 font-semibold text-gray-900">
                             {app.name}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {app.phone}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {app.district}
-                            {app.district && app.state ? ", " : ""}
-                            {app.state}
-                          </div>
-                          {app.message && (
-                            <div className="mt-1 text-sm text-gray-500 italic">
-                              "{app.message}"
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-400 whitespace-nowrap">
-                          {app.date}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                          </td>
+                          <td className="p-3 text-gray-600">{app.phone}</td>
+                          <td className="p-3">
+                            {app.category ? (
+                              <Badge variant="secondary" className="text-xs">
+                                {app.category}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </td>
+                          <td className="p-3 text-gray-600">
+                            {app.plan || "—"}
+                          </td>
+                          <td className="p-3 text-gray-600">
+                            {app.district}, {app.state}
+                          </td>
+                          <td className="p-3 text-gray-500 text-xs">
+                            {app.approvedDate || app.date}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </CardContent>
