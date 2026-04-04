@@ -10,7 +10,106 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
+export type ExternalBlob = Uint8Array;
+export type FileId = string;
+export interface FileReference {
+  'id' : FileId,
+  'isDeleted' : boolean,
+  'blob' : ExternalBlob,
+  'name' : string,
+  'createdAt' : bigint,
+  'createdBy' : Principal,
+  'size' : bigint,
+  'tags' : Array<string>,
+  'description' : string,
+  'timestamp' : bigint,
+  'folderId' : FolderId,
+}
+export type FolderId = string;
+export interface FolderReference {
+  'id' : FolderId,
+  'files' : Array<FileId>,
+  'isDeleted' : boolean,
+  'name' : string,
+  'createdAt' : bigint,
+  'createdBy' : Principal,
+  'description' : string,
+  'parentFolderId' : [] | [FolderId],
+}
+export interface SimpleFileInfo {
+  'id' : FileId,
+  'blob' : ExternalBlob,
+  'name' : string,
+  'size' : bigint,
+}
+export interface UserApprovalInfo {
+  'status' : ApprovalStatus,
+  'principal' : Principal,
+}
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
+export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addFolder' : ActorMethod<
+    [string, string, [] | [FolderId], string],
+    undefined
+  >,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'deleteFile' : ActorMethod<[string], undefined>,
+  'deleteFolderInternal' : ActorMethod<[string], undefined>,
+  'getAllDeletedFiles' : ActorMethod<[], Array<FileReference>>,
+  'getAllFiles' : ActorMethod<[], Array<FileReference>>,
+  'getAllFilesInFolders' : ActorMethod<[], Array<FileReference>>,
+  'getAllFolders' : ActorMethod<[], Array<FolderReference>>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getFileById' : ActorMethod<[FileId], [] | [FileReference]>,
+  'getFilesByCaller' : ActorMethod<[], Array<FileReference>>,
+  'getFilesByFolderId' : ActorMethod<[string], Array<FileReference>>,
+  'getFolderById' : ActorMethod<[FolderId], [] | [FolderReference]>,
+  'getSimpleFileInfoById' : ActorMethod<[FileId], [] | [SimpleFileInfo]>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isCallerApproved' : ActorMethod<[], boolean>,
+  'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
+  'moveFileToFolderByReference' : ActorMethod<[FileId, FolderId], undefined>,
+  'moveFileToFolderInternal' : ActorMethod<[string, string], undefined>,
+  'moveFileToRoot' : ActorMethod<[FileId], undefined>,
+  'moveFolderInternal' : ActorMethod<[string, FolderId], undefined>,
+  'renameFolder' : ActorMethod<[string, string], undefined>,
+  'requestApproval' : ActorMethod<[], undefined>,
+  'restoreFile' : ActorMethod<[string], undefined>,
+  'setApproval' : ActorMethod<[Principal, ApprovalStatus], undefined>,
+  'setMaxFileSize' : ActorMethod<[bigint], undefined>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

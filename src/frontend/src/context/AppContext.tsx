@@ -1,4 +1,9 @@
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import {
+  initializeFromBackend,
+  saveToBackend,
+} from "@/utils/BackendDataService";
+import { useEffect, useRef } from "react";
 import type React from "react";
 import { createContext, useContext } from "react";
 
@@ -2085,6 +2090,247 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [utilityServices, setUtilityServices] = useLocalStorage<
     UtilityService[]
   >("dmvv_utilityServices", initialUtilityServices);
+
+  // ─── Backend Sync ────────────────────────────────────────────────────────────
+  // On mount: load all content from backend canister (server-side persistent storage)
+  // so that ALL users see the admin's latest updates, not just local device state.
+  const backendLoadedRef = useRef(false);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: setters are stable; mount-only init
+  useEffect(() => {
+    if (backendLoadedRef.current) return;
+    backendLoadedRef.current = true;
+    initializeFromBackend().then((data) => {
+      if (data.dmvv_users) setUsers(data.dmvv_users as User[]);
+      if (data.dmvv_kycs) setKycs(data.dmvv_kycs as KYC[]);
+      if (data.dmvv_centers) setCenters(data.dmvv_centers as Center[]);
+      if (data.dmvv_news) setNews(data.dmvv_news as NewsItem[]);
+      if (data.dmvv_settings) setSettings(data.dmvv_settings as SiteSettings);
+      if (data.dmvv_pages) setPages(data.dmvv_pages as PageContent[]);
+      if (data.dmvv_media) setMedia(data.dmvv_media as MediaFile[]);
+      if (data.dmvv_galleryItems)
+        setGalleryItems(data.dmvv_galleryItems as GalleryItem[]);
+      if (data.dmvv_trainingPrograms)
+        setTrainingPrograms(data.dmvv_trainingPrograms as TrainingProgram[]);
+      if (data.dmvv_companyProfile)
+        setCompanyProfile(data.dmvv_companyProfile as CompanyProfile);
+      if (data.dmvv_leadership)
+        setLeadership(data.dmvv_leadership as LeadershipMember[]);
+      if (data.dmvv_foundationEvents)
+        setFoundationEvents(data.dmvv_foundationEvents as FoundationEvent[]);
+      if (data.dmvv_computerCenters)
+        setComputerCenters(data.dmvv_computerCenters as ComputerCenter[]);
+      if (data.dmvv_schemes) setSchemes(data.dmvv_schemes as SchemeItem[]);
+      if (data.dmvv_loanSchemes)
+        setLoanSchemes(data.dmvv_loanSchemes as LoanScheme[]);
+      if (data.dmvv_employmentPartners)
+        setEmploymentPartners(
+          data.dmvv_employmentPartners as EmploymentPartner[],
+        );
+      if (data.dmvv_successStories)
+        setSuccessStories(data.dmvv_successStories as SuccessStory[]);
+      if (data.dmvv_awardCategories)
+        setAwardCategories(data.dmvv_awardCategories as AwardCategory[]);
+      if (data.dmvv_awardWinners)
+        setAwardWinners(data.dmvv_awardWinners as AwardWinner[]);
+      if (data.dmvv_applyFormSubmissions)
+        setApplyFormSubmissions(
+          data.dmvv_applyFormSubmissions as ApplyFormSubmission[],
+        );
+      if (data.dmvv_homeHero)
+        setHomeHero(data.dmvv_homeHero as HomeHeroContent);
+      if (data.dmvv_homeStats) setHomeStats(data.dmvv_homeStats as HomeStat[]);
+      if (data.dmvv_homeInitiatives)
+        setHomeInitiatives(data.dmvv_homeInitiatives as HomeInitiative[]);
+      if (data.dmvv_homeImpactStories)
+        setHomeImpactStories(data.dmvv_homeImpactStories as HomeImpactStory[]);
+      if (data.dmvv_homeCTA) setHomeCTA(data.dmvv_homeCTA as HomeCTAContent);
+      if (data.dmvv_communityCenters)
+        setCommunityCenters(data.dmvv_communityCenters as CommunityCenter[]);
+      if (data.dmvv_transportInfo)
+        setTransportInfo(data.dmvv_transportInfo as TransportInfo[]);
+      if (data.dmvv_downloadItems)
+        setDownloadItems(data.dmvv_downloadItems as DownloadItem[]);
+      if (data.dmvv_legalDocuments)
+        setLegalDocuments(data.dmvv_legalDocuments as LegalDocument[]);
+      if (data.dmvv_wishesLetters)
+        setWishesLetters(data.dmvv_wishesLetters as WishesLetter[]);
+      if (data.dmvv_youtubeVideos)
+        setYouTubeVideos(data.dmvv_youtubeVideos as YouTubeVideo[]);
+      if (data.dmvv_teamMembers)
+        setTeamMembers(data.dmvv_teamMembers as TeamMember[]);
+      if (data.dmvv_partners) setPartners(data.dmvv_partners as Partner[]);
+      if (data.dmvv_complaints)
+        setComplaintSubmissions(data.dmvv_complaints as ComplaintSubmission[]);
+      if (data.dmvv_footerSettings)
+        setFooterSettings(data.dmvv_footerSettings as FooterSettings);
+      if (data.dmvv_loanApplications)
+        setLoanApplications(data.dmvv_loanApplications as LoanApplication[]);
+      if (data.dmvv_incomeSources)
+        setIncomeSources(data.dmvv_incomeSources as IncomeSource[]);
+      if (data.dmvv_trainingEnrollments)
+        setTrainingEnrollments(
+          data.dmvv_trainingEnrollments as TrainingEnrollment[],
+        );
+      if (data.dmvv_volunteerActivities)
+        setVolunteerActivities(
+          data.dmvv_volunteerActivities as VolunteerActivity[],
+        );
+      if (data.dmvv_products) setProducts(data.dmvv_products as Product[]);
+      if (data.dmvv_orders) setOrders(data.dmvv_orders as Order[]);
+      if (data.dmvv_insuranceSchemes)
+        setInsuranceSchemes(data.dmvv_insuranceSchemes as InsuranceScheme[]);
+      if (data.dmvv_insuranceApplications)
+        setInsuranceApplications(
+          data.dmvv_insuranceApplications as InsuranceApplication[],
+        );
+      if (data.dmvv_walletTransactions)
+        setWalletTransactions(
+          data.dmvv_walletTransactions as WalletTransaction[],
+        );
+      if (data.dmvv_utilityServices)
+        setUtilityServices(data.dmvv_utilityServices as UtilityService[]);
+    });
+    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional mount-only effect
+  }, []);
+
+  // On every state change: persist to backend so all users see latest data
+  useEffect(() => {
+    saveToBackend("dmvv_users", users);
+  }, [users]);
+  useEffect(() => {
+    saveToBackend("dmvv_kycs", kycs);
+  }, [kycs]);
+  useEffect(() => {
+    saveToBackend("dmvv_centers", centers);
+  }, [centers]);
+  useEffect(() => {
+    saveToBackend("dmvv_news", news);
+  }, [news]);
+  useEffect(() => {
+    saveToBackend("dmvv_settings", settings);
+  }, [settings]);
+  useEffect(() => {
+    saveToBackend("dmvv_pages", pages);
+  }, [pages]);
+  useEffect(() => {
+    saveToBackend("dmvv_media", media);
+  }, [media]);
+  useEffect(() => {
+    saveToBackend("dmvv_galleryItems", galleryItems);
+  }, [galleryItems]);
+  useEffect(() => {
+    saveToBackend("dmvv_trainingPrograms", trainingPrograms);
+  }, [trainingPrograms]);
+  useEffect(() => {
+    saveToBackend("dmvv_companyProfile", companyProfile);
+  }, [companyProfile]);
+  useEffect(() => {
+    saveToBackend("dmvv_leadership", leadership);
+  }, [leadership]);
+  useEffect(() => {
+    saveToBackend("dmvv_foundationEvents", foundationEvents);
+  }, [foundationEvents]);
+  useEffect(() => {
+    saveToBackend("dmvv_computerCenters", computerCenters);
+  }, [computerCenters]);
+  useEffect(() => {
+    saveToBackend("dmvv_schemes", schemes);
+  }, [schemes]);
+  useEffect(() => {
+    saveToBackend("dmvv_loanSchemes", loanSchemes);
+  }, [loanSchemes]);
+  useEffect(() => {
+    saveToBackend("dmvv_employmentPartners", employmentPartners);
+  }, [employmentPartners]);
+  useEffect(() => {
+    saveToBackend("dmvv_successStories", successStories);
+  }, [successStories]);
+  useEffect(() => {
+    saveToBackend("dmvv_awardCategories", awardCategories);
+  }, [awardCategories]);
+  useEffect(() => {
+    saveToBackend("dmvv_awardWinners", awardWinners);
+  }, [awardWinners]);
+  useEffect(() => {
+    saveToBackend("dmvv_applyFormSubmissions", applyFormSubmissions);
+  }, [applyFormSubmissions]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeHero", homeHero);
+  }, [homeHero]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeStats", homeStats);
+  }, [homeStats]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeInitiatives", homeInitiatives);
+  }, [homeInitiatives]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeImpactStories", homeImpactStories);
+  }, [homeImpactStories]);
+  useEffect(() => {
+    saveToBackend("dmvv_homeCTA", homeCTA);
+  }, [homeCTA]);
+  useEffect(() => {
+    saveToBackend("dmvv_communityCenters", communityCenters);
+  }, [communityCenters]);
+  useEffect(() => {
+    saveToBackend("dmvv_transportInfo", transportInfo);
+  }, [transportInfo]);
+  useEffect(() => {
+    saveToBackend("dmvv_downloadItems", downloadItems);
+  }, [downloadItems]);
+  useEffect(() => {
+    saveToBackend("dmvv_legalDocuments", legalDocuments);
+  }, [legalDocuments]);
+  useEffect(() => {
+    saveToBackend("dmvv_wishesLetters", wishesLetters);
+  }, [wishesLetters]);
+  useEffect(() => {
+    saveToBackend("dmvv_youtubeVideos", youtubeVideos);
+  }, [youtubeVideos]);
+  useEffect(() => {
+    saveToBackend("dmvv_teamMembers", teamMembers);
+  }, [teamMembers]);
+  useEffect(() => {
+    saveToBackend("dmvv_partners", partners);
+  }, [partners]);
+  useEffect(() => {
+    saveToBackend("dmvv_complaints", complaintSubmissions);
+  }, [complaintSubmissions]);
+  useEffect(() => {
+    saveToBackend("dmvv_footerSettings", footerSettings);
+  }, [footerSettings]);
+  useEffect(() => {
+    saveToBackend("dmvv_loanApplications", loanApplications);
+  }, [loanApplications]);
+  useEffect(() => {
+    saveToBackend("dmvv_incomeSources", incomeSources);
+  }, [incomeSources]);
+  useEffect(() => {
+    saveToBackend("dmvv_trainingEnrollments", trainingEnrollments);
+  }, [trainingEnrollments]);
+  useEffect(() => {
+    saveToBackend("dmvv_volunteerActivities", volunteerActivities);
+  }, [volunteerActivities]);
+  useEffect(() => {
+    saveToBackend("dmvv_products", products);
+  }, [products]);
+  useEffect(() => {
+    saveToBackend("dmvv_orders", orders);
+  }, [orders]);
+  useEffect(() => {
+    saveToBackend("dmvv_insuranceSchemes", insuranceSchemes);
+  }, [insuranceSchemes]);
+  useEffect(() => {
+    saveToBackend("dmvv_insuranceApplications", insuranceApplications);
+  }, [insuranceApplications]);
+  useEffect(() => {
+    saveToBackend("dmvv_walletTransactions", walletTransactions);
+  }, [walletTransactions]);
+  useEffect(() => {
+    saveToBackend("dmvv_utilityServices", utilityServices);
+  }, [utilityServices]);
+  // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
   const updateUser = (id: string, updates: Partial<User>) =>
