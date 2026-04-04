@@ -53,6 +53,7 @@ import AdminEmployment from "@/pages/admin/AdminEmployment";
 import AdminFooter from "@/pages/admin/AdminFooter";
 import AdminFoundationEvents from "@/pages/admin/AdminFoundationEvents";
 import AdminFranchise from "@/pages/admin/AdminFranchise";
+import AdminFranchisePartners from "@/pages/admin/AdminFranchisePartners";
 import AdminGallery from "@/pages/admin/AdminGallery";
 import AdminHomePage from "@/pages/admin/AdminHomePage";
 import AdminInsurance from "@/pages/admin/AdminInsurance";
@@ -81,6 +82,8 @@ import AdminVolunteers from "@/pages/admin/AdminVolunteers";
 import AdminWallet from "@/pages/admin/AdminWallet";
 import AdminWishes from "@/pages/admin/AdminWishes";
 import AdminYouTubeVideos from "@/pages/admin/AdminYouTubeVideos";
+import FranchisePartnerDashboard from "@/pages/franchise/FranchisePartnerDashboard";
+import FranchisePartnerLogin from "@/pages/franchise/FranchisePartnerLogin";
 
 import CenterDashboard from "@/pages/center/CenterDashboard";
 import HRDashboard from "@/pages/hr/HRDashboard";
@@ -103,6 +106,8 @@ function DashboardRedirect() {
       return <Navigate to="/transport/dashboard" replace />;
     case "hr":
       return <Navigate to="/hr/dashboard" replace />;
+    case "franchise":
+      return <Navigate to="/franchise-partner/dashboard" replace />;
     default:
       return <Navigate to="/user/dashboard" replace />;
   }
@@ -339,6 +344,22 @@ function AppRoutes() {
           </PublicLayout>
         }
       />
+      <Route
+        path="/franchise-partner/login"
+        element={
+          <PublicLayout>
+            <FranchisePartnerLogin />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/franchise-partner/dashboard"
+        element={
+          <ProtectedRoute>
+            <FranchisePartnerDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="/dashboard" element={<DashboardRedirect />} />
 
@@ -398,6 +419,7 @@ function AppRoutes() {
         <Route path="insurance" element={<AdminInsurance />} />
         <Route path="wallet" element={<AdminWallet />} />
         <Route path="franchise" element={<AdminFranchise />} />
+        <Route path="franchise-partners" element={<AdminFranchisePartners />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

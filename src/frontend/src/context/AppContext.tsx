@@ -32,7 +32,14 @@ export interface User {
   mobile: string;
   email: string;
   password: string;
-  role: "user" | "center" | "supervisor" | "transport" | "admin" | "hr";
+  role:
+    | "user"
+    | "center"
+    | "supervisor"
+    | "transport"
+    | "admin"
+    | "hr"
+    | "franchise";
   status: "pending" | "approved" | "rejected";
   createdAt: string;
   isVerified: boolean;
@@ -54,6 +61,14 @@ export interface User {
   nomineeName?: string;
   nomineeRelation?: string;
   designation?: string;
+  businessName?: string;
+  franchiseCategory?: string;
+  franchisePlan?: string;
+  franchiseJoiningDate?: string;
+  franchiseTerritory?: string;
+  franchiseCommissionRate?: string;
+  franchiseInvestment?: string;
+  franchiseStatus?: "active" | "inactive" | "suspended";
 }
 
 export interface KYC {
@@ -722,6 +737,36 @@ export interface HomeCard {
   imageUrl: string;
   isActive: boolean;
   sortOrder: number;
+}
+
+export interface FranchiseLetter {
+  id: string;
+  partnerId: string;
+  type:
+    | "approval"
+    | "welcome"
+    | "renewal"
+    | "forward"
+    | "cancellation"
+    | "custom";
+  subject: string;
+  content: string;
+  date: string;
+  sentBy: string;
+  attachmentUrl?: string;
+  isRead: boolean;
+}
+
+export interface FranchiseServiceRequest {
+  id: string;
+  partnerId: string;
+  title: string;
+  description: string;
+  category: "support" | "complaint" | "query" | "renewal" | "other";
+  status: "pending" | "inprogress" | "resolved" | "closed";
+  date: string;
+  adminResponse?: string;
+  adminResponseDate?: string;
 }
 
 const initialReviews: Review[] = [
@@ -2607,6 +2652,20 @@ interface AppContextType {
   addHomeCard: (c: HomeCard) => void;
   updateHomeCard: (id: string, updates: Partial<HomeCard>) => void;
   deleteHomeCard: (id: string) => void;
+  franchiseLetters: FranchiseLetter[];
+  addFranchiseLetter: (l: FranchiseLetter) => void;
+  updateFranchiseLetter: (
+    id: string,
+    updates: Partial<FranchiseLetter>,
+  ) => void;
+  deleteFranchiseLetter: (id: string) => void;
+  franchiseServiceRequests: FranchiseServiceRequest[];
+  addFranchiseServiceRequest: (r: FranchiseServiceRequest) => void;
+  updateFranchiseServiceRequest: (
+    id: string,
+    updates: Partial<FranchiseServiceRequest>,
+  ) => void;
+  deleteServiceRequest: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -2808,6 +2867,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     "dmvv_homeCards",
     initialHomeCards,
   );
+  const [franchiseLetters, setFranchiseLetters] = useLocalStorage<
+    FranchiseLetter[]
+  >("dmvv_franchiseLetters", []);
+  const [franchiseServiceRequests, setFranchiseServiceRequests] =
+    useLocalStorage<FranchiseServiceRequest[]>(
+      "dmvv_franchiseServiceRequests",
+      [],
+    );
 
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   // On mount: load all content from backend canister (server-side persistent storage)
@@ -2926,6 +2993,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setMachineRecords(data.dmvv_machineRecords as MachineRecord[]);
       if (data.dmvv_reviews) setReviews(data.dmvv_reviews as Review[]);
       if (data.dmvv_homeCards) setHomeCards(data.dmvv_homeCards as HomeCard[]);
+      if (data.dmvv_franchiseLetters)
+        setFranchiseLetters(data.dmvv_franchiseLetters as FranchiseLetter[]);
+      if (data.dmvv_franchiseServiceRequests)
+        setFranchiseServiceRequests(
+          data.dmvv_franchiseServiceRequests as FranchiseServiceRequest[],
+        );
     });
   }, []);
 
@@ -3095,6 +3168,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_homeCards", homeCards);
   }, [homeCards]);
+  useEffect(() => {
+    saveToBackend("dmvv_franchiseLetters", franchiseLetters);
+  }, [franchiseLetters]);
+  useEffect(() => {
+    saveToBackend("dmvv_franchiseServiceRequests", franchiseServiceRequests);
+  }, [franchiseServiceRequests]);
   // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
@@ -3502,6 +3581,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
   const deleteHomeCard = (id: string) =>
     setHomeCards((prev) => prev.filter((c) => c.id !== id));
+  const addFranchiseLetter = (l: FranchiseLetter) =>
+    setFranchiseLetters((prev) => [...prev, l]);
+  const updateFranchiseLetter = (
+    id: string,
+    updates: Partial<FranchiseLetter>,
+  ) =>
+    setFranchiseLetters((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...updates } : l)),
+    );
+  const deleteFranchiseLetter = (id: string) =>
+    setFranchiseLetters((prev) => prev.filter((l) => l.id !== id));
+  const addFranchiseServiceRequest = (r: FranchiseServiceRequest) =>
+    setFranchiseServiceRequests((prev) => [...prev, r]);
+  const updateFranchiseServiceRequest = (
+    id: string,
+    updates: Partial<FranchiseServiceRequest>,
+  ) =>
+    setFranchiseServiceRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, ...updates } : r)),
+    );
+  const deleteServiceRequest = (id: string) =>
+    setFranchiseServiceRequests((prev) => prev.filter((r) => r.id !== id));
 
   return (
     <AppContext.Provider
@@ -3702,6 +3803,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addHomeCard,
         updateHomeCard,
         deleteHomeCard,
+        franchiseLetters,
+        addFranchiseLetter,
+        updateFranchiseLetter,
+        deleteFranchiseLetter,
+        franchiseServiceRequests,
+        addFranchiseServiceRequest,
+        updateFranchiseServiceRequest,
+        deleteServiceRequest,
       }}
     >
       {children}

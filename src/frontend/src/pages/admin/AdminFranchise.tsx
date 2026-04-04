@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useApp } from "@/context/AppContext";
+import type { FranchiseLetter, User } from "@/context/AppContext";
 import {
   initializeFromBackend,
   saveToBackend,
@@ -43,6 +45,7 @@ import {
   Trash2,
   TrendingUp,
   UserCheck,
+  UserPlus,
   Users,
   XCircle,
   Zap,
@@ -468,6 +471,8 @@ function ApplicationCard({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [forwardTo, setForwardTo] = useState(app.forwardedTo || "");
+  const { addUser, addFranchiseLetter } = useApp();
+  const [createPartnerOpen, setCreatePartnerOpen] = useState(false);
   const [showForwardInput, setShowForwardInput] = useState(false);
   const [adminNotes, setAdminNotes] = useState(app.adminNotes || "");
   const [letterType, setLetterType] = useState<
@@ -517,6 +522,47 @@ function ApplicationCard({
     onUpdate({ ...app, adminNotes });
     toast.success("Notes saved!");
   };
+  const handleCreatePartnerAccount = () => {
+    const genPassword = `FP${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const newUser: User = {
+      id: `fp_${Date.now()}`,
+      fullName: app.name,
+      mobile: app.phone,
+      email: app.email || `${app.phone}@franchise.dmvv.org`,
+      password: genPassword,
+      role: "franchise",
+      status: "approved",
+      franchiseStatus: "active",
+      franchiseCategory: app.category,
+      franchiseJoiningDate: new Date().toISOString().split("T")[0],
+      district: app.district,
+      state: app.state,
+      aadhaarNumber: app.aadhaar,
+      panNumber: app.pan,
+      createdAt: new Date().toISOString(),
+      isVerified: true,
+    };
+    addUser(newUser);
+    const welcomeLetter: FranchiseLetter = {
+      id: `fl_${Date.now()}`,
+      partnerId: newUser.id,
+      type: "welcome",
+      subject: "Welcome to Anshika Udhyog Franchise Network",
+      content: `Dear ${app.name},
+Welcome to the DMVV Bhartiy Mahila Shakti Foundationu2122 Franchise Network!
+Your category: ${app.category}
+Login Email: ${newUser.email}
+Your application has been approved and your account is now active.`,
+      date: new Date().toISOString().split("T")[0],
+      sentBy: "Admin",
+      isRead: false,
+    };
+    addFranchiseLetter(welcomeLetter);
+    setCreatePartnerOpen(false);
+    toast.success(
+      `Partner account created! Credentials: ${newUser.email} / ${genPassword}`,
+    );
+  };
 
   const isImage = (val?: string) => val?.startsWith("data:image");
   const isPdf = (val?: string) => val?.startsWith("data:application/pdf");
@@ -529,6 +575,34 @@ function ApplicationCard({
           app={app}
           onClose={() => setLetterType(null)}
         />
+      )}
+      {createPartnerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl">
+            <h3 className="font-bold text-lg mb-2">Create Partner Account</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Create a franchise partner portal account for{" "}
+              <strong>{app.name}</strong>? A welcome letter will be sent
+              automatically with login credentials.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="flex-1 bg-emerald-600 text-white rounded-lg py-2 text-sm font-semibold hover:bg-emerald-700"
+                onClick={handleCreatePartnerAccount}
+              >
+                Confirm
+              </button>
+              <button
+                type="button"
+                className="flex-1 border border-gray-300 rounded-lg py-2 text-sm font-semibold"
+                onClick={() => setCreatePartnerOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
@@ -834,6 +908,15 @@ function ApplicationCard({
                   data-ocid="franchise.secondary_button"
                 >
                   ➡️ Forward
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700"
+                  onClick={() => setCreatePartnerOpen(true)}
+                  disabled={app.status !== "approved"}
+                  data-ocid="franchise.secondary_button"
+                >
+                  <UserPlus size={13} className="mr-1" /> Create Partner Account
                 </Button>
               </div>
               {showForwardInput && (

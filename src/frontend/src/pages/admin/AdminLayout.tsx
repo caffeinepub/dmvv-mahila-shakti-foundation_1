@@ -67,6 +67,11 @@ const adminNav = [
   { label: "Insurance", path: "/admin/insurance", icon: Shield },
   { label: "Wallet", path: "/admin/wallet", icon: Wallet },
   { label: "Franchise Page", path: "/admin/franchise", icon: Store },
+  {
+    label: "Franchise Partners",
+    path: "/admin/franchise-partners",
+    icon: Handshake,
+  },
   { label: "Center Management", path: "/admin/centers", icon: Building2 },
   { label: "News Management", path: "/admin/news", icon: Newspaper },
   { label: "Leadership Team", path: "/admin/leadership", icon: UserCheck },

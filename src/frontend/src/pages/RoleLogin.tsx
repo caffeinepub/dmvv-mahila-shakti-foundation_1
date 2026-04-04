@@ -11,6 +11,7 @@ import {
   ChevronRight,
   LogIn,
   Shield,
+  Store,
   Truck,
   User,
   Users,
@@ -84,6 +85,15 @@ const roles = [
     icon: <BookOpen size={28} className="text-pink-600" />,
     color: "border-pink-400 hover:bg-pink-50",
     badge: "bg-pink-100 text-pink-700",
+  },
+  {
+    id: "franchise",
+    label: "Franchise Partner",
+    sublabel: "Franchise partner login",
+    icon: <Store size={28} className="text-emerald-600" />,
+    color: "border-emerald-400 hover:bg-emerald-50",
+    badge: "bg-emerald-100 text-emerald-700",
+    externalPath: "/franchise-partner/login",
   },
 ];
 
@@ -162,7 +172,14 @@ export default function RoleLogin() {
                 <button
                   key={role.id}
                   type="button"
-                  onClick={() => setSelectedRole(role.id)}
+                  onClick={() =>
+                    (role as { externalPath?: string }).externalPath
+                      ? navigate(
+                          (role as { externalPath?: string })
+                            .externalPath as string,
+                        )
+                      : setSelectedRole(role.id)
+                  }
                   className={`flex flex-col items-center p-5 rounded-2xl border-2 bg-white shadow-sm transition-all cursor-pointer group ${role.color}`}
                   data-ocid={`role_login.role_card.${role.id}`}
                 >
