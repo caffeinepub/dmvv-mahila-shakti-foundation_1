@@ -31,23 +31,38 @@ import {
 import {
   AlertCircle,
   Award,
+  Bolt,
   Briefcase,
+  Building2,
+  Bus,
   CheckCircle,
+  ChevronRight,
+  Clock,
   CreditCard,
+  Droplets,
   FileCheck,
+  Flame,
   GraduationCap,
   HandHeart,
+  History,
   IndianRupee,
   LayoutDashboard,
+  Loader2,
   LogOut,
   Menu,
   Package,
+  Phone,
   Printer,
+  RefreshCw,
   Settings,
   Shield,
   ShoppingCart,
+  Smartphone,
+  Star,
+  Tv,
   User,
   Wallet,
+  Wifi,
   Wrench,
   X,
   Zap,
@@ -1883,50 +1898,887 @@ function UserShopping() {
 
 // ─── Utilities Section ───
 
-function UserUtilities() {
-  const { utilityServices } = useApp();
-  const activeServices = utilityServices.filter((s) => s.isActive);
-  const typeIcon: Record<string, string> = {
-    electricity: "⚡",
-    water: "💧",
-    gas: "🔥",
-    insurance: "🛡️",
-    other: "🔧",
+type UtilityCategory = {
+  id: string;
+  label: string;
+  emoji: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  services: UtilityServiceItem[];
+};
+
+type UtilityServiceItem = {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  tag?: string;
+  tagColor?: string;
+};
+
+type TransactionEntry = {
+  id: string;
+  service: string;
+  emoji: string;
+  amount: string;
+  date: string;
+  status: "success" | "pending" | "failed";
+  ref: string;
+};
+
+const utilityCategories: UtilityCategory[] = [
+  {
+    id: "mobile",
+    label: "Mobile Recharge",
+    emoji: "📱",
+    color: "text-violet-600",
+    bgColor: "bg-violet-50",
+    borderColor: "border-violet-200",
+    services: [
+      {
+        id: "prepaid",
+        name: "Prepaid Recharge",
+        emoji: "📲",
+        description: "Airtel, Jio, Vi, BSNL",
+        tag: "Popular",
+        tagColor: "bg-violet-100 text-violet-700",
+      },
+      {
+        id: "postpaid",
+        name: "Postpaid Bill",
+        emoji: "📋",
+        description: "Monthly bill payment",
+        tag: "New",
+        tagColor: "bg-green-100 text-green-700",
+      },
+    ],
+  },
+  {
+    id: "electricity",
+    label: "Electricity",
+    emoji: "⚡",
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-50",
+    borderColor: "border-yellow-200",
+    services: [
+      {
+        id: "uppcl",
+        name: "UPPCL Bill",
+        emoji: "💡",
+        description: "Urban & rural UP electricity",
+        tag: "Quick Pay",
+        tagColor: "bg-yellow-100 text-yellow-700",
+      },
+      {
+        id: "pvvnl",
+        name: "PVVNL / DVVNL",
+        emoji: "🔌",
+        description: "Paschimanchal/Dakshinanchal",
+        tag: "",
+        tagColor: "",
+      },
+    ],
+  },
+  {
+    id: "water",
+    label: "Water Bill",
+    emoji: "💧",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+    services: [
+      {
+        id: "jalnigam",
+        name: "Jal Nigam",
+        emoji: "🚰",
+        description: "Urban water supply bill",
+        tag: "Gov",
+        tagColor: "bg-blue-100 text-blue-700",
+      },
+      {
+        id: "jalboard",
+        name: "Jal Board Rural",
+        emoji: "🌊",
+        description: "Village & gram panchayat",
+        tag: "",
+        tagColor: "",
+      },
+    ],
+  },
+  {
+    id: "gas",
+    label: "LPG Gas",
+    emoji: "🔥",
+    color: "text-orange-600",
+    bgColor: "bg-orange-50",
+    borderColor: "border-orange-200",
+    services: [
+      {
+        id: "indane",
+        name: "Indane Gas",
+        emoji: "🛢️",
+        description: "Book & pay Indane cylinder",
+        tag: "₹100 Off",
+        tagColor: "bg-orange-100 text-orange-700",
+      },
+      {
+        id: "bharat",
+        name: "Bharat Gas",
+        emoji: "🔴",
+        description: "Bharat Petroleum cylinder",
+        tag: "",
+        tagColor: "",
+      },
+      {
+        id: "hp",
+        name: "HP Gas",
+        emoji: "🟠",
+        description: "Hindustan Petroleum LPG",
+        tag: "",
+        tagColor: "",
+      },
+    ],
+  },
+  {
+    id: "broadband",
+    label: "Internet / DTH",
+    emoji: "📡",
+    color: "text-cyan-600",
+    bgColor: "bg-cyan-50",
+    borderColor: "border-cyan-200",
+    services: [
+      {
+        id: "dth",
+        name: "DTH Recharge",
+        emoji: "📺",
+        description: "Tata Play, DishTV, Airtel DTH",
+        tag: "Popular",
+        tagColor: "bg-cyan-100 text-cyan-700",
+      },
+      {
+        id: "broadband",
+        name: "Broadband Bill",
+        emoji: "🌐",
+        description: "BSNL, Airtel, Jio Fiber",
+        tag: "",
+        tagColor: "",
+      },
+    ],
+  },
+  {
+    id: "transport",
+    label: "Transport",
+    emoji: "🚌",
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50",
+    borderColor: "border-emerald-200",
+    services: [
+      {
+        id: "bus",
+        name: "Bus Pass / Ticket",
+        emoji: "🎫",
+        description: "UPSRTC & state bus booking",
+        tag: "Book Now",
+        tagColor: "bg-emerald-100 text-emerald-700",
+      },
+      {
+        id: "fastag",
+        name: "FASTag Recharge",
+        emoji: "🚗",
+        description: "NHAI FASTag top-up",
+        tag: "",
+        tagColor: "",
+      },
+    ],
+  },
+];
+
+const mockTransactions: TransactionEntry[] = [
+  {
+    id: "t1",
+    service: "Prepaid Recharge",
+    emoji: "📱",
+    amount: "₹299",
+    date: "Today, 10:30 AM",
+    status: "success",
+    ref: "REF789012",
+  },
+  {
+    id: "t2",
+    service: "UPPCL Electricity",
+    emoji: "⚡",
+    amount: "₹1,240",
+    date: "Yesterday, 3:15 PM",
+    status: "success",
+    ref: "REF456789",
+  },
+  {
+    id: "t3",
+    service: "Indane Gas Booking",
+    emoji: "🔥",
+    amount: "₹950",
+    date: "3 days ago",
+    status: "pending",
+    ref: "REF123456",
+  },
+  {
+    id: "t4",
+    service: "Jal Nigam Bill",
+    emoji: "💧",
+    amount: "₹320",
+    date: "1 week ago",
+    status: "success",
+    ref: "REF654321",
+  },
+  {
+    id: "t5",
+    service: "DTH Recharge",
+    emoji: "📺",
+    amount: "₹399",
+    date: "1 week ago",
+    status: "failed",
+    ref: "REF111222",
+  },
+];
+
+function ServiceModal({
+  service,
+  category,
+  onClose,
+}: {
+  service: UtilityServiceItem;
+  category: UtilityCategory;
+  onClose: () => void;
+}) {
+  const [step, setStep] = useState<"form" | "confirm" | "success">("form");
+  const [accountNo, setAccountNo] = useState("");
+  const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const quickAmounts = ["₹99", "₹199", "₹299", "₹499", "₹999"];
+
+  const handleProceed = () => {
+    if (!accountNo.trim()) {
+      toast.error("Please enter account / consumer number");
+      return;
+    }
+    if (!amount) {
+      toast.error("Please select or enter an amount");
+      return;
+    }
+    setStep("confirm");
+  };
+
+  const handlePay = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStep("success");
+    }, 1800);
   };
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-gray-600">
-        DMVV centers par yeh utility services available hain. Contact number pe
-        call karke service lein.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {activeServices.map((s, i) => (
-          <Card
-            key={s.id}
-            className="hover:shadow-md transition-shadow"
-            data-ocid={`user_utilities.item.${i + 1}`}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="text-3xl">{typeIcon[s.type] || "🔧"}</div>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === "Escape" && onClose()}
+      role="presentation"
+    >
+      <div
+        className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        style={{ animation: "slideUp 0.3s ease-out" }}
+      >
+        {step === "form" && (
+          <>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-12 h-12 rounded-2xl ${category.bgColor} flex items-center justify-center text-2xl`}
+                >
+                  {service.emoji}
+                </div>
                 <div>
-                  <h3 className="font-bold text-gray-800">{s.name}</h3>
-                  <p className="text-sm text-gray-500">{s.description}</p>
-                  <div className="mt-2">
-                    <a
-                      href={`tel:${s.contactNumber}`}
-                      className="text-ngo-green font-semibold text-sm"
-                    >
-                      📞 {s.contactNumber}
-                    </a>
-                  </div>
+                  <h3 className="font-bold text-gray-900 text-lg">
+                    {service.name}
+                  </h3>
+                  <p className="text-xs text-gray-500">{service.description}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-semibold text-gray-700">
+                  Consumer / Account Number
+                </Label>
+                <div className="relative mt-1">
+                  <Input
+                    value={accountNo}
+                    onChange={(e) => setAccountNo(e.target.value)}
+                    placeholder="Enter consumer/account number"
+                    className="pr-10 rounded-xl border-gray-200 focus:border-green-400 focus:ring-green-400"
+                  />
+                  <Phone className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm font-semibold text-gray-700">
+                  Amount
+                </Label>
+                <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                  {quickAmounts.map((a) => (
+                    <button
+                      type="button"
+                      key={a}
+                      onClick={() => setAmount(a.replace("₹", ""))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-all ${
+                        amount === a.replace("₹", "")
+                          ? `${category.bgColor} ${category.color} ${category.borderColor} border`
+                          : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {a}
+                    </button>
+                  ))}
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-semibold">
+                    ₹
+                  </span>
+                  <Input
+                    value={amount}
+                    onChange={(e) =>
+                      setAmount(e.target.value.replace(/[^0-9]/g, ""))
+                    }
+                    placeholder="Or enter custom amount"
+                    className="pl-7 rounded-xl border-gray-200 focus:border-green-400"
+                  />
+                </div>
+              </div>
+
+              <Button
+                className="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-base"
+                onClick={handleProceed}
+              >
+                Proceed to Pay ₹{amount || "0"}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === "confirm" && (
+          <>
+            <div className="text-center mb-6">
+              <div
+                className={`w-16 h-16 rounded-2xl ${category.bgColor} flex items-center justify-center text-3xl mx-auto mb-3`}
+              >
+                {service.emoji}
+              </div>
+              <h3 className="font-bold text-gray-900 text-xl">
+                Confirm Payment
+              </h3>
+              <p className="text-gray-500 text-sm mt-1">
+                Review your transaction details
+              </p>
+            </div>
+
+            <div
+              className={`${category.bgColor} rounded-2xl p-4 space-y-3 mb-5`}
+            >
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Service</span>
+                <span className="font-semibold text-gray-900">
+                  {service.name}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Account No.</span>
+                <span className="font-semibold text-gray-900">{accountNo}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Amount</span>
+                <span className={`font-bold text-lg ${category.color}`}>
+                  ₹{amount}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Via DMVV Center</span>
+                <span className="font-semibold text-green-700">
+                  ✅ Assisted Payment
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl"
+                onClick={() => setStep("form")}
+              >
+                Edit
+              </Button>
+              <Button
+                className="flex-1 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold"
+                onClick={handlePay}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Confirm Pay"
+                )}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === "success" && (
+          <div className="text-center py-6">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+              <CheckCircle className="w-12 h-12 text-green-500" />
+            </div>
+            <h3 className="font-bold text-gray-900 text-2xl mb-1">
+              Payment Submitted! 🎉
+            </h3>
+            <p className="text-gray-500 text-sm mb-1">
+              Your request has been forwarded to the nearest DMVV center.
+            </p>
+            <p className="text-gray-400 text-xs mb-5">
+              Ref: REF{Math.floor(Math.random() * 900000 + 100000)}
+            </p>
+
+            <div className="bg-green-50 rounded-2xl p-4 mb-5 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Service</span>
+                <span className="font-semibold">{service.name}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Amount</span>
+                <span className="font-bold text-green-700">₹{amount}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Status</span>
+                <span className="font-semibold text-green-600">
+                  ✅ Submitted
+                </span>
+              </div>
+            </div>
+
+            <Button
+              className="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold"
+              onClick={onClose}
+            >
+              Done
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function UserUtilities() {
+  const { utilityServices } = useApp();
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [selectedService, setSelectedService] = useState<{
+    service: UtilityServiceItem;
+    category: UtilityCategory;
+  } | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const adminServices = utilityServices.filter((s) => s.isActive);
+  const displayCategories =
+    activeCategory === "all"
+      ? utilityCategories
+      : utilityCategories.filter((c) => c.id === activeCategory);
+
+  const filteredCategories = searchQuery
+    ? utilityCategories
+        .map((cat) => ({
+          ...cat,
+          services: cat.services.filter(
+            (s) =>
+              s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              s.description.toLowerCase().includes(searchQuery.toLowerCase()),
+          ),
+        }))
+        .filter((cat) => cat.services.length > 0)
+    : displayCategories;
+
+  const statusColor: Record<string, string> = {
+    success: "text-green-600 bg-green-50",
+    pending: "text-yellow-600 bg-yellow-50",
+    failed: "text-red-600 bg-red-50",
+  };
+  const statusIcon: Record<string, string> = {
+    success: "✅",
+    pending: "⏳",
+    failed: "❌",
+  };
+
+  return (
+    <div className="space-y-0 -mx-1">
+      {/* App Header Banner */}
+      <div className="bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 rounded-2xl p-5 mb-4 text-white relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 70% 50%, white 0%, transparent 60%)",
+          }}
+        />
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-green-100 text-xs font-medium uppercase tracking-wider">
+                DMVV Utility Services
+              </p>
+              <h2 className="text-2xl font-black mt-0.5">
+                Pay Bills & Recharge ⚡
+              </h2>
+              <p className="text-green-100 text-xs mt-1">
+                Instant assistance at your nearest DMVV center
+              </p>
+            </div>
+            <div className="text-5xl opacity-80">🏪</div>
+          </div>
+          {/* Quick Stats */}
+          <div className="flex gap-3 mt-3">
+            <div className="bg-white/20 rounded-xl px-3 py-2 text-center flex-1">
+              <p className="text-lg font-black">6+</p>
+              <p className="text-xs text-green-100">Services</p>
+            </div>
+            <div className="bg-white/20 rounded-xl px-3 py-2 text-center flex-1">
+              <p className="text-lg font-black">24/7</p>
+              <p className="text-xs text-green-100">Support</p>
+            </div>
+            <div className="bg-white/20 rounded-xl px-3 py-2 text-center flex-1">
+              <p className="text-lg font-black">₹0</p>
+              <p className="text-xs text-green-100">Extra Fee</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative mb-4">
+        <span className="absolute left-3 top-2.5 text-gray-400 text-lg">
+          🔍
+        </span>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search services (electricity, gas, mobile...)"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400 shadow-sm"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Category Filter Pills */}
+      {!searchQuery && (
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+          <button
+            type="button"
+            onClick={() => setActiveCategory("all")}
+            className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+              activeCategory === "all"
+                ? "bg-green-600 text-white border-green-600 shadow-md shadow-green-200"
+                : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+            }`}
+          >
+            🏠 All
+          </button>
+          {utilityCategories.map((cat) => (
+            <button
+              type="button"
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                activeCategory === cat.id
+                  ? `${cat.bgColor} ${cat.color} ${cat.borderColor} shadow-md`
+                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Quick Action Icons Row */}
+      {!searchQuery && activeCategory === "all" && (
+        <div className="grid grid-cols-4 gap-3 mb-5">
+          {[
+            {
+              emoji: "📱",
+              label: "Mobile",
+              id: "mobile",
+              color: "bg-violet-50 border-violet-100",
+            },
+            {
+              emoji: "⚡",
+              label: "Electricity",
+              id: "electricity",
+              color: "bg-yellow-50 border-yellow-100",
+            },
+            {
+              emoji: "💧",
+              label: "Water",
+              id: "water",
+              color: "bg-blue-50 border-blue-100",
+            },
+            {
+              emoji: "🔥",
+              label: "Gas",
+              id: "gas",
+              color: "bg-orange-50 border-orange-100",
+            },
+            {
+              emoji: "📡",
+              label: "DTH/Net",
+              id: "broadband",
+              color: "bg-cyan-50 border-cyan-100",
+            },
+            {
+              emoji: "🚌",
+              label: "Transport",
+              id: "transport",
+              color: "bg-emerald-50 border-emerald-100",
+            },
+            {
+              emoji: "🏦",
+              label: "Insurance",
+              id: "insurance",
+              color: "bg-purple-50 border-purple-100",
+            },
+            {
+              emoji: "🧾",
+              label: "History",
+              id: "history",
+              color: "bg-gray-50 border-gray-200",
+            },
+          ].map((item) => (
+            <button
+              type="button"
+              key={item.id}
+              onClick={() => {
+                if (item.id === "history") setShowHistory(!showHistory);
+                else if (item.id === "insurance") {
+                  /* handled by nav */
+                } else setActiveCategory(item.id);
+              }}
+              className={`${item.color} border rounded-2xl p-3 flex flex-col items-center gap-1.5 hover:scale-105 transition-transform active:scale-95 shadow-sm`}
+            >
+              <span className="text-2xl">{item.emoji}</span>
+              <span className="text-xs font-semibold text-gray-700 text-center leading-tight">
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Admin-added services highlight */}
+      {adminServices.length > 0 && !searchQuery && activeCategory === "all" && (
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+            <h3 className="font-bold text-gray-800 text-sm">
+              Featured by DMVV Centers
+            </h3>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+            {adminServices.map((s) => {
+              const typeEmoji: Record<string, string> = {
+                electricity: "⚡",
+                water: "💧",
+                gas: "🔥",
+                insurance: "🛡️",
+                other: "🔧",
+              };
+              const typeColor: Record<string, string> = {
+                electricity: "from-yellow-400 to-orange-400",
+                water: "from-blue-400 to-cyan-400",
+                gas: "from-orange-400 to-red-400",
+                insurance: "from-purple-400 to-violet-400",
+                other: "from-gray-400 to-slate-400",
+              };
+              return (
+                <div
+                  key={s.id}
+                  className={`flex-shrink-0 w-44 rounded-2xl bg-gradient-to-br ${typeColor[s.type] || typeColor.other} p-3.5 text-white shadow-md`}
+                >
+                  <div className="text-3xl mb-2">
+                    {typeEmoji[s.type] || "🔧"}
+                  </div>
+                  <p className="font-bold text-sm leading-tight">{s.name}</p>
+                  <p className="text-xs opacity-90 mt-1 line-clamp-2">
+                    {s.description}
+                  </p>
+                  <a
+                    href={`tel:${s.contactNumber}`}
+                    className="mt-2.5 flex items-center gap-1.5 bg-white/20 rounded-xl px-2 py-1.5"
+                  >
+                    <Phone className="w-3 h-3" />
+                    <span className="text-xs font-bold">{s.contactNumber}</span>
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Service Categories */}
+      <div className="space-y-4">
+        {filteredCategories.map((cat) => (
+          <div
+            key={cat.id}
+            className={`bg-white rounded-2xl border ${cat.borderColor} overflow-hidden shadow-sm`}
+          >
+            {/* Category Header */}
+            <div
+              className={`${cat.bgColor} px-4 py-3 flex items-center justify-between`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{cat.emoji}</span>
+                <h3 className={`font-bold ${cat.color} text-sm`}>
+                  {cat.label}
+                </h3>
+              </div>
+              <ChevronRight className={`w-4 h-4 ${cat.color} opacity-60`} />
+            </div>
+
+            {/* Services List */}
+            <div className="divide-y divide-gray-50">
+              {cat.services.map((service) => (
+                <button
+                  type="button"
+                  key={service.id}
+                  onClick={() => setSelectedService({ service, category: cat })}
+                  className="w-full flex items-center gap-3 p-3.5 hover:bg-gray-50 transition-colors text-left active:bg-gray-100"
+                >
+                  <div
+                    className={`w-11 h-11 rounded-2xl ${cat.bgColor} flex items-center justify-center text-xl flex-shrink-0`}
+                  >
+                    {service.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {service.name}
+                      </p>
+                      {service.tag && (
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-semibold ${service.tagColor}`}
+                        >
+                          {service.tag}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 truncate">
+                      {service.description}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
+
+      {/* Transaction History */}
+      {showHistory && (
+        <div className="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <History className="w-4 h-4 text-gray-600" />
+              <h3 className="font-bold text-gray-800 text-sm">
+                Recent Transactions
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowHistory(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {mockTransactions.map((tx) => (
+              <div key={tx.id} className="flex items-center gap-3 p-3.5">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl flex-shrink-0">
+                  {tx.emoji}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {tx.service}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {tx.date} · {tx.ref}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-gray-900 text-sm">{tx.amount}</p>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full font-semibold ${statusColor[tx.status]}`}
+                  >
+                    {statusIcon[tx.status]} {tx.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Info Banner */}
+      <div className="mt-4 bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-3">
+        <div className="text-2xl flex-shrink-0">ℹ️</div>
+        <div>
+          <p className="font-semibold text-blue-800 text-sm">How It Works</p>
+          <p className="text-xs text-blue-600 mt-0.5">
+            Select a service, enter your details, and visit your nearest DMVV
+            center. Our assisted payment service ensures zero extra charges and
+            instant processing.
+          </p>
+        </div>
+      </div>
+
+      {/* Service Modal */}
+      {selectedService && (
+        <ServiceModal
+          service={selectedService.service}
+          category={selectedService.category}
+          onClose={() => setSelectedService(null)}
+        />
+      )}
     </div>
   );
 }
