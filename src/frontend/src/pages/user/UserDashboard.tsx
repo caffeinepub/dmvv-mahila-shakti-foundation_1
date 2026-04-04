@@ -1682,6 +1682,11 @@ function UserShopping() {
   const { currentUser, products, addOrder } = useApp();
   const [cart, setCart] = useState<Record<string, number>>({});
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<
+    (typeof products)[0] | null
+  >(null);
+  const [search, setSearch] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
   const [checkoutForm, setCheckoutForm] = useState({
     name: "",
     address: "",
@@ -1690,6 +1695,19 @@ function UserShopping() {
 
   if (!currentUser) return null;
   const activeProducts = products.filter((p) => p.isActive && p.stock > 0);
+
+  const categories = Array.from(
+    new Set(activeProducts.map((p) => p.category).filter(Boolean)),
+  );
+
+  const filtered = activeProducts.filter((p) => {
+    const matchSearch =
+      !search ||
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.description.toLowerCase().includes(search.toLowerCase());
+    const matchCat = filterCategory === "all" || p.category === filterCategory;
+    return matchSearch && matchCat;
+  });
 
   const cartTotal = Object.entries(cart).reduce((sum, [pid, qty]) => {
     const p = products.find((pr) => pr.id === pid);
@@ -1700,7 +1718,7 @@ function UserShopping() {
 
   const handleCheckout = () => {
     if (!checkoutForm.name || !checkoutForm.address || !checkoutForm.phone) {
-      toast.error("Sare fields bharein.");
+      toast.error("Please fill all delivery fields.");
       return;
     }
     const items = Object.entries(cart).map(([pid, qty]) => {
@@ -1726,13 +1744,20 @@ function UserShopping() {
     addOrder(order);
     setCart({});
     setCheckoutOpen(false);
+    setCheckoutForm({ name: "", address: "", phone: "" });
     toast.success("Order placed successfully! 🎉");
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-bold text-gray-800">Available Products</h2>
+      {/* Header + Cart Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="font-bold text-gray-800 text-xl">Shop Products</h2>
+          <p className="text-sm text-gray-500">
+            {activeProducts.length} products available
+          </p>
+        </div>
         {cartCount > 0 && (
           <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
             <DialogTrigger asChild>
@@ -1741,66 +1766,106 @@ function UserShopping() {
                 data-ocid="user_shopping.open_modal_button"
               >
                 <ShoppingCart size={16} className="mr-2" /> Cart ({cartCount}) —
-                ₹{cartTotal}
+                ₹{cartTotal.toLocaleString()}
               </Button>
             </DialogTrigger>
             <DialogContent data-ocid="user_shopping.dialog">
               <DialogHeader>
                 <DialogTitle>Checkout</DialogTitle>
               </DialogHeader>
-              <div className="space-y-3">
-                {Object.entries(cart).map(([pid, qty]) => {
-                  const p = products.find((pr) => pr.id === pid);
-                  return p ? (
-                    <div key={pid} className="flex justify-between text-sm">
-                      <span>
-                        {p.name} × {qty}
-                      </span>
-                      <span className="font-bold">
-                        ₹{(Number.parseFloat(p.price) * qty).toLocaleString()}
-                      </span>
-                    </div>
-                  ) : null;
-                })}
-                <div className="border-t pt-2 font-bold flex justify-between">
+              <div className="space-y-3 max-h-[70vh] overflow-y-auto">
+                <div className="space-y-2">
+                  {Object.entries(cart)
+                    .filter(([, qty]) => qty > 0)
+                    .map(([pid, qty]) => {
+                      const p = products.find((pr) => pr.id === pid);
+                      return p ? (
+                        <div
+                          key={pid}
+                          className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
+                        >
+                          {p.imageUrl ? (
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="h-10 w-10 rounded object-cover"
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center">
+                              <Package size={18} className="text-gray-400" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium truncate">
+                              {p.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              ×{qty} @ ₹{Number(p.price).toLocaleString()}
+                            </div>
+                          </div>
+                          <span className="font-bold text-green-700 text-sm whitespace-nowrap">
+                            ₹
+                            {(
+                              Number.parseFloat(p.price) * qty
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                      ) : null;
+                    })}
+                </div>
+                <div className="border-t pt-2 font-bold flex justify-between text-base">
                   <span>Total</span>
-                  <span>₹{cartTotal}</span>
+                  <span className="text-green-700">
+                    ₹{cartTotal.toLocaleString()}
+                  </span>
                 </div>
-                <div>
-                  <Label className="text-xs">Delivery Name *</Label>
-                  <Input
-                    value={checkoutForm.name}
-                    onChange={(e) =>
-                      setCheckoutForm((p) => ({ ...p, name: e.target.value }))
-                    }
-                    className="mt-1"
-                    data-ocid="user_shopping.input"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Delivery Address *</Label>
-                  <Textarea
-                    value={checkoutForm.address}
-                    onChange={(e) =>
-                      setCheckoutForm((p) => ({
-                        ...p,
-                        address: e.target.value,
-                      }))
-                    }
-                    className="mt-1"
-                    data-ocid="user_shopping.textarea"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Phone *</Label>
-                  <Input
-                    value={checkoutForm.phone}
-                    onChange={(e) =>
-                      setCheckoutForm((p) => ({ ...p, phone: e.target.value }))
-                    }
-                    className="mt-1"
-                    data-ocid="user_shopping.input"
-                  />
+                <div className="border-t pt-3 space-y-2">
+                  <p className="text-sm font-semibold text-gray-700">
+                    Delivery Details
+                  </p>
+                  <div>
+                    <Label className="text-xs">Full Name *</Label>
+                    <Input
+                      value={checkoutForm.name}
+                      onChange={(e) =>
+                        setCheckoutForm((p) => ({ ...p, name: e.target.value }))
+                      }
+                      className="mt-1"
+                      placeholder="Your name"
+                      data-ocid="user_shopping.input"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Delivery Address *</Label>
+                    <Textarea
+                      value={checkoutForm.address}
+                      onChange={(e) =>
+                        setCheckoutForm((p) => ({
+                          ...p,
+                          address: e.target.value,
+                        }))
+                      }
+                      className="mt-1"
+                      rows={2}
+                      placeholder="Full delivery address"
+                      data-ocid="user_shopping.textarea"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Phone Number *</Label>
+                    <Input
+                      value={checkoutForm.phone}
+                      onChange={(e) =>
+                        setCheckoutForm((p) => ({
+                          ...p,
+                          phone: e.target.value,
+                        }))
+                      }
+                      className="mt-1"
+                      placeholder="10-digit mobile"
+                      data-ocid="user_shopping.input"
+                    />
+                  </div>
                 </div>
                 <Button
                   onClick={handleCheckout}
@@ -1815,44 +1880,94 @@ function UserShopping() {
         )}
       </div>
 
-      {activeProducts.length === 0 ? (
+      {/* Search + Filter */}
+      <div className="flex flex-wrap gap-2">
+        <Input
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+          data-ocid="user_shopping.search_input"
+        />
+        <div className="flex gap-1 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setFilterCategory("all")}
+            className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+              filterCategory === "all"
+                ? "bg-ngo-green text-white border-ngo-green"
+                : "bg-white text-gray-600 border-gray-300 hover:border-ngo-green"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setFilterCategory(cat)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                filterCategory === cat
+                  ? "bg-ngo-green text-white border-ngo-green"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-ngo-green"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Product Grid */}
+      {filtered.length === 0 ? (
         <div
           className="text-center py-12 text-gray-400"
           data-ocid="user_shopping.empty_state"
         >
-          <Package size={40} className="mx-auto mb-3 opacity-30" /> No products
-          available.
+          <Package size={40} className="mx-auto mb-3 opacity-30" />
+          <p>No products available.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {activeProducts.map((p, i) => (
+          {filtered.map((p, i) => (
             <Card
               key={p.id}
-              className="hover:shadow-md transition-shadow"
+              className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
               data-ocid={`user_shopping.item.${i + 1}`}
             >
               <CardContent className="p-0">
-                <div className="h-40 bg-gray-100 rounded-t-lg flex items-center justify-center">
+                <button
+                  type="button"
+                  className="h-44 bg-gray-100 relative flex items-center justify-center overflow-hidden w-full"
+                  onClick={() => setDetailProduct(p)}
+                >
                   {p.imageUrl ? (
                     <img
                       src={p.imageUrl}
                       alt={p.name}
-                      className="h-full w-full object-cover rounded-t-lg"
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <Package size={40} className="text-gray-300" />
+                    <Package size={44} className="text-gray-300" />
                   )}
-                </div>
-                <div className="p-3">
-                  <h3 className="font-bold text-gray-800 text-sm">{p.name}</h3>
-                  <div className="text-xs text-gray-400">
-                    {p.category} | {p.centerName}
+                  <div className="absolute top-2 left-2">
+                    <span className="text-xs bg-ngo-green text-white px-2 py-0.5 rounded-full">
+                      {p.category}
+                    </span>
                   </div>
+                </button>
+                <div className="p-3">
+                  <h3 className="font-bold text-gray-800 text-sm line-clamp-1">
+                    {p.name}
+                  </h3>
+                  {p.centerName && (
+                    <div className="text-xs text-gray-400">{p.centerName}</div>
+                  )}
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                     {p.description}
                   </p>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="font-extrabold text-green-700">
+                    <span className="font-extrabold text-green-700 text-base">
                       ₹{Number(p.price).toLocaleString()}
                     </span>
                     <span className="text-xs text-gray-400">
@@ -1860,31 +1975,47 @@ function UserShopping() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        setCart((c) => ({
-                          ...c,
-                          [p.id]: Math.max(0, (c[p.id] || 0) - 1),
-                        }))
-                      }
-                      disabled={!cart[p.id]}
-                    >
-                      −
-                    </Button>
-                    <span className="text-sm font-bold w-6 text-center">
-                      {cart[p.id] || 0}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        setCart((c) => ({ ...c, [p.id]: (c[p.id] || 0) + 1 }))
-                      }
-                    >
-                      +
-                    </Button>
+                    {cart[p.id] ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                          onClick={() =>
+                            setCart((c) => ({
+                              ...c,
+                              [p.id]: Math.max(0, (c[p.id] || 0) - 1),
+                            }))
+                          }
+                        >
+                          −
+                        </Button>
+                        <span className="text-sm font-bold w-6 text-center">
+                          {cart[p.id]}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                          onClick={() =>
+                            setCart((c) => ({
+                              ...c,
+                              [p.id]: (c[p.id] || 0) + 1,
+                            }))
+                          }
+                        >
+                          +
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="bg-ngo-green text-white w-full"
+                        onClick={() => setCart((c) => ({ ...c, [p.id]: 1 }))}
+                      >
+                        <ShoppingCart size={13} className="mr-1" /> Add to Cart
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -1892,6 +2023,112 @@ function UserShopping() {
           ))}
         </div>
       )}
+
+      {/* Product Detail Modal */}
+      <Dialog
+        open={!!detailProduct}
+        onOpenChange={(v) => {
+          if (!v) setDetailProduct(null);
+        }}
+      >
+        <DialogContent className="max-w-md" data-ocid="user_shopping.dialog">
+          {detailProduct && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-lg">
+                  {detailProduct.name}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                {detailProduct.imageUrl ? (
+                  <img
+                    src={detailProduct.imageUrl}
+                    alt={detailProduct.name}
+                    className="w-full h-56 object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-full h-56 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Package size={48} className="text-gray-300" />
+                  </div>
+                )}
+                <div className="flex gap-2 flex-wrap">
+                  <span className="text-xs bg-ngo-green/10 text-ngo-green px-2 py-0.5 rounded-full">
+                    {detailProduct.category}
+                  </span>
+                  {detailProduct.centerName && (
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                      {detailProduct.centerName}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">
+                  {detailProduct.description}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-extrabold text-green-700">
+                    ₹{Number(detailProduct.price).toLocaleString()}
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    Stock: {detailProduct.stock}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {cart[detailProduct.id] ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setCart((c) => ({
+                            ...c,
+                            [detailProduct.id]: Math.max(
+                              0,
+                              (c[detailProduct.id] || 0) - 1,
+                            ),
+                          }))
+                        }
+                      >
+                        −
+                      </Button>
+                      <span className="font-bold w-8 text-center">
+                        {cart[detailProduct.id]}
+                      </span>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setCart((c) => ({
+                            ...c,
+                            [detailProduct.id]: (c[detailProduct.id] || 0) + 1,
+                          }))
+                        }
+                      >
+                        +
+                      </Button>
+                      <Button
+                        className="bg-ngo-orange text-white flex-1"
+                        onClick={() => {
+                          setDetailProduct(null);
+                          setCheckoutOpen(true);
+                        }}
+                      >
+                        <ShoppingCart size={14} className="mr-1" /> Checkout
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      className="bg-ngo-green text-white w-full"
+                      onClick={() =>
+                        setCart((c) => ({ ...c, [detailProduct.id]: 1 }))
+                      }
+                    >
+                      <ShoppingCart size={14} className="mr-1" /> Add to Cart
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

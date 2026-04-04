@@ -24,7 +24,7 @@ import {
   User,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const DEFAULT_DATA = {
@@ -414,7 +414,7 @@ const DEFAULT_DATA = {
 };
 
 function useLocalFranchiseData() {
-  const [data, _setData] = useState(() => {
+  const [data, setData] = useState<typeof DEFAULT_DATA>(() => {
     try {
       const saved = localStorage.getItem("dmvv_franchise_data");
       if (saved)
@@ -426,6 +426,21 @@ function useLocalFranchiseData() {
     } catch {}
     return DEFAULT_DATA;
   });
+
+  // Load from backend (server-side persistent) so APK/other users see admin updates
+  const loadedRef = useRef(false);
+  useEffect(() => {
+    if (loadedRef.current) return;
+    loadedRef.current = true;
+    import("@/utils/BackendDataService").then(({ initializeFromBackend }) => {
+      initializeFromBackend().then((backendData) => {
+        if (backendData.dmvv_franchise_data) {
+          setData(backendData.dmvv_franchise_data as typeof DEFAULT_DATA);
+        }
+      });
+    });
+  }, []);
+
   return data;
 }
 
@@ -456,6 +471,9 @@ export default function FranchisePage() {
       date: new Date().toLocaleDateString("hi-IN"),
     });
     localStorage.setItem("dmvv_franchise_applications", JSON.stringify(apps));
+    import("@/utils/BackendDataService").then(({ saveToBackend }) => {
+      saveToBackend("dmvv_franchise_applications", apps);
+    });
     toast.success(
       "Your application has been submitted! Our team will contact you shortly.",
     );

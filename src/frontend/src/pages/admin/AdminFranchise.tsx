@@ -6,6 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  initializeFromBackend,
+  saveToBackend,
+} from "@/utils/BackendDataService";
+import {
   Award,
   Box,
   ChevronDown,
@@ -26,7 +30,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const DEFAULT_DATA = {
@@ -240,6 +244,23 @@ export default function AdminFranchise() {
       date: string;
     }[]
   >("dmvv_franchise_applications", []);
+
+  // ─── Backend Sync ────────────────────────────────────────────────────────────
+  const franchiseBackendLoadedRef = useRef(false);
+  useEffect(() => {
+    if (franchiseBackendLoadedRef.current) return;
+    franchiseBackendLoadedRef.current = true;
+    initializeFromBackend().then((backendData) => {
+      if (backendData.dmvv_franchise_data) {
+        setData(backendData.dmvv_franchise_data as FranchiseData);
+      }
+    });
+  }, [setData]);
+
+  useEffect(() => {
+    saveToBackend("dmvv_franchise_data", data);
+  }, [data]);
+  // ─────────────────────────────────────────────────────────────────────────────
 
   // Hero edit
   const [heroEdit, setHeroEdit] = useState(data.hero);

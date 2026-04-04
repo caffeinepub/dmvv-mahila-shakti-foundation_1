@@ -2781,6 +2781,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         );
       if (data.dmvv_utilityServices)
         setUtilityServices(data.dmvv_utilityServices as UtilityService[]);
+      if (data.dmvv_memberRecords)
+        setMemberRecords(data.dmvv_memberRecords as MemberRecord[]);
+      if (data.dmvv_attendanceRecords)
+        setAttendanceRecords(data.dmvv_attendanceRecords as AttendanceRecord[]);
+      if (data.dmvv_payrollRecords)
+        setPayrollRecords(data.dmvv_payrollRecords as PayrollRecord[]);
+      if (data.dmvv_leaveRequests)
+        setLeaveRequests(data.dmvv_leaveRequests as LeaveRequest[]);
+      if (data.dmvv_supervisorReports)
+        setSupervisorReports(data.dmvv_supervisorReports as SupervisorReport[]);
+      if (data.dmvv_productionEntries)
+        setProductionEntries(data.dmvv_productionEntries as ProductionEntry[]);
+      if (data.dmvv_machineRecords)
+        setMachineRecords(data.dmvv_machineRecords as MachineRecord[]);
     });
   }, []);
 
@@ -2923,6 +2937,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_utilityServices", utilityServices);
   }, [utilityServices]);
+  useEffect(() => {
+    saveToBackend("dmvv_memberRecords", memberRecords);
+  }, [memberRecords]);
+  useEffect(() => {
+    saveToBackend("dmvv_attendanceRecords", attendanceRecords);
+  }, [attendanceRecords]);
+  useEffect(() => {
+    saveToBackend("dmvv_payrollRecords", payrollRecords);
+  }, [payrollRecords]);
+  useEffect(() => {
+    saveToBackend("dmvv_leaveRequests", leaveRequests);
+  }, [leaveRequests]);
+  useEffect(() => {
+    saveToBackend("dmvv_supervisorReports", supervisorReports);
+  }, [supervisorReports]);
+  useEffect(() => {
+    saveToBackend("dmvv_productionEntries", productionEntries);
+  }, [productionEntries]);
+  useEffect(() => {
+    saveToBackend("dmvv_machineRecords", machineRecords);
+  }, [machineRecords]);
   // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
