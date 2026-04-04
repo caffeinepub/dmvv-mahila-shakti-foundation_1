@@ -24,7 +24,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { type LoanScheme, useApp } from "@/context/AppContext";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  Link2,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -89,6 +97,23 @@ export default function AdminLoan() {
 
   const [editItem, setEditItem] = useState<LoanScheme | null>(null);
   const [editForm, setEditForm] = useState({ ...EMPTY });
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Generate shareable public loan apply link
+  const publicLoanApplyUrl = `${window.location.origin}${window.location.pathname}#/loan-apply`;
+
+  const copyLink = () => {
+    navigator.clipboard
+      .writeText(publicLoanApplyUrl)
+      .then(() => {
+        setLinkCopied(true);
+        toast.success("Link copy ho gaya! Share karein.");
+        setTimeout(() => setLinkCopied(false), 2500);
+      })
+      .catch(() => {
+        toast.error("Copy nahi hua, manually copy karein.");
+      });
+  };
 
   const handleAdd = () => {
     if (!addForm.name.trim()) {
@@ -241,6 +266,64 @@ export default function AdminLoan() {
           <Plus size={16} className="mr-1" /> Nayi Loan Scheme
         </Button>
       </div>
+
+      {/* ──── SHAREABLE LOAN APPLY LINK ──── */}
+      <Card className="mb-6 border-2 border-green-300 bg-green-50">
+        <CardContent className="p-5">
+          <div className="flex items-start gap-3">
+            <div className="p-2.5 rounded-full bg-green-100">
+              <Link2 size={22} className="text-green-700" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-bold text-gray-900">
+                  Loan Apply Shareable Link
+                </h3>
+                <Badge className="bg-green-600 text-white text-xs">New</Badge>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">
+                Is link ko share karein — koi bhi is link se seedha Loan
+                Application Form bhar sakta hai. Submit hone par application
+                aapko <strong>Loan Applications</strong> mein dikhai degi.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex-1 bg-white border border-green-200 rounded-lg px-3 py-2 text-sm text-gray-700 font-mono break-all select-all">
+                  {publicLoanApplyUrl}
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Button
+                    onClick={copyLink}
+                    className={`${
+                      linkCopied
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-ngo-green hover:bg-green-700"
+                    } text-white`}
+                    data-ocid="admin_loan.copy_link_button"
+                  >
+                    {linkCopied ? (
+                      <>
+                        <Check size={15} className="mr-1" /> Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={15} className="mr-1" /> Copy Link
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-green-400 text-green-700"
+                    onClick={() => window.open(publicLoanApplyUrl, "_blank")}
+                    data-ocid="admin_loan.open_link_button"
+                  >
+                    <ExternalLink size={15} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="space-y-3">
         {loanSchemes.map((item) => (

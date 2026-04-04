@@ -42,7 +42,7 @@ export default function Footer() {
                   DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
                 </div>
                 <div className="text-xs text-green-300">
-                  महिला सशक्तिकरण की ओर एक कदम
+                  Empowering Women — A Step Towards Change
                 </div>
               </div>
             </div>

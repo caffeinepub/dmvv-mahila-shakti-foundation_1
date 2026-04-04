@@ -8,9 +8,9 @@ import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import UserApproval "user-approval/approval";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   type FolderId = Text;
   type FileId = Text;

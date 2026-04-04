@@ -69,7 +69,7 @@ export default function LanguageSwitcher() {
         if (window.google?.translate?.TranslateElement) {
           new window.google.translate.TranslateElement(
             {
-              pageLanguage: "hi",
+              pageLanguage: "en",
               includedLanguages: "hi,en,mr,or,pa,bn",
               autoDisplay: false,
             },
@@ -114,17 +114,17 @@ export default function LanguageSwitcher() {
         type="button"
         onClick={() => setIsOpen((v) => !v)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 text-white text-xs font-semibold shadow-md hover:from-green-500 hover:to-emerald-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-1 select-none"
-        aria-label={`Language: ${current?.nativeLabel || "भाषा"}. Click to change.`}
+        aria-label={`Language: ${current?.nativeLabel || "English"}. Click to change.`}
         data-ocid="language.toggle"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
         <Globe size={13} className="flex-shrink-0" aria-hidden="true" />
         <span className="hidden sm:inline tracking-wide">
-          {current?.nativeLabel || "भाषा"}
+          {current?.nativeLabel || "English"}
         </span>
         <span className="sm:hidden">
-          {(current?.code || "hi").toUpperCase()}
+          {(current?.code || "en").toUpperCase()}
         </span>
         <svg
           className={`w-3 h-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
@@ -152,7 +152,7 @@ export default function LanguageSwitcher() {
         >
           <div className="px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-500">
             <p className="text-[10px] font-semibold text-white/80 uppercase tracking-wider">
-              भाषा चुनें
+              Select Language
             </p>
           </div>
           <div className="py-1">

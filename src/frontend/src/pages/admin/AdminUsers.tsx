@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -37,13 +38,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { type User, useApp } from "@/context/AppContext";
 import {
   CheckCircle,
+  CreditCard,
   Pencil,
   ShieldCheck,
   Trash2,
   UserCircle,
+  User as UserIcon,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +60,19 @@ interface EditForm {
   email: string;
   role: User["role"];
   status: User["status"];
+  // Personal Details
+  fatherName: string;
+  dob: string;
+  gender: string;
+  address: string;
+  district: string;
+  state: string;
+  pincode: string;
+  // KYC Details
+  aadhaarNumber: string;
+  panNumber: string;
+  nomineeName: string;
+  nomineeRelation: string;
 }
 
 export default function AdminUsers() {
@@ -69,6 +86,17 @@ export default function AdminUsers() {
     email: "",
     role: "user",
     status: "pending",
+    fatherName: "",
+    dob: "",
+    gender: "",
+    address: "",
+    district: "",
+    state: "",
+    pincode: "",
+    aadhaarNumber: "",
+    panNumber: "",
+    nomineeName: "",
+    nomineeRelation: "",
   });
 
   const filtered = users.filter((u) => {
@@ -85,12 +113,40 @@ export default function AdminUsers() {
       email: user.email,
       role: user.role,
       status: user.status,
+      fatherName: user.fatherName || "",
+      dob: user.dob || "",
+      gender: user.gender || "",
+      address: user.address || "",
+      district: user.district || "",
+      state: user.state || "",
+      pincode: user.pincode || "",
+      aadhaarNumber: user.aadhaarNumber || "",
+      panNumber: user.panNumber || "",
+      nomineeName: user.nomineeName || "",
+      nomineeRelation: user.nomineeRelation || "",
     });
   };
 
   const handleSaveEdit = () => {
     if (!editingUser) return;
-    updateUser(editingUser.id, editForm);
+    updateUser(editingUser.id, {
+      fullName: editForm.fullName,
+      mobile: editForm.mobile,
+      email: editForm.email,
+      role: editForm.role,
+      status: editForm.status,
+      fatherName: editForm.fatherName || undefined,
+      dob: editForm.dob || undefined,
+      gender: editForm.gender || undefined,
+      address: editForm.address || undefined,
+      district: editForm.district || undefined,
+      state: editForm.state || undefined,
+      pincode: editForm.pincode || undefined,
+      aadhaarNumber: editForm.aadhaarNumber || undefined,
+      panNumber: editForm.panNumber || undefined,
+      nomineeName: editForm.nomineeName || undefined,
+      nomineeRelation: editForm.nomineeRelation || undefined,
+    });
     toast.success(`${editForm.fullName}'s profile updated.`);
     setEditingUser(null);
   };
@@ -186,6 +242,11 @@ export default function AdminUsers() {
                             {user.isVerified && (
                               <Badge className="bg-green-100 text-green-700 text-xs px-1.5 py-0.5">
                                 ✓ Verified
+                              </Badge>
+                            )}
+                            {user.aadhaarNumber && (
+                              <Badge className="bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5">
+                                KYC
                               </Badge>
                             )}
                           </div>
@@ -287,8 +348,8 @@ export default function AdminUsers() {
                               size="sm"
                               variant="outline"
                               className="h-8 w-8 p-0 border-blue-300 text-blue-600 hover:bg-blue-50"
+                              title="Edit User"
                               onClick={() => openEdit(user)}
-                              title="Edit Profile"
                               data-ocid="admin_users.edit_button"
                             >
                               <Pencil size={13} />
@@ -361,85 +422,297 @@ export default function AdminUsers() {
         open={!!editingUser}
         onOpenChange={(open) => !open && setEditingUser(null)}
       >
-        <DialogContent className="max-w-md" data-ocid="admin_users.dialog">
+        <DialogContent className="max-w-2xl" data-ocid="admin_users.dialog">
           <DialogHeader>
             <DialogTitle>Edit User Profile</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div>
-              <Label>Full Name</Label>
-              <Input
-                value={editForm.fullName}
-                onChange={(e) =>
-                  setEditForm((p) => ({ ...p, fullName: e.target.value }))
-                }
-                className="mt-1"
-                data-ocid="admin_users.input"
-              />
+
+          <div className="max-h-[70vh] overflow-y-auto pr-1">
+            {/* ── Section 1: Basic Details ── */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-ngo-green/10">
+                  <UserIcon size={14} className="text-ngo-green" />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  Basic Details
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <Label>Full Name</Label>
+                  <Input
+                    value={editForm.fullName}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, fullName: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Mobile</Label>
+                  <Input
+                    value={editForm.mobile}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, mobile: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    value={editForm.email}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, email: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Role</Label>
+                  <Select
+                    value={editForm.role}
+                    onValueChange={(v) =>
+                      setEditForm((p) => ({ ...p, role: v as User["role"] }))
+                    }
+                  >
+                    <SelectTrigger
+                      className="mt-1"
+                      data-ocid="admin_users.select"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="center">Center</SelectItem>
+                      <SelectItem value="supervisor">Supervisor</SelectItem>
+                      <SelectItem value="transport">Transport</SelectItem>
+                      <SelectItem value="hr">HR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Select
+                    value={editForm.status}
+                    onValueChange={(v) =>
+                      setEditForm((p) => ({
+                        ...p,
+                        status: v as User["status"],
+                      }))
+                    }
+                  >
+                    <SelectTrigger
+                      className="mt-1"
+                      data-ocid="admin_users.select"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
-            <div>
-              <Label>Mobile</Label>
-              <Input
-                value={editForm.mobile}
-                onChange={(e) =>
-                  setEditForm((p) => ({ ...p, mobile: e.target.value }))
-                }
-                className="mt-1"
-                data-ocid="admin_users.input"
-              />
+
+            <Separator className="my-4" />
+
+            {/* ── Section 2: Personal Details ── */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-100">
+                  <UserIcon size={14} className="text-orange-600" />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  Personal Details / व्यक्तिगत विवरण
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Father's Name</Label>
+                  <Input
+                    value={editForm.fatherName}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, fatherName: e.target.value }))
+                    }
+                    placeholder="Father's full name"
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Date of Birth</Label>
+                  <Input
+                    type="date"
+                    value={editForm.dob}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, dob: e.target.value }))
+                    }
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Gender</Label>
+                  <Select
+                    value={editForm.gender}
+                    onValueChange={(v) =>
+                      setEditForm((p) => ({ ...p, gender: v }))
+                    }
+                  >
+                    <SelectTrigger
+                      className="mt-1"
+                      data-ocid="admin_users.select"
+                    >
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male / पुरुष</SelectItem>
+                      <SelectItem value="Female">Female / महिला</SelectItem>
+                      <SelectItem value="Other">Other / अन्य</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Pincode</Label>
+                  <Input
+                    value={editForm.pincode}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, pincode: e.target.value }))
+                    }
+                    placeholder="6-digit pincode"
+                    maxLength={6}
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>District</Label>
+                  <Input
+                    value={editForm.district}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, district: e.target.value }))
+                    }
+                    placeholder="District"
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>State</Label>
+                  <Input
+                    value={editForm.state}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, state: e.target.value }))
+                    }
+                    placeholder="State"
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Address</Label>
+                  <Textarea
+                    value={editForm.address}
+                    onChange={(e) =>
+                      setEditForm((p) => ({ ...p, address: e.target.value }))
+                    }
+                    placeholder="Full address"
+                    rows={2}
+                    className="mt-1 resize-none"
+                    data-ocid="admin_users.textarea"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <Label>Email</Label>
-              <Input
-                type="email"
-                value={editForm.email}
-                onChange={(e) =>
-                  setEditForm((p) => ({ ...p, email: e.target.value }))
-                }
-                className="mt-1"
-                data-ocid="admin_users.input"
-              />
-            </div>
-            <div>
-              <Label>Role</Label>
-              <Select
-                value={editForm.role}
-                onValueChange={(v) =>
-                  setEditForm((p) => ({ ...p, role: v as User["role"] }))
-                }
-              >
-                <SelectTrigger className="mt-1" data-ocid="admin_users.select">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="center">Center</SelectItem>
-                  <SelectItem value="supervisor">Supervisor</SelectItem>
-                  <SelectItem value="transport">Transport</SelectItem>
-                  <SelectItem value="hr">HR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Status</Label>
-              <Select
-                value={editForm.status}
-                onValueChange={(v) =>
-                  setEditForm((p) => ({ ...p, status: v as User["status"] }))
-                }
-              >
-                <SelectTrigger className="mt-1" data-ocid="admin_users.select">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
+
+            <Separator className="my-4" />
+
+            {/* ── Section 3: KYC Details ── */}
+            <div className="mb-2">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-100">
+                  <CreditCard size={14} className="text-blue-600" />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  KYC Details / केवाईसी विवरण
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Aadhaar Number</Label>
+                  <Input
+                    value={editForm.aadhaarNumber}
+                    onChange={(e) =>
+                      setEditForm((p) => ({
+                        ...p,
+                        aadhaarNumber: e.target.value.replace(/\D/g, ""),
+                      }))
+                    }
+                    placeholder="12-digit Aadhaar number"
+                    maxLength={12}
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>PAN Number</Label>
+                  <Input
+                    value={editForm.panNumber}
+                    onChange={(e) =>
+                      setEditForm((p) => ({
+                        ...p,
+                        panNumber: e.target.value.toUpperCase(),
+                      }))
+                    }
+                    placeholder="e.g. ABCDE1234F"
+                    maxLength={10}
+                    className="mt-1 uppercase"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Nominee Name</Label>
+                  <Input
+                    value={editForm.nomineeName}
+                    onChange={(e) =>
+                      setEditForm((p) => ({
+                        ...p,
+                        nomineeName: e.target.value,
+                      }))
+                    }
+                    placeholder="Nominee's full name"
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+                <div>
+                  <Label>Nominee Relation</Label>
+                  <Input
+                    value={editForm.nomineeRelation}
+                    onChange={(e) =>
+                      setEditForm((p) => ({
+                        ...p,
+                        nomineeRelation: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g. Mother, Spouse"
+                    className="mt-1"
+                    data-ocid="admin_users.input"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <DialogFooter>
+
+          <DialogFooter className="pt-2">
             <Button
               variant="outline"
               onClick={() => setEditingUser(null)}

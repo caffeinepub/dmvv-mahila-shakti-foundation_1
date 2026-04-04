@@ -23,7 +23,9 @@ import Login from "@/pages/Login";
 import News from "@/pages/News";
 import OurPartners from "@/pages/OurPartners";
 import OurTeam from "@/pages/OurTeam";
+import PublicLoanApply from "@/pages/PublicLoanApply";
 import Rewards from "@/pages/Rewards";
+import RoleLogin from "@/pages/RoleLogin";
 import RulesRegulations from "@/pages/RulesRegulations";
 import SHGLoan from "@/pages/SHGLoan";
 import Schemes from "@/pages/Schemes";
@@ -250,6 +252,24 @@ function AppRoutes() {
         element={
           <PublicLayout>
             <Login />
+          </PublicLayout>
+        }
+      />
+      {/* Role-based login page */}
+      <Route
+        path="/role-login"
+        element={
+          <PublicLayout>
+            <RoleLogin />
+          </PublicLayout>
+        }
+      />
+      {/* Public shareable loan apply form */}
+      <Route
+        path="/loan-apply"
+        element={
+          <PublicLayout>
+            <PublicLoanApply />
           </PublicLayout>
         }
       />

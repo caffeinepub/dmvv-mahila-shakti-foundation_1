@@ -1,3 +1,4 @@
+import LogoImage from "@/components/LogoImage";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/context/AppContext";
 import {
@@ -114,9 +115,19 @@ export default function AdminLayout() {
         }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-          <div>
-            <div className="font-bold text-sm text-white">DMVV Admin Panel</div>
-            <div className="text-xs text-green-300">{currentUser.fullName}</div>
+          <div className="flex items-center gap-2">
+            <LogoImage
+              className="h-8 w-8 object-contain flex-shrink-0"
+              alt="Logo"
+            />
+            <div>
+              <div className="font-bold text-sm text-white">
+                DMVV Admin Panel
+              </div>
+              <div className="text-xs text-green-300">
+                {currentUser.fullName}
+              </div>
+            </div>
           </div>
           <button
             type="button"

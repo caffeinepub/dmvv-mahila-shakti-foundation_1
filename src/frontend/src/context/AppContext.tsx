@@ -48,6 +48,11 @@ export interface User {
   memberId?: string;
   promotions?: Promotion[];
   achievementCerts?: AchievementCert[];
+  aadhaarNumber?: string;
+  panNumber?: string;
+  gender?: string;
+  nomineeName?: string;
+  nomineeRelation?: string;
 }
 
 export interface KYC {

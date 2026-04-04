@@ -21,7 +21,7 @@ function getInitialLanguage(): Language {
   } catch {
     // localStorage not available
   }
-  return "hi";
+  return "en";
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {

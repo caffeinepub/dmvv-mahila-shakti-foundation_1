@@ -1,3 +1,4 @@
+import LogoImage from "@/components/LogoImage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -72,11 +73,7 @@ export default function Login() {
       <Card className="max-w-md w-full">
         <CardContent className="p-8">
           <div className="text-center mb-6">
-            <img
-              src="/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png"
-              alt="Logo"
-              className="h-14 mx-auto mb-2"
-            />
+            <LogoImage className="h-14 mx-auto mb-2" alt="Logo" />
             <Badge className="bg-ngo-green text-white mb-2">Secure Login</Badge>
             <h1 className="text-2xl font-extrabold text-gray-900">
               Login to Your Account

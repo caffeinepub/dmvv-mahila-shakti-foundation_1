@@ -1,4 +1,5 @@
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LogoImage from "@/components/LogoImage";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ import {
   Info,
   Layers,
   LayoutDashboard,
+  LogIn,
   LogOut,
   MapPin,
   MessageCircle,
@@ -35,6 +37,7 @@ import {
   Phone,
   Rss,
   Scale,
+  ShieldCheck,
   Star,
   Store,
   User,
@@ -99,7 +102,7 @@ export default function Header() {
   const [openMobileCategory, setOpenMobileCategory] = useState<string | null>(
     null,
   );
-  const { currentUser, setCurrentUser, settings } = useApp();
+  const { currentUser, setCurrentUser } = useApp();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -241,21 +244,13 @@ export default function Header() {
     setOpenMobileCategory((prev) => (prev === id ? null : id));
   };
 
-  const logoSrc =
-    settings.logoUrl ||
-    "/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png";
-
   return (
     <header className="w-full sticky top-0 z-50 shadow-md">
       {/* White top bar: logo + auth */}
       <div className="bg-white border-b border-gray-200 px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <img
-              src={logoSrc}
-              alt="DMVV Foundation Logo"
-              className="h-14 w-14 object-contain flex-shrink-0"
-            />
+            <LogoImage className="h-14 w-14 object-contain flex-shrink-0" />
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <LanguageSwitcher />
@@ -297,6 +292,18 @@ export default function Header() {
               </DropdownMenu>
             ) : (
               <>
+                {/* Role Login Button */}
+                <Link to="/role-login">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-purple-500 text-purple-700 hover:bg-purple-50 hidden sm:flex items-center gap-1"
+                    data-ocid="header.role_login_button"
+                  >
+                    <ShieldCheck size={14} />
+                    <span className="hidden md:inline">Role Login</span>
+                  </Button>
+                </Link>
                 <Link to="/login">
                   <Button
                     variant="outline"
@@ -332,7 +339,7 @@ export default function Header() {
                 DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
               </span>
               <span className="text-green-200 text-xs whitespace-nowrap">
-                महिला सशक्तिकरण की ओर एक कदम
+                Empowering Women — A Step Towards Change
               </span>
             </div>
             <div className="lg:hidden flex items-center gap-2">
@@ -359,6 +366,16 @@ export default function Header() {
               >
                 <Home size={15} />
                 {t("nav.home")}
+              </Link>
+
+              {/* Role Login in nav bar */}
+              <Link
+                to="/role-login"
+                className="flex items-center gap-1.5 text-white text-sm font-medium px-3 py-3 hover:bg-green-700 transition-colors whitespace-nowrap"
+                data-ocid="nav.role_login.link"
+              >
+                <LogIn size={15} />
+                Role Login
               </Link>
 
               {/* Category dropdowns */}
@@ -431,6 +448,19 @@ export default function Header() {
               >
                 <Home size={15} />
                 {t("nav.home")}
+              </Link>
+
+              {/* Role Login in mobile menu */}
+              <Link
+                to="/role-login"
+                className="flex items-center gap-2 text-white text-sm px-3 py-2.5 hover:bg-green-700 transition-colors border-b border-green-700"
+                onClick={() => setMenuOpen(false)}
+                data-ocid="mobile_nav.role_login.link"
+              >
+                <ShieldCheck size={15} />
+                <span className="font-medium">
+                  🔐 Role Login (Admin / Center / HR...)
+                </span>
               </Link>
 
               {/* Categories accordion */}
