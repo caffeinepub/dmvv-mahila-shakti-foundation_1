@@ -61,7 +61,7 @@ export default function PublicLoanApply() {
       !form.accountNumber
     ) {
       toast.error(
-        "Zaroori fields bhar karein (naam, mobile, amount, purpose, bank details).",
+        "Please fill all required fields (name, mobile, amount, purpose, bank details).",
       );
       return;
     }
@@ -93,7 +93,7 @@ export default function PublicLoanApply() {
       setSubmittedRef(refId);
       setSubmitted(true);
       setLoading(false);
-      toast.success("Loan application submit ho gayi!");
+      toast.success("Loan application submitted successfully!");
     }, 1000);
   };
 
@@ -104,18 +104,18 @@ export default function PublicLoanApply() {
           <CardContent className="p-8 text-center">
             <CheckCircle size={60} className="text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
-              Application Submit Ho Gayi!
+              Application Submitted Successfully!
             </h2>
             <p className="text-gray-600 mb-4">
-              Aapki loan application safaltapoorvak submit ho gayi hai. Hamari
-              team jald hi aapse sampark karegi.
+              Your loan application has been submitted successfully. Our team
+              will contact you shortly.
             </p>
             <Badge className="bg-green-100 text-green-800 text-base px-4 py-1">
               Reference No: {submittedRef}
             </Badge>
             <p className="text-sm text-gray-400 mt-4">
-              Yeh reference number save karein. Admin se status jaanne ke liye
-              sampark mein rahein.
+              Please save this reference number. Stay in touch with admin to
+              check your application status.
             </p>
           </CardContent>
         </Card>
@@ -133,7 +133,7 @@ export default function PublicLoanApply() {
             <FileText size={13} className="mr-1" /> Loan Application Form
           </Badge>
           <h1 className="text-2xl font-extrabold text-gray-900">
-            Loan Ke Liye Avedan Karein
+            Apply for a Loan
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             DMVV Bhartiy Mahila Shakti Foundation — Loan Apply
@@ -150,21 +150,21 @@ export default function PublicLoanApply() {
               {/* Personal Info */}
               <div>
                 <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                  व्यक्तिगत जानकारी
+                  Personal Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <Label>पूरा नाम *</Label>
+                    <Label>Full Name *</Label>
                     <Input
                       value={form.fullName}
                       onChange={(e) => set("fullName", e.target.value)}
-                      placeholder="Apna poora naam"
+                      placeholder="Your full name"
                       className="mt-1"
                       data-ocid="public_loan_apply.name_input"
                     />
                   </div>
                   <div>
-                    <Label>मोबाइल नंबर *</Label>
+                    <Label>Mobile Number *</Label>
                     <Input
                       value={form.mobile}
                       onChange={(e) => set("mobile", e.target.value)}
@@ -185,7 +185,7 @@ export default function PublicLoanApply() {
                     />
                   </div>
                   <div>
-                    <Label>जिला / District</Label>
+                    <Label>District</Label>
                     <Input
                       value={form.district}
                       onChange={(e) => set("district", e.target.value)}
@@ -194,7 +194,7 @@ export default function PublicLoanApply() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <Label>पता / Address</Label>
+                    <Label>Address</Label>
                     <Textarea
                       value={form.address}
                       onChange={(e) => set("address", e.target.value)}
@@ -208,11 +208,11 @@ export default function PublicLoanApply() {
               {/* Loan Info */}
               <div>
                 <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                  Loan जानकारी
+                  Loan Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <Label>Loan का प्रकार *</Label>
+                    <Label>Loan Type *</Label>
                     <Select
                       value={form.loanType}
                       onValueChange={(v) =>
@@ -228,10 +228,10 @@ export default function PublicLoanApply() {
                       <SelectContent>
                         <SelectItem value="general">General Loan</SelectItem>
                         <SelectItem value="shg">
-                          SHG Loan (स्वयं सहायता समूह)
+                          SHG Loan (Self Help Group)
                         </SelectItem>
                         <SelectItem value="udhyog">
-                          Udhyog Loan (उद्योग)
+                          Udhyog Loan (Business)
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -242,17 +242,17 @@ export default function PublicLoanApply() {
                       type="number"
                       value={form.amount}
                       onChange={(e) => set("amount", e.target.value)}
-                      placeholder="Kitna loan chahiye"
+                      placeholder="Enter loan amount"
                       className="mt-1"
                       data-ocid="public_loan_apply.amount_input"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <Label>Loan का उद्देश्य / Purpose *</Label>
+                    <Label>Loan Purpose *</Label>
                     <Textarea
                       value={form.purpose}
                       onChange={(e) => set("purpose", e.target.value)}
-                      placeholder="Loan kis kaam ke liye chahiye?"
+                      placeholder="What do you need this loan for?"
                       className="mt-1 h-16"
                       data-ocid="public_loan_apply.purpose_input"
                     />
@@ -264,20 +264,20 @@ export default function PublicLoanApply() {
               {form.loanType === "shg" && (
                 <div>
                   <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                    SHG जानकारी
+                    SHG Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <Label>SHG का नाम</Label>
+                      <Label>SHG Name</Label>
                       <Input
                         value={form.shgName}
                         onChange={(e) => set("shgName", e.target.value)}
-                        placeholder="SHG naam"
+                        placeholder="SHG name"
                         className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label>सदस्य संख्या</Label>
+                      <Label>Member Count</Label>
                       <Input
                         type="number"
                         value={form.shgMembersCount}
@@ -294,15 +294,15 @@ export default function PublicLoanApply() {
               {form.loanType === "udhyog" && (
                 <div>
                   <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                    व्यवसाय जानकारी
+                    Business Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <Label>Business / Udyog ka Naam</Label>
+                      <Label>Business Name</Label>
                       <Input
                         value={form.businessName}
                         onChange={(e) => set("businessName", e.target.value)}
-                        placeholder="Business naam"
+                        placeholder="Business name"
                         className="mt-1"
                       />
                     </div>
@@ -331,15 +331,15 @@ export default function PublicLoanApply() {
               {/* Bank Details */}
               <div>
                 <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                  Bank जानकारी
+                  Bank Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <Label>Bank का नाम *</Label>
+                    <Label>Bank Name *</Label>
                     <Input
                       value={form.bankName}
                       onChange={(e) => set("bankName", e.target.value)}
-                      placeholder="Bank naam"
+                      placeholder="Bank name"
                       className="mt-1"
                       data-ocid="public_loan_apply.bank_name_input"
                     />
@@ -370,15 +370,15 @@ export default function PublicLoanApply() {
               {/* Guarantor */}
               <div>
                 <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide border-b pb-1">
-                  Guarantor जानकारी
+                  Guarantor Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <Label>Guarantor का नाम</Label>
+                    <Label>Guarantor Name</Label>
                     <Input
                       value={form.guarantorName}
                       onChange={(e) => set("guarantorName", e.target.value)}
-                      placeholder="Guarantor naam"
+                      placeholder="Guarantor name"
                       className="mt-1"
                     />
                   </div>
@@ -400,9 +400,7 @@ export default function PublicLoanApply() {
                 disabled={loading}
                 data-ocid="public_loan_apply.submit_button"
               >
-                {loading
-                  ? "Submit ho raha hai..."
-                  : "Loan Application Submit Karein"}
+                {loading ? "Submitting..." : "Submit Loan Application"}
               </Button>
             </form>
           </CardContent>

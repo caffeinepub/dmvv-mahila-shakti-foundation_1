@@ -47,7 +47,7 @@ export default function AdminSettings() {
       setForm((p) => ({ ...p, signatureUrl: base64 }));
       updateSettings({ signatureUrl: base64 });
       toast.success(
-        "Authority signature uploaded! Ab yeh ID Card aur Certificate mein auto-attach hogi.",
+        "Authority signature uploaded! It will now auto-attach to ID Cards and Certificates.",
       );
     };
     reader.readAsDataURL(file);
@@ -64,7 +64,7 @@ export default function AdminSettings() {
       setForm((p) => ({ ...p, sealUrl: base64 }));
       updateSettings({ sealUrl: base64 });
       toast.success(
-        "Official seal uploaded! Ab yeh ID Card aur Certificate mein auto-attach hogi.",
+        "Official seal uploaded! It will now auto-attach to ID Cards and Certificates.",
       );
     };
     reader.readAsDataURL(file);
@@ -138,8 +138,8 @@ export default function AdminSettings() {
               Authority Signature &amp; Official Seal
             </CardTitle>
             <p className="text-xs text-gray-500 mt-1">
-              Yahan upload ki gayi signature aur seal ID Card aur Certificate
-              mein automatically attach ho jaayengi.
+              The uploaded signature and seal will automatically attach to ID
+              Cards and Certificates.
             </p>
           </CardHeader>
           <CardContent>

@@ -36,7 +36,7 @@ export default function AdminProducts() {
 
   const handleSave = () => {
     if (!form.name || !form.price) {
-      toast.error("Name aur price required hai.");
+      toast.error("Name and price are required.");
       return;
     }
     if (editId) {
@@ -44,7 +44,7 @@ export default function AdminProducts() {
       toast.success("Product updated!");
     } else {
       addProduct({ ...form, id: `pr_${Date.now()}` });
-      toast.success("Product add ho gaya!");
+      toast.success("Product added successfully!");
     }
     setOpen(false);
     setForm(emptyProduct());

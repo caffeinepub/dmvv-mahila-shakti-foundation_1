@@ -48,7 +48,7 @@ export default function AdminLoanApplications() {
     status: "approved" | "rejected" | "under_review",
   ) => {
     updateLoanApplication(id, { status, adminRemark: remark || undefined });
-    toast.success(`Application ${status} kar di gayi!`);
+    toast.success(`Application ${status} successfully!`);
     setExpandedId(null);
     setRemark("");
   };
@@ -70,11 +70,11 @@ export default function AdminLoanApplications() {
           </div>
           <div>
             <h3 className="font-bold text-green-800 text-sm">
-              Share Loan Apply Link / लोन अप्लाई लिंक शेयर करें
+              Share Loan Apply Link
             </h3>
             <p className="text-xs text-green-700">
-              Is link ko share karein — jo bhi loan apply karega uski poori
-              details yahan dikhegi
+              Share this link — anyone who applies for a loan will have their
+              full details saved here
             </p>
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function AdminLoanApplications() {
           className="text-center py-16 text-gray-400"
           data-ocid="admin_loan_apps.empty_state"
         >
-          Koi application nahi hai.
+          No applications found.
         </div>
       ) : (
         <div className="space-y-3">
@@ -241,7 +241,7 @@ export default function AdminLoanApplications() {
                       <Textarea
                         value={remark}
                         onChange={(e) => setRemark(e.target.value)}
-                        placeholder="Remark ya reason likhein..."
+                        placeholder="Enter remark or reason..."
                         className="mt-1 h-20"
                         data-ocid="admin_loan_apps.textarea"
                       />

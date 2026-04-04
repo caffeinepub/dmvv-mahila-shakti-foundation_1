@@ -71,7 +71,7 @@ export default function AdminApplyForm() {
           Apply Form Submissions
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Website se aye hue application forms yahan dikhai dete hain
+          Application forms submitted from the website appear here
         </p>
       </div>
 
@@ -105,8 +105,8 @@ export default function AdminApplyForm() {
         <div className="text-center py-16 text-gray-400">
           <User size={48} className="mx-auto mb-3 opacity-30" />
           <p>
-            Abhi koi application nahi aayi. Jab koi Apply Form submit karega,
-            yahan dikhega.
+            No applications received yet. When someone submits the form, it will
+            appear here.
           </p>
         </div>
       ) : (
@@ -156,7 +156,7 @@ export default function AdminApplyForm() {
                         updateApplyFormSubmission(sub.id, {
                           status: v as ApplyFormSubmission["status"],
                         });
-                        toast.success("Status update ho gaya.");
+                        toast.success("Status updated.");
                       }}
                     >
                       <SelectTrigger className="w-28 h-8 text-xs">
@@ -192,7 +192,7 @@ export default function AdminApplyForm() {
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             "{sub.fullName}" ki application permanently delete
-                            ho jayegi.
+                            will be deleted.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -201,7 +201,7 @@ export default function AdminApplyForm() {
                             className="bg-red-600 hover:bg-red-700"
                             onClick={() => {
                               deleteApplyFormSubmission(sub.id);
-                              toast.success("Delete ho gayi.");
+                              toast.success("Deleted successfully.");
                             }}
                           >
                             Delete
@@ -283,7 +283,7 @@ export default function AdminApplyForm() {
                     setViewItem((v) =>
                       v ? { ...v, status: "contacted" } : null,
                     );
-                    toast.success("Contacted mark ho gaya.");
+                    toast.success("Marked as contacted.");
                   }}
                 >
                   <CheckCircle size={14} className="mr-2" /> Mark Contacted

@@ -34,7 +34,7 @@ export default function Downloads() {
             className="text-center py-20 text-gray-400"
             data-ocid="downloads.empty_state"
           >
-            Koi download available nahi hai.
+            No downloads available.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

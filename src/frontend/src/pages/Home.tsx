@@ -8,6 +8,7 @@ import {
   Banknote,
   BookOpen,
   Briefcase,
+  ChevronLeft,
   ChevronRight,
   Clock,
   Globe,
@@ -23,6 +24,7 @@ import {
   Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -50,6 +52,137 @@ function getIcon(name: string): React.ElementType {
   return ICON_MAP[name] ?? Star;
 }
 
+// ---- Image Slider Component ----
+function HeroSlider({
+  slides,
+  children,
+}: {
+  slides: { id: string; imageUrl: string; title: string; subtitle: string }[];
+  children: React.ReactNode;
+}) {
+  const [current, setCurrent] = useState(0);
+  const [transitioning, setTransitioning] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const total = slides.length;
+
+  const goTo = useCallback(
+    (index: number) => {
+      if (transitioning || index === current) return;
+      setTransitioning(true);
+      setTimeout(() => {
+        setCurrent(index);
+        setTransitioning(false);
+      }, 400);
+    },
+    [transitioning, current],
+  );
+
+  const prev = useCallback(() => {
+    goTo((current - 1 + total) % total);
+  }, [current, total, goTo]);
+
+  const next = useCallback(() => {
+    goTo((current + 1) % total);
+  }, [current, total, goTo]);
+
+  // Auto-loop every 4 seconds
+  useEffect(() => {
+    if (total <= 1) return;
+    timerRef.current = setInterval(() => {
+      setCurrent((c) => (c + 1) % total);
+    }, 4000);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [total]);
+
+  const slide = slides[current] ?? slides[0];
+
+  return (
+    <section className="relative min-h-[88vh] flex items-center overflow-hidden">
+      {/* Background images */}
+      {slides.map((s, i) => (
+        <div
+          key={s.id}
+          className="absolute inset-0 transition-opacity duration-700"
+          style={{
+            opacity: i === current ? 1 : 0,
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${s.imageUrl}')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            zIndex: 0,
+          }}
+        />
+      ))}
+
+      {/* Slide title/subtitle overlay at bottom */}
+      {total > 0 && (
+        <div
+          className="absolute bottom-16 left-0 right-0 flex flex-col items-center gap-1 z-10 pointer-events-none px-4"
+          style={{ opacity: transitioning ? 0 : 1, transition: "opacity 0.4s" }}
+        >
+          {slide.title && (
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl px-6 py-2 text-center max-w-2xl">
+              <div className="text-white font-bold text-xl md:text-2xl drop-shadow">
+                {slide.title}
+              </div>
+              {slide.subtitle && (
+                <div className="text-green-200 text-sm md:text-base mt-1">
+                  {slide.subtitle}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Arrow controls */}
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={prev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur rounded-full p-2 text-white transition"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            type="button"
+            onClick={next}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur rounded-full p-2 text-white transition"
+            aria-label="Next slide"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {total > 1 && (
+        <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2 z-20">
+          {slides.map((s, i) => (
+            <button
+              type="button"
+              key={s.id}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === current
+                  ? "w-6 h-3 bg-white"
+                  : "w-3 h-3 bg-white/50 hover:bg-white/80"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Main content */}
+      <div className="relative z-10 w-full">{children}</div>
+    </section>
+  );
+}
+
 export default function Home() {
   const {
     news,
@@ -60,6 +193,7 @@ export default function Home() {
     homeCTA,
     communityCenters,
     youtubeVideos,
+    sliderImages,
   } = useApp();
 
   const latestNews = news.filter((n) => n.isPublished).slice(0, 3);
@@ -79,17 +213,31 @@ export default function Home() {
     communityCenters.find((c) => c.isActive)?.imageUrl ||
     "/assets/generated/community-center.dim_600x400.jpg";
 
+  const activeSlides = (sliderImages ?? [])
+    .filter((s) => s.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  // Fallback slide if admin hasn't added any
+  const slides =
+    activeSlides.length > 0
+      ? activeSlides
+      : [
+          {
+            id: "default",
+            imageUrl:
+              "/assets/generated/hero-women-empowerment.dim_1400x700.jpg",
+            title: "Empowering Women Across India",
+            subtitle:
+              "Building skills, livelihoods and dignity for every woman",
+            isActive: true,
+            sortOrder: 1,
+          },
+        ];
+
   return (
     <main>
-      {/* Hero */}
-      <section
-        className="relative min-h-[88vh] flex items-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('/assets/generated/hero-women-empowerment.dim_1400x700.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      {/* Hero Slider */}
+      <HeroSlider slides={slides}>
         <div className="max-w-7xl mx-auto px-4 w-full py-16 flex flex-col lg:flex-row items-center gap-8">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -98,7 +246,7 @@ export default function Home() {
             className="flex-1 text-white"
           >
             <Badge className="bg-ngo-orange text-white mb-4 text-sm px-3 py-1">
-              महिला सशक्तिकरण
+              Women Empowerment
             </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 whitespace-pre-line">
               {homeHero.heading.split("\n").map((line) =>
@@ -201,7 +349,7 @@ export default function Home() {
             </Card>
           </motion.div>
         </div>
-      </section>
+      </HeroSlider>
 
       {/* Stats Strip */}
       <section className="relative -mt-10 z-10 px-4">
@@ -373,10 +521,15 @@ export default function Home() {
                         allowFullScreen
                       />
                     </div>
-                    <div className="p-3">
-                      <h4 className="font-semibold text-gray-900 text-sm line-clamp-2">
+                    <div className="p-4">
+                      <h3 className="font-bold text-gray-900 text-sm line-clamp-2">
                         {video.title}
-                      </h4>
+                      </h3>
+                      {video.description && (
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                          {video.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -386,15 +539,15 @@ export default function Home() {
         </section>
       )}
 
-      {/* Schemes Overview */}
+      {/* Government Schemes Section */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-10">
-            <Badge className="bg-orange-100 text-ngo-orange mb-3">
+            <Badge className="bg-orange-100 text-orange-600 mb-3">
               Government Schemes
             </Badge>
             <h2 className="text-3xl font-extrabold text-gray-900">
-              Key Schemes for Women
+              Programs We Support
             </h2>
             <p className="text-gray-500 mt-2">
               We help women access these government programs
@@ -504,13 +657,18 @@ export default function Home() {
                     {item.content}
                   </p>
                   <div className="text-xs text-gray-400 mt-3">
-                    {item.publishDate}
+                    {new Date(item.publishDate).toLocaleDateString("en-IN")}
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
+        {latestNews.length === 0 && (
+          <p className="text-center text-gray-500">
+            No news published yet. Check back soon!
+          </p>
+        )}
         <div className="text-center mt-8">
           <Link to="/news">
             <Button

@@ -247,7 +247,7 @@ export default function AdminCommunityCenter() {
                                 Delete Community Center?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                "{item.name}" permanently delete ho jayega.
+                                "{item.name}" will be permanently deleted.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

@@ -1,30 +1,31 @@
 # DMVV Mahila Shakti Foundation
 
 ## Current State
-- Signup form saves data to `users` array via `addUser` in AppContext
-- AdminUsers page shows all users with edit/update capability
-- AdminLoanApplications page shows all loan applications with approve/reject
-- AdminLoan page has a shareable loan apply link with "Copy Link" button
-- No dedicated "Signup Submissions" view with shareable signup link in admin
+The main page hero section uses a single static background image (`hero-women-empowerment.dim_1400x700.jpg`) with no slider. Admin dashboard has no image slider management.
 
 ## Requested Changes (Diff)
 
 ### Add
-- **Shareable Signup Link** in AdminUsers page: a prominent green/blue box at the top showing the signup page URL with "Copy Link" button -- same style as the loan link in AdminLoan
-- **Signup Submissions Tab/Section**: In AdminUsers, add a "New Registrations" highlight -- show pending signups at top with all submitted form fields visible (Name, Mobile, Email, Role, Father's Name, DOB, Gender, Address, District, State, Pincode, Aadhaar, PAN, Nominee Name, Nominee Relation, createdAt)
-- **Full Details Expand**: Each signup submission expandable to show all KYC/personal details submitted, with inline Edit + Approve/Reject buttons
-- **Loan Applications Enhancement**: Add shareable loan apply link box to AdminLoanApplications page too (mirroring AdminLoan), full details visible for each loan application
+- `SliderImage` interface in AppContext with fields: `id`, `imageUrl`, `title`, `subtitle`, `isActive`, `sortOrder`
+- `sliderImages` state array in AppContext (persisted to backend)
+- CRUD functions: `addSliderImage`, `updateSliderImage`, `deleteSliderImage`
+- Auto-looping image slider on Home page hero section replacing the static background
+- Slider: full-width, auto-advances every 4 seconds, shows title/subtitle overlay, dots navigation, prev/next arrows, smooth crossfade or slide transition
+- "Image Slider" tab in AdminHomePage with: upload image (base64 URL stored), set title/subtitle, toggle active/inactive, reorder, delete
 
 ### Modify
-- AdminUsers: add shareable signup link box at top, improve pending registrations visibility with "New" badge and full form data display
-- AdminLoanApplications: add shareable loan link box at top
+- `AppContext`: add interface, initial data (2 default slides using existing hero image + a second), state, useEffect for backend sync, CRUD functions, expose in context value
+- `Home.tsx`: replace static hero section with dynamic slider component
+- `AdminHomePage.tsx`: add "Image Slider" tab with full CRUD
 
 ### Remove
 - Nothing removed
 
 ## Implementation Plan
-1. Add shareable signup link box in AdminUsers (copy window.location.origin + /signup)
-2. Enhance pending registrations display -- show all fields in expandable detail view
-3. Add "New Registrations" tab as first tab in AdminUsers showing only pending with full data
-4. Add shareable loan link box in AdminLoanApplications (same link as AdminLoan uses)
-5. Ensure all edit/update options are accessible from the detailed view
+1. Add `SliderImage` interface after `HomeHeroContent` in AppContext
+2. Add initial slider images array (2 slides with existing hero image)
+3. Add `sliderImages` state, backend sync useEffect, CRUD functions
+4. Expose `sliderImages`, CRUD in context type and value
+5. Build `HomeSlider` component inline in Home.tsx with auto-play, dots, arrows
+6. Replace hero `<section>` with slider in Home.tsx
+7. Add "Image Slider" tab to AdminHomePage with upload (FileReader base64), title/subtitle, active toggle, delete, reorder

@@ -113,7 +113,7 @@ export default function AdminSchemes() {
 
   const handleAdd = () => {
     if (!addForm.name.trim()) {
-      toast.error("Scheme ka naam zaroori hai.");
+      toast.error("Scheme name is required.");
       return;
     }
     addScheme({
@@ -124,7 +124,7 @@ export default function AdminSchemes() {
       benefits: addForm.benefits.filter(Boolean),
       imageUrl: addImage || addForm.imageUrl || undefined,
     });
-    toast.success("Scheme add ho gayi.");
+    toast.success("Scheme added.");
     setAddOpen(false);
     setAddForm({ ...EMPTY, eligibility: [""], benefits: [""] });
     setAddImage(null);
@@ -144,7 +144,7 @@ export default function AdminSchemes() {
       benefits: editForm.benefits.filter(Boolean),
       imageUrl: editImage || editForm.imageUrl || undefined,
     });
-    toast.success("Scheme update ho gayi.");
+    toast.success("Scheme updated.");
     setEditItem(null);
     setEditImage(null);
   };
@@ -268,7 +268,7 @@ export default function AdminSchemes() {
             Schemes Management
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Schemes page ke liye content manage karen — add, edit, photo,
+            Manage content for the Schemes page — add, edit, photo,
             active/inactive
           </p>
         </div>
@@ -346,7 +346,7 @@ export default function AdminSchemes() {
                           Scheme Delete Karen?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          "{item.name}" permanently delete ho jayegi.
+                          "{item.name}" will be permanently deleted.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -355,7 +355,7 @@ export default function AdminSchemes() {
                           className="bg-red-600 hover:bg-red-700"
                           onClick={() => {
                             deleteScheme(item.id);
-                            toast.success("Scheme delete ho gayi.");
+                            toast.success("Scheme deleted.");
                           }}
                         >
                           Delete
@@ -395,7 +395,7 @@ export default function AdminSchemes() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={28} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>
@@ -456,7 +456,7 @@ export default function AdminSchemes() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={28} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>

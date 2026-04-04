@@ -31,7 +31,7 @@ export default function SHGLoan() {
       !form.bankName ||
       !form.accountNumber
     ) {
-      toast.error("Kripya sare required fields bharein.");
+      toast.error("Please fill all required fields.");
       return;
     }
     setSubmitting(true);
@@ -57,7 +57,7 @@ export default function SHGLoan() {
     addLoanApplication(app);
     setSubmitted(true);
     setSubmitting(false);
-    toast.success("🎉 SHG Loan application submit ho gayi!");
+    toast.success("🎉 SHG Loan application submitted successfully!");
   };
 
   const F = ({
@@ -108,8 +108,8 @@ export default function SHGLoan() {
             SHG Loan Yojana
           </h1>
           <p className="text-blue-100 mt-3 max-w-2xl text-lg">
-            Mahila Swayam Sahayata Samooh ke liye vishesh loan yojana. Samuh
-            shakti se vyavsayik unnati ki raah.
+            Special loan scheme for Women Self-Help Groups. Build business
+            success through collective strength.
           </p>
         </div>
       </section>
@@ -137,43 +137,45 @@ export default function SHGLoan() {
         {/* What is SHG Loan */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-            SHG Loan Kya Hai?
+            What is SHG Loan?
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            Self Help Group (SHG) Loan ek samuh loan yojana hai jisme mahilao ka
-            swayam sahayata samooh milkar loan lete hain apne vyavsayik kaaryon
-            ke liye. DMVV Foundation is loan ko registered SHG groups ko praadan
-            karta hai jo kam se kam 6 mahine se sakt ke roop mein kaam kar rahe
-            hon.
+            Self Help Group (SHG) Loan is a group loan scheme where women's
+            self-help groups collectively take loans for their business
+            activities. DMVV Foundation provides this loan to registered SHG
+            groups that have been operating for at least 6 months.
           </p>
         </section>
 
         {/* Benefits */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-6">
-            Fayde (Benefits)
+            Benefits
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(
               [
                 [
-                  "💰 Samuh Rin",
-                  "Samuh ke naam par loan milta hai, vyaktigat guarantee ki zaroorat nahi.",
+                  "💰 Group Loan",
+                  "Loan is given in the group's name — no individual guarantee required.",
                 ],
                 [
-                  "▼ Kam Byaj",
-                  "Sirf 6% varshik byaj dar par loan uplabdh hai, baki banks se bahut kam.",
+                  "▼ Low Interest",
+                  "Available at just 6% annual interest rate — much lower than other banks.",
                 ],
                 [
-                  "⚡ Jaldi Processing",
-                  "Poori process 7-10 din mein poori hoti hai.",
+                  "⚡ Quick Processing",
+                  "The entire process is completed within 7-10 days.",
                 ],
-                ["📈 Loan Limit", "₹1 lakh se ₹50 lakh tak ka loan milta hai."],
+                ["📈 Loan Limit", "Loans available from ₹1 lakh to ₹50 lakh."],
                 [
                   "📅 Flexible Tenure",
-                  "2 se 7 saal ki avadhi ka chunav karein.",
+                  "Choose a repayment tenure of 2 to 7 years.",
                 ],
-                ["🤝 DMVV Support", "Poori process mein DMVV team ka sahyog."],
+                [
+                  "🤝 DMVV Support",
+                  "DMVV team support throughout the entire process.",
+                ],
               ] as [string, string][]
             ).map(([t, d]) => (
               <Card key={t}>
@@ -189,16 +191,16 @@ export default function SHGLoan() {
         {/* Eligibility */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-            Paatrata (Eligibility)
+            Eligibility
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
-              "DMVV Foundation mein registered SHG group",
+              "Registered SHG group with DMVV Foundation",
               "Minimum 10 active members",
-              "6 mahine se adhik samuh ki bachat record",
+              "Group savings record of more than 6 months",
               "Samuh KYC completed",
-              "Koi purana default nahi",
-              "Samuh ka bank account hona chahiye",
+              "No previous loan defaults",
+              "Group must have a bank account",
             ].map((e) => (
               <div
                 key={e}
@@ -217,16 +219,16 @@ export default function SHGLoan() {
         {/* How to apply */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-6">
-            Kaise Apply Karein (Steps)
+            How to Apply (Steps)
           </h2>
           <div className="space-y-3">
             {(
               [
-                ["1", "Niche form bharein ya DMVV center par jaaein"],
-                ["2", "Samuh documents submit karein"],
+                ["1", "Fill the form below or visit a DMVV center"],
+                ["2", "Submit group documents"],
                 ["3", "Field officer verification"],
-                ["4", "Loan committee approval (3-5 din)"],
-                ["5", "Loan disbursement samuh ke bank account mein"],
+                ["4", "Loan committee approval (3-5 days)"],
+                ["5", "Loan disbursement into the group's bank account"],
               ] as [string, string][]
             ).map(([num, step]) => (
               <div
@@ -252,10 +254,10 @@ export default function SHGLoan() {
           >
             <CheckCircle size={56} className="text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-extrabold text-green-800">
-              Application Submit Ho Gayi!
+              Application Submitted Successfully!
             </h2>
             <p className="text-green-600 mt-2">
-              Hamare team aapko 2-3 working days mein contact karenge.
+              Our team will contact you within 2-3 working days.
             </p>
             <Button
               className="mt-6 bg-blue-600 text-white"
@@ -265,7 +267,7 @@ export default function SHGLoan() {
               }}
               data-ocid="shg_loan.primary_button"
             >
-              Naya Application
+              New Application
             </Button>
           </motion.div>
         ) : (
@@ -274,14 +276,14 @@ export default function SHGLoan() {
               SHG Loan Application Form
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <F label="Aavedan karta ka naam" k="applicantName" required />
+              <F label="Applicant Name" k="applicantName" required />
               <F label="Mobile Number" k="mobile" type="tel" required />
               <F label="Email" k="email" type="email" />
               <F label="Village / Ward" k="village" />
               <F label="Block" k="block" />
               <F label="District" k="district" required />
               <F label="State" k="state" />
-              <F label="SHG Group Ka Naam" k="shgName" required />
+              <F label="SHG Group Name" k="shgName" required />
               <F label="SHG Registration Number" k="shgRegNo" />
               <F
                 label="Members Count"
@@ -311,9 +313,9 @@ export default function SHGLoan() {
               <F label="Account Number" k="accountNumber" required />
               <F label="IFSC Code" k="ifscCode" />
               <div className="md:col-span-2">
-                <Label className="text-xs">Loan ka Purpose</Label>
+                <Label className="text-xs">Loan Purpose</Label>
                 <Textarea
-                  placeholder="Loan kis kaam ke liye chahiye..."
+                  placeholder="What will the loan be used for..."
                   value={form.purpose || ""}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, purpose: e.target.value }))
@@ -325,7 +327,7 @@ export default function SHGLoan() {
               <div className="md:col-span-2">
                 <Label className="text-xs">Group Activity Description</Label>
                 <Textarea
-                  placeholder="Group kya kaam karta hai..."
+                  placeholder="Describe the group's activities..."
                   value={form.groupActivity || ""}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, groupActivity: e.target.value }))

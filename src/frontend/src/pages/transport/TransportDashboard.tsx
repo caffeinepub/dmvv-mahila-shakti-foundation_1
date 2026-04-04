@@ -551,7 +551,7 @@ function TransportOrders() {
           className="text-center py-12 text-gray-400"
           data-ocid="transport_orders.empty_state"
         >
-          Koi order nahi.
+          No orders found.
         </div>
       ) : (
         <div className="space-y-3">
@@ -651,7 +651,7 @@ function TransportShipping() {
           className="text-center py-12 text-gray-400"
           data-ocid="transport_shipping.empty_state"
         >
-          Koi active shipment nahi.
+          No active shipments.
         </div>
       ) : (
         <div className="space-y-3">
@@ -842,7 +842,7 @@ function CenterOrdersTransport() {
           className="text-center py-12 text-gray-400"
           data-ocid="transport_center_orders.empty_state"
         >
-          Koi center order nahi.
+          No center orders found.
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow overflow-x-auto">

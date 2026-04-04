@@ -256,7 +256,7 @@ export default function Signup() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-gray-800">
-                    KYC / पहचान विवरण
+                    KYC / Identity Details
                   </h3>
                   <p className="text-xs text-gray-500">
                     Aadhaar, PAN &amp; personal details (optional — can be
@@ -302,9 +302,9 @@ export default function Signup() {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Male">Male / पुरुष</SelectItem>
-                      <SelectItem value="Female">Female / महिला</SelectItem>
-                      <SelectItem value="Other">Other / अन्य</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

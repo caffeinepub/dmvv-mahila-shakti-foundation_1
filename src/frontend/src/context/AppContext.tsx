@@ -53,6 +53,7 @@ export interface User {
   gender?: string;
   nomineeName?: string;
   nomineeRelation?: string;
+  designation?: string;
 }
 
 export interface KYC {
@@ -287,6 +288,15 @@ export interface HomeHeroContent {
   subheading: string;
   primaryBtnText: string;
   secondaryBtnText: string;
+}
+
+export interface SliderImage {
+  id: string;
+  imageUrl: string;
+  title: string;
+  subtitle: string;
+  isActive: boolean;
+  sortOrder: number;
 }
 
 export interface HomeStat {
@@ -585,6 +595,112 @@ export interface UtilityService {
   type: "electricity" | "water" | "gas" | "insurance" | "other";
   contactNumber: string;
   isActive: boolean;
+}
+
+// ─── New Management Interfaces ───────────────────────────────────────────────
+
+export interface MemberRecord {
+  id: string;
+  centerId: string;
+  fullName: string;
+  mobile: string;
+  role: string;
+  salaryGrade: "A" | "B" | "C";
+  joiningDate: string;
+  status: "active" | "inactive";
+  photo?: string;
+  address?: string;
+  aadhaar?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  memberId: string;
+  memberName: string;
+  centerId: string;
+  date: string;
+  present: boolean;
+  remarks?: string;
+}
+
+export interface PayrollRecord {
+  id: string;
+  userId: string;
+  staffName: string;
+  staffDesignation: string;
+  month: string;
+  basicSalary: number;
+  hra: number;
+  da: number;
+  ta: number;
+  medical: number;
+  bonus: number;
+  grossSalary: number;
+  pfDeduction: number;
+  esiDeduction: number;
+  tdsDeduction: number;
+  advanceDeduction: number;
+  totalDeductions: number;
+  netSalary: number;
+  status: "pending" | "approved" | "paid" | "hold";
+  generatedAt: string;
+  paidAt?: string;
+  adminRemark?: string;
+}
+
+export interface LeaveRequest {
+  id: string;
+  userId: string;
+  userName: string;
+  leaveType: "casual" | "sick" | "earned" | "unpaid";
+  fromDate: string;
+  toDate: string;
+  days: number;
+  reason: string;
+  status: "pending" | "approved" | "rejected";
+  appliedAt: string;
+  hrRemark?: string;
+}
+
+export interface SupervisorReport {
+  id: string;
+  supervisorId: string;
+  supervisorName: string;
+  centerId: string;
+  centerName: string;
+  reportType: "daily" | "weekly" | "monthly";
+  date: string;
+  membersPresent: number;
+  production: number;
+  issues: string;
+  remarks: string;
+  submittedAt: string;
+}
+
+export interface ProductionEntry {
+  id: string;
+  centerId: string;
+  memberId: string;
+  memberName: string;
+  productName: string;
+  unitsProduced: number;
+  qualityCheck: "pass" | "fail" | "pending";
+  date: string;
+  remarks?: string;
+}
+
+export interface MachineRecord {
+  id: string;
+  centerId: string;
+  machineId: string;
+  machineName: string;
+  machineType: string;
+  status: "working" | "repair" | "maintenance" | "idle";
+  lastMaintenance: string;
+  nextMaintenance: string;
+  assignedTo?: string;
+  purchaseDate?: string;
+  remarks?: string;
 }
 
 // ─── Initial Data ───
@@ -1376,6 +1492,24 @@ const initialAwardWinners: AwardWinner[] = [
 
 const _initialApplyFormSubmissions: ApplyFormSubmission[] = [];
 
+const initialSliderImages: SliderImage[] = [
+  {
+    id: "slider1",
+    imageUrl: "/assets/generated/hero-women-empowerment.dim_1400x700.jpg",
+    title: "Empowering Women Across India",
+    subtitle: "Building skills, livelihoods and dignity for every woman",
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    id: "slider2",
+    imageUrl: "/assets/generated/hero-women-empowerment.dim_1400x700.jpg",
+    title: "DMVV Bhartiy Mahila Shakti Foundation",
+    subtitle: "Self Employment Revolution — Join Us Today",
+    isActive: true,
+    sortOrder: 2,
+  },
+];
 const initialHomeHero: HomeHeroContent = {
   heading: "Empowering Women, Building India",
   subheading:
@@ -1728,6 +1862,391 @@ const initialUtilityServices: UtilityService[] = [
   },
 ];
 
+// ─── New Management Initial Data ─────────────────────────────────────────────
+
+const initialMemberRecords: MemberRecord[] = [
+  {
+    id: "mr1",
+    centerId: "c1",
+    fullName: "Geeta Rani",
+    mobile: "9876501111",
+    role: "Tailor",
+    salaryGrade: "A",
+    joiningDate: "2025-06-01",
+    status: "active",
+    address: "45 Rajajipuram, Lucknow",
+  },
+  {
+    id: "mr2",
+    centerId: "c1",
+    fullName: "Sunita Kumari",
+    mobile: "9876502222",
+    role: "Embroider",
+    salaryGrade: "B",
+    joiningDate: "2025-07-15",
+    status: "active",
+    address: "12 Alambagh, Lucknow",
+  },
+  {
+    id: "mr3",
+    centerId: "c1",
+    fullName: "Asha Devi",
+    mobile: "9876503333",
+    role: "Computer Operator",
+    salaryGrade: "B",
+    joiningDate: "2025-08-01",
+    status: "active",
+    address: "77 Indira Nagar, Lucknow",
+  },
+  {
+    id: "mr4",
+    centerId: "c2",
+    fullName: "Meena Singh",
+    mobile: "9876504444",
+    role: "Weaver",
+    salaryGrade: "C",
+    joiningDate: "2025-09-10",
+    status: "active",
+    address: "34 Lanka, Varanasi",
+  },
+  {
+    id: "mr5",
+    centerId: "c2",
+    fullName: "Pooja Gupta",
+    mobile: "9876505555",
+    role: "Beauty Expert",
+    salaryGrade: "A",
+    joiningDate: "2025-10-05",
+    status: "inactive",
+    address: "89 Sigra, Varanasi",
+  },
+];
+
+const initialAttendanceRecords: AttendanceRecord[] = [
+  {
+    id: "ar1",
+    memberId: "mr1",
+    memberName: "Geeta Rani",
+    centerId: "c1",
+    date: "2026-04-01",
+    present: true,
+  },
+  {
+    id: "ar2",
+    memberId: "mr2",
+    memberName: "Sunita Kumari",
+    centerId: "c1",
+    date: "2026-04-01",
+    present: true,
+  },
+  {
+    id: "ar3",
+    memberId: "mr3",
+    memberName: "Asha Devi",
+    centerId: "c1",
+    date: "2026-04-01",
+    present: false,
+  },
+  {
+    id: "ar4",
+    memberId: "mr4",
+    memberName: "Meena Singh",
+    centerId: "c2",
+    date: "2026-04-01",
+    present: true,
+  },
+  {
+    id: "ar5",
+    memberId: "mr5",
+    memberName: "Pooja Gupta",
+    centerId: "c2",
+    date: "2026-04-01",
+    present: false,
+  },
+  {
+    id: "ar6",
+    memberId: "mr1",
+    memberName: "Geeta Rani",
+    centerId: "c1",
+    date: "2026-04-02",
+    present: true,
+  },
+  {
+    id: "ar7",
+    memberId: "mr2",
+    memberName: "Sunita Kumari",
+    centerId: "c1",
+    date: "2026-04-02",
+    present: false,
+  },
+  {
+    id: "ar8",
+    memberId: "mr3",
+    memberName: "Asha Devi",
+    centerId: "c1",
+    date: "2026-04-02",
+    present: true,
+  },
+  {
+    id: "ar9",
+    memberId: "mr4",
+    memberName: "Meena Singh",
+    centerId: "c2",
+    date: "2026-04-02",
+    present: true,
+  },
+  {
+    id: "ar10",
+    memberId: "mr5",
+    memberName: "Pooja Gupta",
+    centerId: "c2",
+    date: "2026-04-02",
+    present: false,
+  },
+];
+
+const initialPayrollRecords: PayrollRecord[] = [
+  {
+    id: "pay1",
+    userId: "u3",
+    staffName: "Rahul Verma",
+    staffDesignation: "Center Manager",
+    month: "2026-03",
+    basicSalary: 12000,
+    hra: 2400,
+    da: 1200,
+    ta: 500,
+    medical: 300,
+    bonus: 0,
+    grossSalary: 16400,
+    pfDeduction: 1440,
+    esiDeduction: 123,
+    tdsDeduction: 0,
+    advanceDeduction: 0,
+    totalDeductions: 1563,
+    netSalary: 14837,
+    status: "paid",
+    generatedAt: "2026-03-31",
+    paidAt: "2026-04-01",
+  },
+  {
+    id: "pay2",
+    userId: "u2",
+    staffName: "Priya Sharma",
+    staffDesignation: "Field Executive",
+    month: "2026-03",
+    basicSalary: 8000,
+    hra: 1600,
+    da: 800,
+    ta: 500,
+    medical: 300,
+    bonus: 0,
+    grossSalary: 11200,
+    pfDeduction: 960,
+    esiDeduction: 84,
+    tdsDeduction: 0,
+    advanceDeduction: 0,
+    totalDeductions: 1044,
+    netSalary: 10156,
+    status: "approved",
+    generatedAt: "2026-03-31",
+  },
+  {
+    id: "pay3",
+    userId: "u4",
+    staffName: "Sunita Devi",
+    staffDesignation: "Supervisor",
+    month: "2026-03",
+    basicSalary: 15000,
+    hra: 3000,
+    da: 1500,
+    ta: 500,
+    medical: 300,
+    bonus: 500,
+    grossSalary: 20800,
+    pfDeduction: 1800,
+    esiDeduction: 156,
+    tdsDeduction: 0,
+    advanceDeduction: 0,
+    totalDeductions: 1956,
+    netSalary: 18844,
+    status: "pending",
+    generatedAt: "2026-03-31",
+  },
+];
+
+const initialLeaveRequests: LeaveRequest[] = [
+  {
+    id: "lr1",
+    userId: "u2",
+    userName: "Priya Sharma",
+    leaveType: "casual",
+    fromDate: "2026-04-05",
+    toDate: "2026-04-06",
+    days: 2,
+    reason: "Personal family function",
+    status: "approved",
+    appliedAt: "2026-04-03",
+    hrRemark: "Approved",
+  },
+  {
+    id: "lr2",
+    userId: "u3",
+    userName: "Rahul Verma",
+    leaveType: "sick",
+    fromDate: "2026-04-08",
+    toDate: "2026-04-09",
+    days: 2,
+    reason: "Medical treatment",
+    status: "pending",
+    appliedAt: "2026-04-07",
+  },
+  {
+    id: "lr3",
+    userId: "u4",
+    userName: "Sunita Devi",
+    leaveType: "earned",
+    fromDate: "2026-04-15",
+    toDate: "2026-04-17",
+    days: 3,
+    reason: "Annual vacation",
+    status: "pending",
+    appliedAt: "2026-04-10",
+  },
+];
+
+const initialSupervisorReports: SupervisorReport[] = [
+  {
+    id: "sr1",
+    supervisorId: "u4",
+    supervisorName: "Sunita Devi",
+    centerId: "c1",
+    centerName: "Lucknow Main Center",
+    reportType: "daily",
+    date: "2026-04-03",
+    membersPresent: 22,
+    production: 150,
+    issues: "Machine M-003 needs repair",
+    remarks: "Production on track. Quality check passed.",
+    submittedAt: "2026-04-03T17:30:00",
+  },
+  {
+    id: "sr2",
+    supervisorId: "u4",
+    supervisorName: "Sunita Devi",
+    centerId: "c2",
+    centerName: "Varanasi Center",
+    reportType: "weekly",
+    date: "2026-03-31",
+    membersPresent: 18,
+    production: 720,
+    issues: "None",
+    remarks: "Excellent week. Exceeded targets by 12%.",
+    submittedAt: "2026-03-31T18:00:00",
+  },
+];
+
+const initialProductionEntries: ProductionEntry[] = [
+  {
+    id: "pe1",
+    centerId: "c1",
+    memberId: "mr1",
+    memberName: "Geeta Rani",
+    productName: "Salwar Kameez",
+    unitsProduced: 8,
+    qualityCheck: "pass",
+    date: "2026-04-01",
+  },
+  {
+    id: "pe2",
+    centerId: "c1",
+    memberId: "mr2",
+    memberName: "Sunita Kumari",
+    productName: "Embroidered Dupatta",
+    unitsProduced: 12,
+    qualityCheck: "pass",
+    date: "2026-04-01",
+  },
+  {
+    id: "pe3",
+    centerId: "c1",
+    memberId: "mr3",
+    memberName: "Asha Devi",
+    productName: "Kurta Set",
+    unitsProduced: 6,
+    qualityCheck: "pending",
+    date: "2026-04-02",
+  },
+  {
+    id: "pe4",
+    centerId: "c2",
+    memberId: "mr4",
+    memberName: "Meena Singh",
+    productName: "Handloom Saree",
+    unitsProduced: 3,
+    qualityCheck: "pass",
+    date: "2026-04-02",
+  },
+  {
+    id: "pe5",
+    centerId: "c2",
+    memberId: "mr4",
+    memberName: "Meena Singh",
+    productName: "Jute Bag",
+    unitsProduced: 20,
+    qualityCheck: "fail",
+    date: "2026-04-03",
+    remarks: "Stitching quality issue",
+  },
+];
+
+const initialMachineRecords: MachineRecord[] = [
+  {
+    id: "mch1",
+    centerId: "c1",
+    machineId: "M-001",
+    machineName: "Singer Sewing Machine",
+    machineType: "Sewing",
+    status: "working",
+    lastMaintenance: "2026-03-15",
+    nextMaintenance: "2026-06-15",
+    assignedTo: "Geeta Rani",
+  },
+  {
+    id: "mch2",
+    centerId: "c1",
+    machineId: "M-002",
+    machineName: "Juki Overlock",
+    machineType: "Overlock",
+    status: "working",
+    lastMaintenance: "2026-03-10",
+    nextMaintenance: "2026-06-10",
+    assignedTo: "Sunita Kumari",
+  },
+  {
+    id: "mch3",
+    centerId: "c1",
+    machineId: "M-003",
+    machineName: "Button Stitch Machine",
+    machineType: "Button",
+    status: "repair",
+    lastMaintenance: "2026-02-28",
+    nextMaintenance: "2026-03-28",
+    remarks: "Needle assembly broken",
+  },
+  {
+    id: "mch4",
+    centerId: "c2",
+    machineId: "M-004",
+    machineName: "Handloom Frame",
+    machineType: "Weaving",
+    status: "working",
+    lastMaintenance: "2026-03-01",
+    nextMaintenance: "2026-06-01",
+    assignedTo: "Meena Singh",
+  },
+];
+
 // ─── Context Type ─────────────────────────────────────────────────────────────
 
 interface AppContextType {
@@ -1753,6 +2272,7 @@ interface AppContextType {
   awardWinners: AwardWinner[];
   applyFormSubmissions: ApplyFormSubmission[];
   homeHero: HomeHeroContent;
+  sliderImages: SliderImage[];
   homeStats: HomeStat[];
   homeInitiatives: HomeInitiative[];
   homeImpactStories: HomeImpactStory[];
@@ -1850,6 +2370,9 @@ interface AppContextType {
   ) => void;
   deleteApplyFormSubmission: (id: string) => void;
   updateHomeHero: (updates: Partial<HomeHeroContent>) => void;
+  addSliderImage: (img: SliderImage) => void;
+  updateSliderImage: (id: string, updates: Partial<SliderImage>) => void;
+  deleteSliderImage: (id: string) => void;
   addHomeStat: (stat: HomeStat) => void;
   updateHomeStat: (id: string, updates: Partial<HomeStat>) => void;
   deleteHomeStat: (id: string) => void;
@@ -1933,6 +2456,36 @@ interface AppContextType {
   ) => void;
   addWalletTransaction: (t: WalletTransaction) => void;
   updateUtilityService: (id: string, updates: Partial<UtilityService>) => void;
+  // Management collections
+  memberRecords: MemberRecord[];
+  attendanceRecords: AttendanceRecord[];
+  payrollRecords: PayrollRecord[];
+  leaveRequests: LeaveRequest[];
+  supervisorReports: SupervisorReport[];
+  productionEntries: ProductionEntry[];
+  machineRecords: MachineRecord[];
+  addMemberRecord: (m: MemberRecord) => void;
+  updateMemberRecord: (id: string, updates: Partial<MemberRecord>) => void;
+  deleteMemberRecord: (id: string) => void;
+  addAttendanceRecord: (a: AttendanceRecord) => void;
+  updateAttendanceRecord: (
+    id: string,
+    updates: Partial<AttendanceRecord>,
+  ) => void;
+  addPayrollRecord: (p: PayrollRecord) => void;
+  updatePayrollRecord: (id: string, updates: Partial<PayrollRecord>) => void;
+  deletePayrollRecord: (id: string) => void;
+  addLeaveRequest: (l: LeaveRequest) => void;
+  updateLeaveRequest: (id: string, updates: Partial<LeaveRequest>) => void;
+  addSupervisorReport: (r: SupervisorReport) => void;
+  addProductionEntry: (p: ProductionEntry) => void;
+  updateProductionEntry: (
+    id: string,
+    updates: Partial<ProductionEntry>,
+  ) => void;
+  addMachineRecord: (m: MachineRecord) => void;
+  updateMachineRecord: (id: string, updates: Partial<MachineRecord>) => void;
+  deleteMachineRecord: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -2007,6 +2560,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [homeHero, setHomeHero] = useLocalStorage<HomeHeroContent>(
     "dmvv_homeHero",
     initialHomeHero,
+  );
+  const [sliderImages, setSliderImages] = useLocalStorage<SliderImage[]>(
+    "dmvv_sliderImages",
+    initialSliderImages,
   );
   const [homeStats, setHomeStats] = useLocalStorage<HomeStat[]>(
     "dmvv_homeStats",
@@ -2096,6 +2653,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     UtilityService[]
   >("dmvv_utilityServices", initialUtilityServices);
 
+  // ─── Management State ────────────────────────────────────────────────────────
+  const [memberRecords, setMemberRecords] = useLocalStorage<MemberRecord[]>(
+    "dmvv_memberRecords",
+    initialMemberRecords,
+  );
+  const [attendanceRecords, setAttendanceRecords] = useLocalStorage<
+    AttendanceRecord[]
+  >("dmvv_attendanceRecords", initialAttendanceRecords);
+  const [payrollRecords, setPayrollRecords] = useLocalStorage<PayrollRecord[]>(
+    "dmvv_payrollRecords",
+    initialPayrollRecords,
+  );
+  const [leaveRequests, setLeaveRequests] = useLocalStorage<LeaveRequest[]>(
+    "dmvv_leaveRequests",
+    initialLeaveRequests,
+  );
+  const [supervisorReports, setSupervisorReports] = useLocalStorage<
+    SupervisorReport[]
+  >("dmvv_supervisorReports", initialSupervisorReports);
+  const [productionEntries, setProductionEntries] = useLocalStorage<
+    ProductionEntry[]
+  >("dmvv_productionEntries", initialProductionEntries);
+  const [machineRecords, setMachineRecords] = useLocalStorage<MachineRecord[]>(
+    "dmvv_machineRecords",
+    initialMachineRecords,
+  );
+
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   // On mount: load all content from backend canister (server-side persistent storage)
   // so that ALL users see the admin's latest updates, not just local device state.
@@ -2144,6 +2728,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         );
       if (data.dmvv_homeHero)
         setHomeHero(data.dmvv_homeHero as HomeHeroContent);
+      if (data.dmvv_sliderImages)
+        setSliderImages(data.dmvv_sliderImages as SliderImage[]);
       if (data.dmvv_homeStats) setHomeStats(data.dmvv_homeStats as HomeStat[]);
       if (data.dmvv_homeInitiatives)
         setHomeInitiatives(data.dmvv_homeInitiatives as HomeInitiative[]);
@@ -2196,7 +2782,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (data.dmvv_utilityServices)
         setUtilityServices(data.dmvv_utilityServices as UtilityService[]);
     });
-    // biome-ignore lint/correctness/useExhaustiveDependencies: intentional mount-only effect
   }, []);
 
   // On every state change: persist to backend so all users see latest data
@@ -2263,6 +2848,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_homeHero", homeHero);
   }, [homeHero]);
+  useEffect(() => {
+    saveToBackend("dmvv_sliderImages", sliderImages);
+  }, [sliderImages]);
   useEffect(() => {
     saveToBackend("dmvv_homeStats", homeStats);
   }, [homeStats]);
@@ -2490,6 +3078,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setApplyFormSubmissions((prev) => prev.filter((a) => a.id !== id));
   const updateHomeHero = (updates: Partial<HomeHeroContent>) =>
     setHomeHero((prev) => ({ ...prev, ...updates }));
+  const addSliderImage = (img: SliderImage) =>
+    setSliderImages((prev) => [...prev, img]);
+  const updateSliderImage = (id: string, updates: Partial<SliderImage>) =>
+    setSliderImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, ...updates } : img)),
+    );
+  const deleteSliderImage = (id: string) =>
+    setSliderImages((prev) => prev.filter((img) => img.id !== id));
   const addHomeStat = (stat: HomeStat) =>
     setHomeStats((prev) => [...prev, stat]);
   const updateHomeStat = (id: string, updates: Partial<HomeStat>) =>
@@ -2669,6 +3265,58 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       prev.map((u) => (u.id === id ? { ...u, ...updates } : u)),
     );
 
+  // ─── Management CRUD ─────────────────────────────────────────────────────────
+  const addMemberRecord = (m: MemberRecord) =>
+    setMemberRecords((prev) => [...prev, m]);
+  const updateMemberRecord = (id: string, updates: Partial<MemberRecord>) =>
+    setMemberRecords((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    );
+  const deleteMemberRecord = (id: string) =>
+    setMemberRecords((prev) => prev.filter((m) => m.id !== id));
+  const addAttendanceRecord = (a: AttendanceRecord) =>
+    setAttendanceRecords((prev) => [...prev, a]);
+  const updateAttendanceRecord = (
+    id: string,
+    updates: Partial<AttendanceRecord>,
+  ) =>
+    setAttendanceRecords((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+    );
+  const addPayrollRecord = (p: PayrollRecord) =>
+    setPayrollRecords((prev) => [...prev, p]);
+  const updatePayrollRecord = (id: string, updates: Partial<PayrollRecord>) =>
+    setPayrollRecords((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    );
+  const deletePayrollRecord = (id: string) =>
+    setPayrollRecords((prev) => prev.filter((p) => p.id !== id));
+  const addLeaveRequest = (l: LeaveRequest) =>
+    setLeaveRequests((prev) => [...prev, l]);
+  const updateLeaveRequest = (id: string, updates: Partial<LeaveRequest>) =>
+    setLeaveRequests((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...updates } : l)),
+    );
+  const addSupervisorReport = (r: SupervisorReport) =>
+    setSupervisorReports((prev) => [...prev, r]);
+  const addProductionEntry = (p: ProductionEntry) =>
+    setProductionEntries((prev) => [...prev, p]);
+  const updateProductionEntry = (
+    id: string,
+    updates: Partial<ProductionEntry>,
+  ) =>
+    setProductionEntries((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    );
+  const addMachineRecord = (m: MachineRecord) =>
+    setMachineRecords((prev) => [...prev, m]);
+  const updateMachineRecord = (id: string, updates: Partial<MachineRecord>) =>
+    setMachineRecords((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    );
+  const deleteMachineRecord = (id: string) =>
+    setMachineRecords((prev) => prev.filter((m) => m.id !== id));
+
   return (
     <AppContext.Provider
       value={{
@@ -2694,6 +3342,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         awardWinners,
         applyFormSubmissions,
         homeHero,
+        sliderImages,
         homeStats,
         homeInitiatives,
         homeImpactStories,
@@ -2775,6 +3424,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateApplyFormSubmission,
         deleteApplyFormSubmission,
         updateHomeHero,
+        addSliderImage,
+        updateSliderImage,
+        deleteSliderImage,
         addHomeStat,
         updateHomeStat,
         deleteHomeStat,
@@ -2833,6 +3485,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateInsuranceApplication,
         addWalletTransaction,
         updateUtilityService,
+        memberRecords,
+        attendanceRecords,
+        payrollRecords,
+        leaveRequests,
+        supervisorReports,
+        productionEntries,
+        machineRecords,
+        addMemberRecord,
+        updateMemberRecord,
+        deleteMemberRecord,
+        addAttendanceRecord,
+        updateAttendanceRecord,
+        addPayrollRecord,
+        updatePayrollRecord,
+        deletePayrollRecord,
+        addLeaveRequest,
+        updateLeaveRequest,
+        addSupervisorReport,
+        addProductionEntry,
+        updateProductionEntry,
+        addMachineRecord,
+        updateMachineRecord,
+        deleteMachineRecord,
       }}
     >
       {children}

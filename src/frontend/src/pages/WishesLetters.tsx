@@ -20,8 +20,9 @@ export default function WishesLetters() {
             Wishes &amp; Greetings
           </h1>
           <p className="text-pink-100 text-lg max-w-2xl mx-auto">
-            Desh ke mahaanubhavon, netaon aur vishishtajan ne DMVV Foundation ke
-            kaam ko ye shubhkamnayein di hain.
+            Dignitaries, leaders and distinguished individuals have expressed
+            their support for DMVV Foundation and shared their wishes and
+            blessings.
           </p>
         </div>
       </div>
@@ -30,7 +31,7 @@ export default function WishesLetters() {
         {active.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
             <Heart size={48} className="mx-auto mb-3" />
-            <p>Wishes letters jald hi uplabdh honge.</p>
+            <p>Wishes letters will be available soon.</p>
           </div>
         ) : (
           <div className="space-y-6">

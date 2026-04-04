@@ -87,7 +87,7 @@ export default function AdminRewards() {
 
   const handleAddCat = () => {
     if (!catForm.category.trim()) {
-      toast.error("Category naam zaroori hai.");
+      toast.error("Category name is required.");
       return;
     }
     addAwardCategory({
@@ -95,7 +95,7 @@ export default function AdminRewards() {
       ...catForm,
       category: catForm.category.trim(),
     });
-    toast.success("Award category add ho gayi.");
+    toast.success("Award category added.");
     setCatOpen(false);
     setCatForm({
       category: "",
@@ -122,13 +122,13 @@ export default function AdminRewards() {
   const handleSaveCat = () => {
     if (!editCat) return;
     updateAwardCategory(editCat.id, { ...editCatForm });
-    toast.success("Category update ho gayi.");
+    toast.success("Category updated.");
     setEditCat(null);
   };
 
   const handleAddWinner = () => {
     if (!winnerForm.name.trim()) {
-      toast.error("Naam zaroori hai.");
+      toast.error("Name is required.");
       return;
     }
     addAwardWinner({
@@ -136,7 +136,7 @@ export default function AdminRewards() {
       ...winnerForm,
       name: winnerForm.name.trim(),
     });
-    toast.success("Winner add ho gaya.");
+    toast.success("Winner added successfully.");
     setWinnerOpen(false);
     setWinnerForm({
       name: "",
@@ -163,7 +163,7 @@ export default function AdminRewards() {
   const handleSaveWinner = () => {
     if (!editWinner) return;
     updateAwardWinner(editWinner.id, { ...editWinnerForm });
-    toast.success("Winner update ho gaya.");
+    toast.success("Winner updated successfully.");
     setEditWinner(null);
   };
 
@@ -174,7 +174,7 @@ export default function AdminRewards() {
           Rewards Page Management
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Award categories aur past winners manage karen
+          Manage award categories and past winners
         </p>
       </div>
 
@@ -248,7 +248,7 @@ export default function AdminRewards() {
                               Category Delete Karen?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              "{a.category}" delete ho jayegi.
+                              "{a.category}" will be permanently deleted.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -257,7 +257,7 @@ export default function AdminRewards() {
                               className="bg-red-600"
                               onClick={() => {
                                 deleteAwardCategory(a.id);
-                                toast.success("Delete ho gayi.");
+                                toast.success("Deleted successfully.");
                               }}
                             >
                               Delete
@@ -340,7 +340,7 @@ export default function AdminRewards() {
                             Winner Delete Karen?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            "{w.name}" delete ho jayega.
+                            "{w.name}" will be permanently deleted.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -349,7 +349,7 @@ export default function AdminRewards() {
                             className="bg-red-600"
                             onClick={() => {
                               deleteAwardWinner(w.id);
-                              toast.success("Delete ho gaya.");
+                              toast.success("Deleted successfully.");
                             }}
                           >
                             Delete
@@ -519,7 +519,7 @@ export default function AdminRewards() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label>Winner Naam *</Label>
+              <Label>Winner Name *</Label>
               <Input
                 value={winnerForm.name}
                 onChange={(e) =>
@@ -592,7 +592,7 @@ export default function AdminRewards() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label>Winner Naam *</Label>
+              <Label>Winner Name *</Label>
               <Input
                 value={editWinnerForm.name}
                 onChange={(e) =>

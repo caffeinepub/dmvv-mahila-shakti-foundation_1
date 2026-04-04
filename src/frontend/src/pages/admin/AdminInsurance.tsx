@@ -51,7 +51,7 @@ export default function AdminInsurance() {
 
   const handleSave = () => {
     if (!form.name || !form.premium) {
-      toast.error("Name aur premium required.");
+      toast.error("Name and premium are required.");
       return;
     }
     const data = { ...form, eligibility: eligStr.split("\n").filter(Boolean) };
@@ -294,7 +294,7 @@ export default function AdminInsurance() {
               className="text-center py-12 text-gray-400"
               data-ocid="admin_insurance.empty_state"
             >
-              Koi application nahi.
+              No applications found.
             </div>
           ) : (
             <div className="bg-white rounded-xl shadow overflow-x-auto">

@@ -32,7 +32,7 @@ import { toast } from "sonner";
 const DEFAULT_DATA = {
   hero: {
     title: "Anshika Udhyog Centre — Franchise Program",
-    subtitle: "अपना खुद का उद्योग शुरू करें — स्वरोजगार की राह पर चलें",
+    subtitle: "Start your own enterprise — Walk the path of self-employment",
     tagline:
       "Join India's growing franchise network and build your future with DMVV Bhartiy Mahila Shakti Foundation's Anshika Udhyog Centre",
   },
@@ -329,7 +329,7 @@ export default function AdminFranchise() {
 
   const saveHero = () => {
     setData({ ...data, hero: heroEdit });
-    toast.success("Hero section update ho gaya!");
+    toast.success("Hero section updated!");
   };
 
   // --- Machine helpers ---
@@ -339,7 +339,7 @@ export default function AdminFranchise() {
   };
   const saveMachine = () => {
     if (!machineForm.name || !machineForm.rate) {
-      toast.error("Naam aur rate zaroori hai");
+      toast.error("Name and rate are required");
       return;
     }
     if (machineEditing && machineForm.id) {
@@ -357,11 +357,11 @@ export default function AdminFranchise() {
     }
     setMachineForm({ id: "", name: "", description: "", rate: "", photo: "" });
     setMachineEditing(false);
-    toast.success("Machine save ho gai!");
+    toast.success("Machine saved!");
   };
   const deleteMachine = (id: string) => {
     setData({ ...data, machines: data.machines.filter((m) => m.id !== id) });
-    toast.success("Machine delete ho gai!");
+    toast.success("Machine deleted!");
   };
   const handleMachinePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -375,7 +375,7 @@ export default function AdminFranchise() {
   // --- Raw Material helpers ---
   const saveRm = () => {
     if (!rmForm.name || !rmForm.rate) {
-      toast.error("Naam aur rate zaroori hai");
+      toast.error("Name and rate are required");
       return;
     }
     if (rmEditing && rmForm.id) {
@@ -393,13 +393,13 @@ export default function AdminFranchise() {
     }
     setRmForm({ id: "", name: "", unit: "", rate: "" });
     setRmEditing(false);
-    toast.success("Raw material save ho gaya!");
+    toast.success("Raw material saved!");
   };
 
   // --- Blueprint helpers ---
   const saveBp = () => {
     if (!bpForm.title) {
-      toast.error("Title zaroori hai");
+      toast.error("Title is required");
       return;
     }
     const stepNum =
@@ -422,13 +422,13 @@ export default function AdminFranchise() {
     }
     setBpForm({ id: "", step: 0, title: "", description: "" });
     setBpEditing(false);
-    toast.success("Blueprint step save ho gaya!");
+    toast.success("Blueprint step saved!");
   };
 
   // --- Roadmap helpers ---
   const saveRoadmap = () => {
     if (!roadmapForm.title) {
-      toast.error("Title zaroori hai");
+      toast.error("Title is required");
       return;
     }
     const stepNum =
@@ -459,13 +459,13 @@ export default function AdminFranchise() {
       duration: "",
     });
     setRoadmapEditing(false);
-    toast.success("Roadmap step save ho gaya!");
+    toast.success("Roadmap step saved!");
   };
 
   // --- Charge helpers ---
   const saveCharge = () => {
     if (!chargeForm.item || !chargeForm.amount) {
-      toast.error("Item aur amount zaroori hai");
+      toast.error("Item and amount are required");
       return;
     }
     if (chargeEditing && chargeForm.id) {
@@ -483,13 +483,13 @@ export default function AdminFranchise() {
     }
     setChargeForm({ id: "", item: "", amount: "", note: "" });
     setChargeEditing(false);
-    toast.success("Charge save ho gaya!");
+    toast.success("Charge saved!");
   };
 
   // --- Marketing Support helpers ---
   const saveMs = () => {
     if (!msForm.title) {
-      toast.error("Title zaroori hai");
+      toast.error("Title is required");
       return;
     }
     if (msEditing && msForm.id) {
@@ -510,13 +510,13 @@ export default function AdminFranchise() {
     }
     setMsForm({ id: "", title: "", description: "" });
     setMsEditing(false);
-    toast.success("Marketing support save ho gaya!");
+    toast.success("Marketing support saved!");
   };
 
   // --- Plan helpers ---
   const savePlan = () => {
     if (!planForm.name || !planForm.price) {
-      toast.error("Naam aur price zaroori hai");
+      toast.error("Name and price are required");
       return;
     }
     const features = planForm.features
@@ -546,13 +546,13 @@ export default function AdminFranchise() {
       recommended: false,
     });
     setPlanEditing(false);
-    toast.success("Plan save ho gaya!");
+    toast.success("Plan saved!");
   };
 
   // --- Packaging helpers ---
   const savePkg = () => {
     if (!pkgForm.product) {
-      toast.error("Product naam zaroori hai");
+      toast.error("Product name is required");
       return;
     }
     if (pkgEditing && pkgForm.id) {
@@ -577,13 +577,13 @@ export default function AdminFranchise() {
       qtyPerBox: "",
     });
     setPkgEditing(false);
-    toast.success("Packaging detail save ho gaya!");
+    toast.success("Packaging detail saved!");
   };
 
   // --- Program helpers ---
   const saveProg = () => {
     if (!progForm.name) {
-      toast.error("Program naam zaroori hai");
+      toast.error("Program name is required");
       return;
     }
     if (progEditing && progForm.id) {
@@ -601,7 +601,7 @@ export default function AdminFranchise() {
     }
     setProgForm({ id: "", name: "", description: "", badge: "" });
     setProgEditing(false);
-    toast.success("Program save ho gaya!");
+    toast.success("Program saved!");
   };
 
   return (
@@ -612,8 +612,7 @@ export default function AdminFranchise() {
             Franchise Page Management
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Anshika Udhyog Centre — Franchise page ka pura content yahan se
-            manage karein
+            Anshika Udhyog Centre — Manage all franchise page content here
           </p>
         </div>
         <a href="/#/franchise" target="_blank" rel="noreferrer">
@@ -699,7 +698,7 @@ export default function AdminFranchise() {
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <Label>Machine Naam *</Label>
+                  <Label>Machine Name *</Label>
                   <Input
                     placeholder="Machine name"
                     value={machineForm.name}
@@ -833,13 +832,13 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package size={18} />{" "}
-                {rmEditing ? "Raw Material Edit" : "Naya Raw Material"}
+                {rmEditing ? "Edit Raw Material" : "Add New Raw Material"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <Label>Naam *</Label>
+                  <Label>Name *</Label>
                   <Input
                     placeholder="Material name"
                     value={rmForm.name}
@@ -951,7 +950,7 @@ export default function AdminFranchise() {
           <Card className="mb-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Factory size={18} /> {bpEditing ? "Step Edit" : "Naya Step"}
+                <Factory size={18} /> {bpEditing ? "Edit Step" : "Add New Step"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -1048,7 +1047,7 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp size={18} />{" "}
-                {roadmapEditing ? "Step Edit" : "Naya Roadmap Step"}
+                {roadmapEditing ? "Edit Step" : "Add New Roadmap Step"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -1169,7 +1168,7 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <IndianRupee size={18} />{" "}
-                {chargeEditing ? "Charge Edit" : "Naya Charge"}
+                {chargeEditing ? "Edit Charge" : "Add New Charge"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -1288,7 +1287,7 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Megaphone size={18} />{" "}
-                {msEditing ? "Item Edit" : "Naya Support Item"}
+                {msEditing ? "Edit Item" : "Add New Support Item"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -1378,13 +1377,13 @@ export default function AdminFranchise() {
           <Card className="mb-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Award size={18} /> {planEditing ? "Plan Edit" : "Naya Plan"}
+                <Award size={18} /> {planEditing ? "Edit Plan" : "Add New Plan"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <Label>Plan Naam *</Label>
+                  <Label>Plan Name *</Label>
                   <Input
                     placeholder="e.g. Starter Plan"
                     value={planForm.name}
@@ -1425,7 +1424,7 @@ export default function AdminFranchise() {
                 </div>
               </div>
               <div>
-                <Label>Features (ek line mein ek feature)</Label>
+                <Label>Features (one feature per line)</Label>
                 <Textarea
                   rows={4}
                   placeholder={"1 Machine\n5-Day Training\nFull Branding Kit"}
@@ -1445,7 +1444,7 @@ export default function AdminFranchise() {
                   id="recommended"
                 />
                 <Label htmlFor="recommended">
-                  Recommended Plan (highlight karega)
+                  Recommended Plan (will be highlighted)
                 </Label>
               </div>
               <div className="flex gap-2">
@@ -1539,7 +1538,7 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Box size={18} />{" "}
-                {pkgEditing ? "Packaging Edit" : "Naya Packaging Detail"}
+                {pkgEditing ? "Edit Packaging" : "Add New Packaging Detail"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -1685,13 +1684,13 @@ export default function AdminFranchise() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap size={18} />{" "}
-                {progEditing ? "Program Edit" : "Naya Udhyog Program"}
+                {progEditing ? "Edit Program" : "Add New Program"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2">
-                  <Label>Program Naam *</Label>
+                  <Label>Program Name *</Label>
                   <Input
                     placeholder="e.g. Agarbatti Udhyog"
                     value={progForm.name}
@@ -1807,9 +1806,9 @@ export default function AdminFranchise() {
               {applications.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                   <Handshake size={48} className="mx-auto mb-3 opacity-30" />
-                  <p>Koi application nahi aayi abhi tak</p>
+                  <p>No applications received yet</p>
                   <p className="text-xs mt-1">
-                    Jab koi franchise ke liye apply karega, yahan dikhega
+                    When someone applies for a franchise, it will appear here
                   </p>
                 </div>
               ) : (

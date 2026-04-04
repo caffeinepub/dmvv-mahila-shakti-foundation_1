@@ -69,7 +69,7 @@ export default function AdminFoundationEvents() {
 
   const handleAdd = () => {
     if (!addForm.title.trim()) {
-      toast.error("Title zaroori hai.");
+      toast.error("Title is required.");
       return;
     }
     addFoundationEvent({
@@ -78,7 +78,7 @@ export default function AdminFoundationEvents() {
       title: addForm.title.trim(),
       imageUrl: addImage || addForm.imageUrl || undefined,
     });
-    toast.success("Event add ho gaya.");
+    toast.success("Event added successfully.");
     setAddOpen(false);
     setAddForm({ ...EMPTY });
     setAddImage(null);
@@ -104,7 +104,7 @@ export default function AdminFoundationEvents() {
       ...editForm,
       imageUrl: editImage || editForm.imageUrl || undefined,
     });
-    toast.success("Event update ho gaya.");
+    toast.success("Event updated successfully.");
     setEditItem(null);
     setEditImage(null);
   };
@@ -124,15 +124,13 @@ export default function AdminFoundationEvents() {
           className="bg-ngo-green hover:bg-green-700 text-white"
           onClick={() => setAddOpen(true)}
         >
-          <Plus size={16} className="mr-1" /> Naya Event
+          <Plus size={16} className="mr-1" /> New Event
         </Button>
       </div>
 
       <div className="space-y-4">
         {foundationEvents.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            Abhi koi event nahi hai.
-          </div>
+          <div className="text-center py-16 text-gray-400">No events yet.</div>
         ) : (
           foundationEvents.map((item) => (
             <Card key={item.id} className="overflow-hidden">
@@ -207,7 +205,7 @@ export default function AdminFoundationEvents() {
                                 Event Delete Karen?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                "{item.title}" permanently delete ho jayega.
+                                "{item.title}" will be permanently deleted.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -216,7 +214,7 @@ export default function AdminFoundationEvents() {
                                 className="bg-red-600 hover:bg-red-700"
                                 onClick={() => {
                                   deleteFoundationEvent(item.id);
-                                  toast.success("Event delete ho gaya.");
+                                  toast.success("Event deleted successfully.");
                                 }}
                               >
                                 Delete
@@ -238,7 +236,7 @@ export default function AdminFoundationEvents() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Naya Event Add Karen</DialogTitle>
+            <DialogTitle>Add New Event</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
@@ -257,7 +255,7 @@ export default function AdminFoundationEvents() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>
@@ -287,7 +285,7 @@ export default function AdminFoundationEvents() {
                   setAddForm((f) => ({ ...f, title: e.target.value }))
                 }
                 className="mt-1"
-                placeholder="Event ka naam"
+                placeholder="Event name"
               />
             </div>
             <div>
@@ -388,7 +386,7 @@ export default function AdminFoundationEvents() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>

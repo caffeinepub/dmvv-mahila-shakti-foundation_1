@@ -102,7 +102,7 @@ export default function Contact() {
         message: "",
       });
       toast.success(
-        "आपका आवेदन सफलतापूर्वक जमा हो गया! हम 2-3 कार्य दिवसों में संपर्क करेंगे.",
+        "Your application has been submitted successfully! We will contact you within 2-3 working days.",
       );
     }, 1000);
   };
@@ -272,9 +272,7 @@ export default function Contact() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-10">
             <Badge className="bg-ngo-orange text-white mb-3">Apply Now</Badge>
-            <h2 className="text-3xl font-extrabold text-gray-900">
-              अभी आवेदन करें
-            </h2>
+            <h2 className="text-3xl font-extrabold text-gray-900">Apply Now</h2>
             <p className="text-gray-500 mt-2">
               Training, loan, employment, awards, or volunteer — fill the form
               and we'll reach you
@@ -302,7 +300,7 @@ export default function Contact() {
                           fullName: e.target.value,
                         }))
                       }
-                      placeholder="आपका पूरा नाम"
+                      placeholder="Your full name"
                       className="mt-1"
                       data-ocid="apply.input"
                     />
@@ -405,7 +403,7 @@ export default function Contact() {
                     onChange={(e) =>
                       setApplyForm((p) => ({ ...p, message: e.target.value }))
                     }
-                    placeholder="Kuch aur batana chahte hain? Yahan likhein..."
+                    placeholder="Anything else you want to share? Write here..."
                     rows={4}
                     className="mt-1"
                     data-ocid="apply.textarea"
@@ -421,8 +419,8 @@ export default function Contact() {
                 >
                   <Send size={16} className="mr-2" />
                   {applySubmitting
-                    ? "आवेदन जमा हो रहा है..."
-                    : "आवेदन जमा करें (Submit Application)"}
+                    ? "Submitting application..."
+                    : "Submit Application"}
                 </Button>
               </form>
             </CardContent>

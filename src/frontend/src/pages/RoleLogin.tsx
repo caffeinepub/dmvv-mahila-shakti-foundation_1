@@ -98,7 +98,7 @@ export default function RoleLogin() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Email aur password dono zaroori hain.");
+      toast.error("Both email and password are required.");
       return;
     }
     setLoading(true);
@@ -112,26 +112,26 @@ export default function RoleLogin() {
       if (!user) {
         toast.error(
           selectedRole
-            ? "Is role ke liye email/password galat hai."
+            ? "Incorrect email or password for this role."
             : "Invalid email or password.",
         );
         setLoading(false);
         return;
       }
       if (user.status === "pending") {
-        toast.warning("Aapka account admin approval ke intezaar mein hai.");
+        toast.warning("Your account is pending admin approval.");
         setLoading(false);
         return;
       }
       if (user.status === "rejected") {
         toast.error(
-          "Aapka account reject ho gaya hai. Admin se sampark karein.",
+          "Your account has been rejected. Please contact the admin.",
         );
         setLoading(false);
         return;
       }
       setCurrentUser(user);
-      toast.success(`Swagat hai, ${user.fullName}!`);
+      toast.success(`Welcome, ${user.fullName}!`);
       navigate(getDashboardPath(user.role));
       setLoading(false);
     }, 800);
@@ -148,14 +148,14 @@ export default function RoleLogin() {
             DMVV Portal Login
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Apna role chunein aur login karein
+            Choose your role and login
           </p>
         </div>
 
         {!selectedRole ? (
           <div>
             <h2 className="text-center text-lg font-semibold text-gray-700 mb-5">
-              Aap kaun hain? Role chunein:
+              Who are you? Select your role:
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {roles.map((role) => (
@@ -183,7 +183,7 @@ export default function RoleLogin() {
               ))}
             </div>
             <p className="text-center text-sm text-gray-500 mt-6">
-              Direct login ke liye:{" "}
+              For direct login:{" "}
               <Link
                 to="/login"
                 className="text-ngo-green font-semibold hover:underline"
@@ -233,7 +233,7 @@ export default function RoleLogin() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email daalen"
+                      placeholder="Enter email"
                       className="mt-1"
                       autoComplete="email"
                       data-ocid="role_login.email_input"
@@ -246,7 +246,7 @@ export default function RoleLogin() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password daalen"
+                      placeholder="Enter password"
                       className="mt-1"
                       autoComplete="current-password"
                       data-ocid="role_login.password_input"
@@ -259,12 +259,12 @@ export default function RoleLogin() {
                     data-ocid="role_login.submit_button"
                   >
                     <LogIn size={16} className="mr-2" />
-                    {loading ? "Login ho raha hai..." : "Login Karein"}
+                    {loading ? "Logging in..." : "Login"}
                   </Button>
                 </form>
 
                 <p className="text-center text-sm text-gray-500 mt-4">
-                  Account nahi hai?{" "}
+                  Don't have an account?{" "}
                   <Link
                     to="/signup"
                     className="text-ngo-green font-semibold hover:underline"

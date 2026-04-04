@@ -48,7 +48,7 @@ export default function Rewards() {
             className="text-center py-10 text-gray-400"
             data-ocid="rewards.empty_state"
           >
-            Koi award category available nahi hai.
+            No award categories available.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -118,7 +118,7 @@ export default function Rewards() {
           </h2>
           {activeWinners.length === 0 ? (
             <div className="text-center py-10 text-gray-400">
-              Koi past winner available nahi hai.
+              No past winners available.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -137,7 +137,7 @@ export default function AdminDownloads() {
             Downloads Management
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Forms, brochures, reports aur resources manage karen
+            Manage forms, brochures, reports and resources
           </p>
         </div>
         <Button
@@ -255,7 +255,7 @@ export default function AdminDownloads() {
                               Delete Download?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              "{item.name}" permanently delete ho jayega.
+                              "{item.name}" will be permanently deleted.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

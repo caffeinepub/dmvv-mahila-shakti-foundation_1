@@ -86,11 +86,11 @@ export default function AdminNews() {
   // Add handlers
   const handleAdd = () => {
     if (!addForm.title.trim()) {
-      toast.error("News title zaroori hai.");
+      toast.error("News title is required.");
       return;
     }
     if (!addForm.content.trim()) {
-      toast.error("News content zaroori hai.");
+      toast.error("News content is required.");
       return;
     }
     const item: NewsItem = {
@@ -103,7 +103,7 @@ export default function AdminNews() {
       imageUrl: addImage || addForm.imageUrl || undefined,
     };
     addNews(item);
-    toast.success("News add ho gayi.");
+    toast.success("News added.");
     setAddOpen(false);
     setAddForm({ ...EMPTY_FORM });
     setAddImage(null);
@@ -133,21 +133,19 @@ export default function AdminNews() {
       isPublished: editForm.isPublished,
       imageUrl: editImage || editForm.imageUrl || undefined,
     });
-    toast.success("News update ho gayi.");
+    toast.success("News updated.");
     setEditItem(null);
     setEditImage(null);
   };
 
   const handleTogglePublish = (item: NewsItem) => {
     updateNews(item.id, { isPublished: !item.isPublished });
-    toast.success(
-      item.isPublished ? "News unpublished kar di." : "News publish ho gayi.",
-    );
+    toast.success(item.isPublished ? "News unpublished." : "News published.");
   };
 
   const handleDelete = (id: string) => {
     deleteNews(id);
-    toast.success("News delete ho gayi.");
+    toast.success("News deleted.");
   };
 
   return (
@@ -201,7 +199,7 @@ export default function AdminNews() {
       <div className="space-y-4">
         {news.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            Abhi koi news nahi hai. "New News" button se add karein.
+            No news items yet. Use the 'New News' button to add one.
           </div>
         ) : (
           news.map((item) => (
@@ -283,8 +281,8 @@ export default function AdminNews() {
                                 News Delete Karen?
                               </AlertDialogTitle>
                               <AlertDialogDescription>
-                                "{item.title}" permanently delete ho jayegi. Yeh
-                                action undo nahi ho sakti.
+                                "{item.title}" will be permanently deleted. This
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -332,7 +330,7 @@ export default function AdminNews() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein (click)</p>
+                    <p className="text-sm">Select a photo (click)</p>
                   </div>
                 )}
               </button>
@@ -424,7 +422,7 @@ export default function AdminNews() {
                   setAddForm((f) => ({ ...f, isPublished: v }))
                 }
               />
-              <Label>Abhi Publish Karen</Label>
+              <Label>Publish Now</Label>
             </div>
           </div>
           <DialogFooter>
@@ -465,7 +463,7 @@ export default function AdminNews() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>

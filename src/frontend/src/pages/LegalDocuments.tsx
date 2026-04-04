@@ -21,8 +21,8 @@ export default function LegalDocuments() {
             Legal Documents
           </h1>
           <p className="text-green-100 text-lg max-w-2xl mx-auto">
-            DMVV Bhartiy Mahila Shakti Foundation ke saare kanuni dastavez —
-            registration, tax exemption, aur government approvals.
+            All legal documents of DMVV Bhartiy Mahila Shakti Foundation —
+            registration, tax exemption, and government approvals.
           </p>
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function LegalDocuments() {
         {active.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
             <Shield size={48} className="mx-auto mb-3" />
-            <p>Documents jald hi uplabdh honge.</p>
+            <p>Documents will be available soon.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

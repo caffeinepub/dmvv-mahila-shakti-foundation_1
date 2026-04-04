@@ -31,7 +31,7 @@ export default function UdhyogLoan() {
       !form.bankName ||
       !form.accountNumber
     ) {
-      toast.error("Kripya sare required fields bharein.");
+      toast.error("Please fill all required fields.");
       return;
     }
     setSubmitting(true);
@@ -58,7 +58,7 @@ export default function UdhyogLoan() {
     addLoanApplication(app);
     setSubmitted(true);
     setSubmitting(false);
-    toast.success("🎉 Udhyog Loan application submit ho gayi!");
+    toast.success("🎉 Udhyog Loan application submitted successfully!");
   };
 
   const F = ({
@@ -121,8 +121,8 @@ export default function UdhyogLoan() {
             Udhyog Loan Yojana
           </h1>
           <p className="text-orange-100 mt-3 max-w-2xl text-lg">
-            Mahila udyamitaon ke liye vyavsayik loan. Apne sapno ka business
-            shuru karein ya badhaein.
+            Business loan for women entrepreneurs. Start or grow your dream
+            business.
           </p>
         </div>
       </section>
@@ -150,14 +150,12 @@ export default function UdhyogLoan() {
         {/* What is */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-            Udhyog Loan Kya Hai?
+            What is Udhyog Loan?
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            Udhyog Loan ek vishesh vyavsayik loan yojana hai jo mahila
-            udyamitaon ko apna vyavsay shuru karne ya badhaane ke liye praadan
-            ki jaati hai. DMVV Foundation ke saath registered mahilayein is loan
-            ke liye apply kar sakti hain aur apni aajivika behtar bana sakti
-            hain.
+            Udhyog Loan is a special business loan scheme designed to help women
+            entrepreneurs start or grow their businesses. Women registered with
+            DMVV Foundation can apply for this loan to improve their livelihood.
           </p>
         </section>
 
@@ -194,16 +192,16 @@ export default function UdhyogLoan() {
         {/* Eligibility */}
         <section>
           <h2 className="text-2xl font-extrabold text-gray-900 mb-4">
-            Paatrata (Eligibility)
+            Eligibility
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
-              "DMVV Foundation ki approved member",
-              "Mahila ya mahila-led business",
-              "Umar 18-55 saal",
+              "Approved member of DMVV Foundation",
+              "Women or women-led business",
+              "Age 18-55 years",
               "Valid KYC documents",
               "Bank account mandatory",
-              "Business plan ya existing business proof",
+              "Business plan or existing business proof",
             ].map((e) => (
               <div
                 key={e}
@@ -222,7 +220,7 @@ export default function UdhyogLoan() {
         {/* Required documents */}
         <section className="bg-orange-50 rounded-2xl p-6">
           <h2 className="text-xl font-extrabold text-gray-900 mb-4">
-            Zaroori Documents
+            Required Documents
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[
@@ -255,10 +253,10 @@ export default function UdhyogLoan() {
           >
             <CheckCircle size={56} className="text-orange-500 mx-auto mb-4" />
             <h2 className="text-2xl font-extrabold text-orange-800">
-              Application Submit Ho Gayi!
+              Application Submitted Successfully!
             </h2>
             <p className="text-orange-600 mt-2">
-              Hamare team aapko 2-3 working days mein contact karenge.
+              Our team will contact you within 2-3 working days.
             </p>
             <Button
               className="mt-6 bg-orange-600 text-white"
@@ -268,7 +266,7 @@ export default function UdhyogLoan() {
               }}
               data-ocid="udhyog_loan.primary_button"
             >
-              Naya Application
+              New Application
             </Button>
           </motion.div>
         ) : (
@@ -277,11 +275,11 @@ export default function UdhyogLoan() {
               Udhyog Loan Application Form
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <F label="Aavedan karta ka naam" k="applicantName" required />
+              <F label="Applicant Name" k="applicantName" required />
               <F label="Mobile Number" k="mobile" type="tel" required />
               <F label="Email" k="email" type="email" />
               <F label="Address" k="address" />
-              <F label="Business Ka Naam" k="businessName" required />
+              <F label="Business Name" k="businessName" required />
               <div>
                 <Label className="text-xs">Business Category</Label>
                 <Select
@@ -325,9 +323,9 @@ export default function UdhyogLoan() {
               <F label="Account Number" k="accountNumber" required />
               <F label="IFSC Code" k="ifscCode" />
               <div className="md:col-span-2">
-                <Label className="text-xs">Loan ka Purpose</Label>
+                <Label className="text-xs">Loan Purpose</Label>
                 <Textarea
-                  placeholder="Loan kis kaam ke liye chahiye..."
+                  placeholder="What will the loan be used for..."
                   value={form.purpose || ""}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, purpose: e.target.value }))
@@ -339,7 +337,7 @@ export default function UdhyogLoan() {
               <div className="md:col-span-2">
                 <Label className="text-xs">Business Details</Label>
                 <Textarea
-                  placeholder="Apne business ke baare mein bataaein..."
+                  placeholder="Describe your business..."
                   value={form.businessDetails || ""}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, businessDetails: e.target.value }))

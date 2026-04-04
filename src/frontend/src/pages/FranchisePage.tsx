@@ -30,7 +30,7 @@ import { toast } from "sonner";
 const DEFAULT_DATA = {
   hero: {
     title: "Anshika Udhyog Centre — Franchise Program",
-    subtitle: "अपना खुद का उद्योग शुरू करें — स्वरोजगार की राह पर चलें",
+    subtitle: "Start your own enterprise — Walk the path of self-employment",
     tagline:
       "Join India's growing franchise network and build your future with DMVV Bhartiy Mahila Shakti Foundation's Anshika Udhyog Centre",
   },
@@ -443,7 +443,7 @@ export default function FranchisePage() {
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.phone) {
-      toast.error("Naam aur phone number bharna zaroori hai");
+      toast.error("Name and phone number are required");
       return;
     }
     setSubmitting(true);
@@ -457,7 +457,7 @@ export default function FranchisePage() {
     });
     localStorage.setItem("dmvv_franchise_applications", JSON.stringify(apps));
     toast.success(
-      "Aapka application submit ho gaya! Hamari team jald contact karegi.",
+      "Your application has been submitted! Our team will contact you shortly.",
     );
     setForm({ name: "", phone: "", district: "", state: "", message: "" });
     setSubmitting(false);
@@ -593,7 +593,7 @@ export default function FranchisePage() {
               Raw Material Details & Rate
             </h2>
             <p className="text-gray-500 mt-2">
-              Sabhi kachcha maal ki list, unit aur current rate
+              List of all raw materials, units and current rates
             </p>
           </div>
           <div className="overflow-x-auto rounded-xl border border-yellow-200 shadow-sm bg-white">
@@ -691,7 +691,7 @@ export default function FranchisePage() {
               Franchise Roadmap
             </h2>
             <p className="text-gray-500 mt-2">
-              Franchise lene se launch tak ka pura safar — sirf 30 din mein
+              Complete journey from franchise to launch — in just 30 days
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -771,7 +771,7 @@ export default function FranchisePage() {
               Marketing Support
             </h2>
             <p className="text-gray-500 mt-2">
-              Hamari taraf se franchise partners ko milne wala support
+              Support provided to our franchise partners
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -804,7 +804,7 @@ export default function FranchisePage() {
               Franchise Plans
             </h2>
             <p className="text-gray-500 mt-2">
-              Apni zaroorat aur budget ke hisaab se plan chunein
+              Choose a plan based on your needs and budget
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -868,7 +868,7 @@ export default function FranchisePage() {
               Product Packaging Details
             </h2>
             <p className="text-gray-500 mt-2">
-              Har product ki packaging type, size aur quantity details
+              Packaging type, size and quantity details for each product
             </p>
           </div>
           <div className="overflow-x-auto rounded-xl border border-indigo-100 shadow-sm bg-white">
@@ -921,7 +921,7 @@ export default function FranchisePage() {
               <Zap size={14} /> Udhyog Programs
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900">
-              Anshika Udhyog — Sab Programs
+              Anshika Udhyog — All Programs
             </h2>
             <p className="text-gray-500 mt-2">
               Har franchise centre mein yeh programs available hain
@@ -968,7 +968,7 @@ export default function FranchisePage() {
               Franchise Ke Liye Apply Karein
             </h2>
             <p className="text-green-200 mt-2">
-              Form bharo, hamari team 48 ghante mein contact karegi
+              Fill the form, our team will contact you within 48 hours
             </p>
           </div>
           <Card className="border-0 shadow-2xl">
@@ -977,7 +977,7 @@ export default function FranchisePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-gray-700 font-medium mb-1 block">
-                      Pura Naam *
+                      Full Name *
                     </Label>
                     <div className="relative">
                       <User
@@ -986,7 +986,7 @@ export default function FranchisePage() {
                       />
                       <Input
                         className="pl-9"
-                        placeholder="Aapka pura naam"
+                        placeholder="Your full name"
                         value={form.name}
                         onChange={(e) =>
                           setForm({ ...form, name: e.target.value })
@@ -1026,7 +1026,7 @@ export default function FranchisePage() {
                       />
                       <Input
                         className="pl-9"
-                        placeholder="Aapka district"
+                        placeholder="Your district"
                         value={form.district}
                         onChange={(e) =>
                           setForm({ ...form, district: e.target.value })
@@ -1045,7 +1045,7 @@ export default function FranchisePage() {
                       />
                       <Input
                         className="pl-9"
-                        placeholder="Aapka state"
+                        placeholder="Your state"
                         value={form.state}
                         onChange={(e) =>
                           setForm({ ...form, state: e.target.value })
@@ -1059,7 +1059,7 @@ export default function FranchisePage() {
                     Message / Query
                   </Label>
                   <Textarea
-                    placeholder="Koi bhi sawaal ya details yahan likhein..."
+                    placeholder="Any questions or details you want to share..."
                     rows={3}
                     value={form.message}
                     onChange={(e) =>
@@ -1073,9 +1073,7 @@ export default function FranchisePage() {
                   className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 text-base"
                 >
                   <Handshake size={16} className="mr-2" />{" "}
-                  {submitting
-                    ? "Submit Ho Raha Hai..."
-                    : "Application Submit Karein"}
+                  {submitting ? "Submitting..." : "Submit Application"}
                 </Button>
               </form>
             </CardContent>

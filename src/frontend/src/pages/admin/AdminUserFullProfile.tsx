@@ -61,9 +61,9 @@ async function downloadAsPDF(elementId: string, filename: string) {
     });
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
     pdf.save(filename);
-    toast.success("PDF download shuru ho gayi!");
+    toast.success("PDF download started!");
   } catch {
-    toast.error("PDF download mein error aaya. Please dobara try karein.");
+    toast.error("Error downloading PDF. Please try again.");
   }
 }
 
@@ -1254,10 +1254,10 @@ export default function AdminUserFullProfile() {
       {/* Settings note if no signature/seal */}
       {(!signatureUrl || !sealUrl) && (
         <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
-          💡 Tip: <strong>Settings</strong> mein jakar{" "}
-          <strong>Authority Signature</strong> aur{" "}
-          <strong>Official Seal</strong> upload karein — woh ID Card aur
-          Certificate mein automatically attach ho jaayenge.
+          💡 Tip: Go to <strong>Settings</strong> to upload{" "}
+          <strong>Authority Signature</strong> and{" "}
+          <strong>Official Seal</strong> — they will be auto-attached to ID
+          Cards and Certificates.
         </div>
       )}
 
@@ -1430,8 +1430,8 @@ export default function AdminUserFullProfile() {
                 />
               </div>
               <p className="text-xs text-gray-400 mt-3 text-center">
-                CR80 standard PVC card size (85.6mm × 54mm). Download PDF ya
-                Print karein.
+                CR80 standard PVC card size (85.6mm × 54mm). Download PDF or
+                Print.
               </p>
             </CardContent>
           </Card>
@@ -1529,14 +1529,14 @@ export default function AdminUserFullProfile() {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 mb-4">
-                    Koi achievement certificate nahi hai abhi tak.
+                    No achievement certificates yet.
                   </p>
                 )}
 
                 {/* Add form */}
                 <div className="border-t border-gray-100 pt-4">
                   <p className="text-xs font-semibold text-gray-500 uppercase mb-3">
-                    Naya Certificate Add Karein
+                    Add New Certificate
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -1747,14 +1747,14 @@ export default function AdminUserFullProfile() {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 mb-4">
-                    Koi promotion record nahi hai abhi tak.
+                    No promotion records yet.
                   </p>
                 )}
 
                 {/* Add promotion form */}
                 <div className="border-t border-gray-100 pt-4">
                   <p className="text-xs font-semibold text-gray-500 uppercase mb-3">
-                    Naya Promotion Add Karein
+                    Add New Promotion
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>

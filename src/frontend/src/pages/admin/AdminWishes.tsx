@@ -62,23 +62,23 @@ export default function AdminWishes() {
 
   function handleSave() {
     if (!form.senderName.trim() || !form.message.trim()) {
-      toast.error("Sender Name aur Message zaroori hai");
+      toast.error("Sender Name and Message are required");
       return;
     }
     if (editing) {
       updateWishesLetter(editing.id, form);
-      toast.success("Wishes letter update ho gaya!");
+      toast.success("Wishes letter updated!");
     } else {
       addWishesLetter(form);
-      toast.success("Naya wishes letter add ho gaya!");
+      toast.success("New wishes letter added!");
     }
     setShowForm(false);
   }
 
   function handleDelete(id: string) {
-    if (confirm("Is wishes letter ko delete karna chahte hain?")) {
+    if (confirm("Are you sure you want to delete this wishes letter?")) {
       deleteWishesLetter(id);
-      toast.success("Wishes letter delete ho gaya");
+      toast.success("Wishes letter deleted");
     }
   }
 
@@ -97,7 +97,7 @@ export default function AdminWishes() {
           onClick={openAdd}
           className="bg-pink-600 hover:bg-pink-700 text-white"
         >
-          <Plus size={16} className="mr-1" /> Naya Wishes Letter Add Karen
+          <Plus size={16} className="mr-1" /> Add New Wishes Letter
         </Button>
       </div>
 
@@ -106,9 +106,7 @@ export default function AdminWishes() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-lg text-pink-700">
-                {editing
-                  ? "Wishes Letter Edit Karen"
-                  : "Naya Wishes Letter Add Karen"}
+                {editing ? "Wishes Letter Edit Karen" : "Add New Wishes Letter"}
               </h2>
               <Button
                 variant="ghost"
@@ -185,7 +183,7 @@ export default function AdminWishes() {
                     setForm((f) => ({ ...f, isActive: v }))
                   }
                 />
-                <Label>Active (Public page par dikhega)</Label>
+                <Label>Active (Visible on Public Page)</Label>
               </div>
               <div className="col-span-2">
                 <Label>Message / Wishes *</Label>
@@ -195,7 +193,7 @@ export default function AdminWishes() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, message: e.target.value }))
                   }
-                  placeholder="Unka sandesh ya shubhkamnayein yahan likhen..."
+                  placeholder="Enter their message or wishes here..."
                 />
               </div>
               <div className="col-span-2">
@@ -326,8 +324,7 @@ export default function AdminWishes() {
         <div className="text-center py-16 text-gray-400">
           <Heart size={40} className="mx-auto mb-2" />
           <p>
-            Abhi koi wishes letter nahi hai. "Naya Wishes Letter Add Karen"
-            click karein.
+            No wishes letters yet. Click "Add New Wishes Letter" to get started.
           </p>
         </div>
       )}

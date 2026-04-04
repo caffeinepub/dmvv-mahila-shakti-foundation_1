@@ -28,7 +28,7 @@ export default function AdminWallet() {
 
   const handleCredit = () => {
     if (!selectedUserId || !amount || !description) {
-      toast.error("User, amount aur description required hai.");
+      toast.error("User, amount and description are required.");
       return;
     }
     const userTxns = walletTransactions.filter(
@@ -115,7 +115,7 @@ export default function AdminWallet() {
               <Label className="text-xs">Select User *</Label>
               <Select value={selectedUserId} onValueChange={setSelectedUserId}>
                 <SelectTrigger className="mt-1" data-ocid="admin_wallet.select">
-                  <SelectValue placeholder="User select karein" />
+                  <SelectValue placeholder="Select a user" />
                 </SelectTrigger>
                 <SelectContent>
                   {regularUsers.map((u) => (
@@ -184,7 +184,7 @@ export default function AdminWallet() {
               className="text-center py-10 text-gray-400"
               data-ocid="admin_wallet.empty_state"
             >
-              Koi transaction nahi.
+              No transactions found.
             </div>
           ) : (
             <div className="overflow-x-auto">

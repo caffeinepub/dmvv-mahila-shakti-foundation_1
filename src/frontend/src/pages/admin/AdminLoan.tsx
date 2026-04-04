@@ -107,17 +107,17 @@ export default function AdminLoan() {
       .writeText(publicLoanApplyUrl)
       .then(() => {
         setLinkCopied(true);
-        toast.success("Link copy ho gaya! Share karein.");
+        toast.success("Link copied! Share it now.");
         setTimeout(() => setLinkCopied(false), 2500);
       })
       .catch(() => {
-        toast.error("Copy nahi hua, manually copy karein.");
+        toast.error("Copy failed, please copy manually.");
       });
   };
 
   const handleAdd = () => {
     if (!addForm.name.trim()) {
-      toast.error("Loan scheme ka naam zaroori hai.");
+      toast.error("Loan scheme name is required.");
       return;
     }
     addLoanScheme({
@@ -126,7 +126,7 @@ export default function AdminLoan() {
       name: addForm.name.trim(),
       eligibility: addForm.eligibility.filter(Boolean),
     });
-    toast.success("Loan scheme add ho gayi.");
+    toast.success("Loan scheme added.");
     setAddOpen(false);
     setAddForm({ ...EMPTY, eligibility: [""] });
   };
@@ -142,7 +142,7 @@ export default function AdminLoan() {
       ...editForm,
       eligibility: editForm.eligibility.filter(Boolean),
     });
-    toast.success("Loan scheme update ho gayi.");
+    toast.success("Loan scheme updated.");
     setEditItem(null);
   };
 
@@ -256,7 +256,7 @@ export default function AdminLoan() {
             Loan Schemes Management
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Loan page ke liye schemes manage karen — add, edit, active/inactive
+            Manage loan schemes for the Loan page — add, edit, active/inactive
           </p>
         </div>
         <Button
@@ -282,9 +282,9 @@ export default function AdminLoan() {
                 <Badge className="bg-green-600 text-white text-xs">New</Badge>
               </div>
               <p className="text-sm text-gray-600 mb-3">
-                Is link ko share karein — koi bhi is link se seedha Loan
-                Application Form bhar sakta hai. Submit hone par application
-                aapko <strong>Loan Applications</strong> mein dikhai degi.
+                Share this link — anyone can apply for a loan directly using
+                this link. Once submitted, the application will appear in{" "}
+                <strong>Loan Applications</strong>.
               </p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex-1 bg-white border border-green-200 rounded-lg px-3 py-2 text-sm text-gray-700 font-mono break-all select-all">
@@ -386,7 +386,7 @@ export default function AdminLoan() {
                           Loan Scheme Delete Karen?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                          "{item.name}" permanently delete ho jayegi.
+                          "{item.name}" will be permanently deleted.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -395,7 +395,7 @@ export default function AdminLoan() {
                           className="bg-red-600 hover:bg-red-700"
                           onClick={() => {
                             deleteLoanScheme(item.id);
-                            toast.success("Loan scheme delete ho gayi.");
+                            toast.success("Loan scheme deleted.");
                           }}
                         >
                           Delete

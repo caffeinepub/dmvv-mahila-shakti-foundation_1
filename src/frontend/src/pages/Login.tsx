@@ -95,7 +95,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address daalen"
+                placeholder="Enter email address"
                 className="mt-1"
                 autoComplete="email"
                 data-ocid="login.input"
@@ -108,7 +108,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password daalen"
+                placeholder="Enter password"
                 className="mt-1"
                 autoComplete="current-password"
                 data-ocid="login.input"

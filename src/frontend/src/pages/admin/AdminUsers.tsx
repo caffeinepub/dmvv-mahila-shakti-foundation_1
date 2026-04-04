@@ -212,11 +212,11 @@ export default function AdminUsers() {
           </div>
           <div>
             <h3 className="font-bold text-green-800 text-sm">
-              Share Signup Link / साइनअप लिंक शेयर करें
+              Share Signup Link
             </h3>
             <p className="text-xs text-green-700">
-              Is link ko share karein — jo bhi form bharega uski poori details
-              yahan dikhegi
+              Share this link — anyone who fills the form will have their full
+              details saved here
             </p>
           </div>
         </div>
@@ -903,7 +903,7 @@ export default function AdminUsers() {
                   <UserIcon size={14} className="text-orange-600" />
                 </div>
                 <span className="text-sm font-semibold text-gray-700">
-                  Personal Details / व्यक्तिगत विवरण
+                  Personal Details
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -946,9 +946,9 @@ export default function AdminUsers() {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Male">Male / पुरुष</SelectItem>
-                      <SelectItem value="Female">Female / महिला</SelectItem>
-                      <SelectItem value="Other">Other / अन्य</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1014,7 +1014,7 @@ export default function AdminUsers() {
                   <CreditCard size={14} className="text-blue-600" />
                 </div>
                 <span className="text-sm font-semibold text-gray-700">
-                  KYC Details / केवाईसी विवरण
+                  KYC Details
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -82,7 +82,7 @@ export default function Employment() {
             className="text-center py-10 text-gray-400"
             data-ocid="employment.empty_state"
           >
-            Koi partner available nahi hai.
+            No partners available.
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -119,7 +119,7 @@ export default function Employment() {
           </h2>
           {activeStories.length === 0 ? (
             <div className="text-center py-10 text-green-200">
-              Koi success story available nahi hai.
+              No success stories available.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

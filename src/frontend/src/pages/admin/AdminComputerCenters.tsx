@@ -69,7 +69,7 @@ export default function AdminComputerCenters() {
 
   const handleAdd = () => {
     if (!addForm.name.trim()) {
-      toast.error("Center ka naam zaroori hai.");
+      toast.error("Center name is required.");
       return;
     }
     addComputerCenter({
@@ -78,7 +78,7 @@ export default function AdminComputerCenters() {
       name: addForm.name.trim(),
       imageUrl: addImage || addForm.imageUrl || undefined,
     });
-    toast.success("Computer Center add ho gaya.");
+    toast.success("Computer center added successfully.");
     setAddOpen(false);
     setAddForm({ ...EMPTY });
     setAddImage(null);
@@ -105,7 +105,7 @@ export default function AdminComputerCenters() {
       ...editForm,
       imageUrl: editImage || editForm.imageUrl || undefined,
     });
-    toast.success("Computer Center update ho gaya.");
+    toast.success("Computer center updated successfully.");
     setEditItem(null);
     setEditImage(null);
   };
@@ -125,7 +125,7 @@ export default function AdminComputerCenters() {
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             className="mt-1"
-            placeholder="Center ka naam"
+            placeholder="Center name"
           />
         </div>
         <div>
@@ -201,7 +201,7 @@ export default function AdminComputerCenters() {
           className="bg-ngo-green hover:bg-green-700 text-white"
           onClick={() => setAddOpen(true)}
         >
-          <Plus size={16} className="mr-1" /> Naya Center
+          <Plus size={16} className="mr-1" /> New Center
         </Button>
       </div>
 
@@ -268,7 +268,7 @@ export default function AdminComputerCenters() {
                             Center Delete Karen?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            "{item.name}" permanently delete ho jayega.
+                            "{item.name}" will be permanently deleted.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -277,7 +277,7 @@ export default function AdminComputerCenters() {
                             className="bg-red-600 hover:bg-red-700"
                             onClick={() => {
                               deleteComputerCenter(item.id);
-                              toast.success("Center delete ho gaya.");
+                              toast.success("Center deleted successfully.");
                             }}
                           >
                             Delete
@@ -297,7 +297,7 @@ export default function AdminComputerCenters() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Naya Computer Center Add Karen</DialogTitle>
+            <DialogTitle>Add New Computer Center</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
@@ -316,7 +316,7 @@ export default function AdminComputerCenters() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>
@@ -377,7 +377,7 @@ export default function AdminComputerCenters() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={32} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>

@@ -34,7 +34,7 @@ export default function Loan() {
       !form.bankName ||
       !form.accountNumber
     ) {
-      toast.error("Kripya sare required fields bharein.");
+      toast.error("Please fill all required fields.");
       return;
     }
     setSubmitting(true);
@@ -55,9 +55,7 @@ export default function Loan() {
       appliedAt: new Date().toISOString().split("T")[0],
     };
     addLoanApplication(app);
-    toast.success(
-      "🎉 Loan application submit ho gayi! Hum jald hi contact karenge.",
-    );
+    toast.success("🎉 Loan application submitted! We will contact you soon.");
     setForm({});
     setOpenModal(null);
     setSubmitting(false);
@@ -80,7 +78,7 @@ export default function Loan() {
       {/* SHG / Udhyog banner */}
       <section className="bg-gradient-to-r from-blue-600 to-orange-500 py-4">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap gap-4 items-center justify-between">
-          <div className="text-white font-bold">Vishesh Loan Yojanaein:</div>
+          <div className="text-white font-bold">Special Loan Schemes:</div>
           <div className="flex gap-3">
             <Link to="/shg-loan">
               <Button
@@ -145,7 +143,7 @@ export default function Loan() {
             className="text-center py-20 text-gray-400"
             data-ocid="loan.empty_state"
           >
-            Koi loan scheme available nahi hai.
+            No loan schemes available at the moment.
           </div>
         ) : (
           active.map((scheme, idx) => (

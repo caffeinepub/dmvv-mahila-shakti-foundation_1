@@ -91,9 +91,9 @@ async function downloadAsPDF(elementId: string, filename: string) {
     });
     pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
     pdf.save(filename);
-    toast.success("PDF download shuru ho gayi!");
+    toast.success("PDF download started!");
   } catch {
-    toast.error("PDF download mein error. Please dobara try karein.");
+    toast.error("Error downloading PDF. Please try again.");
   }
 }
 
@@ -404,11 +404,11 @@ function UserHome({ setSection }: { setSection: (s: string) => void }) {
           <div className="flex items-start gap-2">
             <Zap size={18} className="text-yellow-600 mt-0.5" />
             <div>
-              <h3 className="font-bold text-yellow-800">Samvaad (Notice)</h3>
+              <h3 className="font-bold text-yellow-800">Notice</h3>
               <p className="text-sm text-yellow-700 mt-1">
-                KYC verify karein aur loan, insurance aur training ke liye
-                eligible banein. Koi bhi madad ke liye +91 9876543210 pe call
-                karein.
+                Please complete your KYC verification to become eligible for
+                loans, insurance, and training programs. For help, call +91
+                9876543210.
               </p>
             </div>
           </div>
@@ -886,7 +886,7 @@ function UserIDCard() {
                 data-ocid="user_achievements.empty_state"
               >
                 <Award size={40} className="mx-auto mb-3 opacity-30" />
-                Abhi tak koi achievement certificate nahi hai.
+                No achievement certificates yet.
               </div>
             ) : (
               (currentUser.achievementCerts || []).map((ac, i) => (
@@ -935,7 +935,7 @@ function UserLoan() {
       !form.bankName ||
       !form.accountNumber
     ) {
-      toast.error("Kripya sare required fields bharein.");
+      toast.error("Please fill all required fields.");
       return;
     }
     setSubmitting(true);
@@ -962,7 +962,7 @@ function UserLoan() {
       appliedAt: new Date().toISOString().split("T")[0],
     };
     addLoanApplication(app);
-    toast.success("Loan application submit ho gayi! Admin review karenge.");
+    toast.success("Loan application submitted! Admin will review it.");
     setForm({});
     setSubmitting(false);
   };
@@ -1049,14 +1049,14 @@ function UserLoan() {
         <Card className="bg-yellow-50 border-yellow-300">
           <CardContent className="p-4 text-yellow-800">
             <AlertCircle size={18} className="inline mr-2" />
-            Aapki ek loan application already pending/approved hai. Naya apply
-            karne ke liye pehli application resolve honi chahiye.
+            You already have a pending/approved loan application. Please wait
+            for it to be resolved before applying again.
           </CardContent>
         </Card>
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Loan Apply Karein</CardTitle>
+            <CardTitle>Apply for a Loan</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -1112,7 +1112,7 @@ function UserLoan() {
                             Group Activity Description
                           </Label>
                           <Textarea
-                            placeholder="Group ki activities ke baare mein likhein..."
+                            placeholder="Describe the group's activities..."
                             value={form.businessDetails || ""}
                             onChange={(e) =>
                               setForm((p) => ({
@@ -1223,7 +1223,7 @@ function UserIncome() {
 
   const handleAdd = () => {
     if (!form.source || !form.monthlyAmount) {
-      toast.error("Source aur amount bharein.");
+      toast.error("Please fill source and amount.");
       return;
     }
     addIncomeSource({
@@ -1233,7 +1233,7 @@ function UserIncome() {
       addedAt: new Date().toISOString().split("T")[0],
     });
     setForm({ source: "", type: "salary", monthlyAmount: "", description: "" });
-    toast.success("Income source add ho gaya!");
+    toast.success("Income source added!");
   };
 
   return (
@@ -1337,7 +1337,7 @@ function UserIncome() {
             className="text-center py-10 text-gray-400"
             data-ocid="user_income.empty_state"
           >
-            Koi income source nahi hai. Upar se add karein.
+            No income sources added yet. Use the form above to add one.
           </div>
         ) : (
           myIncome.map((s, i) => (
@@ -1411,7 +1411,7 @@ function UserTraining() {
       status: "pending",
     };
     addTrainingEnrollment(enrollment);
-    toast.success(`${program.title} mein enrollment ho gayi!`);
+    toast.success(`Successfully enrolled in ${program.title}!`);
   };
 
   return (
@@ -1470,7 +1470,7 @@ function UserTraining() {
                 className="text-center py-10 text-gray-400"
                 data-ocid="user_training.empty_state"
               >
-                Koi enrollment nahi hai.
+                No enrollments found.
               </div>
             ) : (
               myEnrollments.map((e, i) => (
@@ -1525,7 +1525,7 @@ function UserVolunteer() {
 
   const handleRegister = () => {
     if (!form.area || !form.hoursPerWeek) {
-      toast.error("Area aur hours bharein.");
+      toast.error("Please fill area and hours.");
       return;
     }
     const activity: VolunteerActivity = {
@@ -1538,7 +1538,7 @@ function UserVolunteer() {
       joinedAt: new Date().toISOString().split("T")[0],
     };
     addVolunteerActivity(activity);
-    toast.success("Volunteer registration ho gayi! Admin approve karenge.");
+    toast.success("Volunteer registration submitted! Admin will approve it.");
   };
 
   if (myActivity) {
@@ -1596,7 +1596,7 @@ function UserVolunteer() {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-4">
-          DMVV Foundation ke saath volunteer ban kar apne samaj ki seva karein.
+          Become a volunteer with DMVV Foundation and serve your community.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -1641,7 +1641,7 @@ function UserVolunteer() {
               onChange={(e) =>
                 setForm((p) => ({ ...p, description: e.target.value }))
               }
-              placeholder="Apne baare mein likhein"
+              placeholder="Tell us about yourself"
               className="mt-1"
               data-ocid="user_volunteer.input"
             />
@@ -1711,7 +1711,7 @@ function UserShopping() {
     addOrder(order);
     setCart({});
     setCheckoutOpen(false);
-    toast.success("Order place ho gaya! 🎉");
+    toast.success("Order placed successfully! 🎉");
   };
 
   return (
@@ -1805,8 +1805,8 @@ function UserShopping() {
           className="text-center py-12 text-gray-400"
           data-ocid="user_shopping.empty_state"
         >
-          <Package size={40} className="mx-auto mb-3 opacity-30" /> Koi product
-          available nahi hai.
+          <Package size={40} className="mx-auto mb-3 opacity-30" /> No products
+          available.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1963,7 +1963,7 @@ function UserInsurance() {
       appliedAt: new Date().toISOString().split("T")[0],
     };
     addInsuranceApplication(app);
-    toast.success(`${scheme.name} ke liye apply ho gaya!`);
+    toast.success(`Applied for ${scheme.name} successfully!`);
   };
 
   const typeColor: Record<string, string> = {
@@ -2096,8 +2096,8 @@ function UserWallet() {
       <Card className="bg-yellow-50 border-yellow-200">
         <CardContent className="p-4 text-sm text-yellow-800">
           <Wallet size={16} className="inline mr-2" />
-          Aapka wallet admin dwara credited hota hai. Loan disbursement,
-          scholarship, aur rewards yahan reflect honge.
+          Your wallet is credited by the admin. Loan disbursements, rewards, and
+          payments appear here.
         </CardContent>
       </Card>
 
@@ -2111,7 +2111,7 @@ function UserWallet() {
               className="text-center py-10 text-gray-400"
               data-ocid="user_wallet.empty_state"
             >
-              Koi transaction nahi hui hai.
+              No transactions yet.
             </div>
           ) : (
             <div className="overflow-x-auto">

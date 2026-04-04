@@ -194,7 +194,7 @@ export default function Schemes() {
             className="text-center py-20 text-gray-400"
             data-ocid="schemes.empty_state"
           >
-            Koi scheme available nahi hai.
+            No schemes available.
           </div>
         )}
       </section>

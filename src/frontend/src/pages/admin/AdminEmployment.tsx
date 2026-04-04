@@ -116,7 +116,7 @@ export default function AdminEmployment() {
 
   const handleAddPartner = () => {
     if (!partnerForm.name.trim()) {
-      toast.error("Partner ka naam zaroori hai.");
+      toast.error("Partner name is required.");
       return;
     }
     addEmploymentPartner({
@@ -124,7 +124,7 @@ export default function AdminEmployment() {
       ...partnerForm,
       name: partnerForm.name.trim(),
     });
-    toast.success("Partner add ho gaya.");
+    toast.success("Partner added successfully.");
     setPartnerOpen(false);
     setPartnerForm({
       name: "",
@@ -151,13 +151,13 @@ export default function AdminEmployment() {
   const handleSavePartner = () => {
     if (!editPartner) return;
     updateEmploymentPartner(editPartner.id, { ...editPartnerForm });
-    toast.success("Partner update ho gaya.");
+    toast.success("Partner updated successfully.");
     setEditPartner(null);
   };
 
   const handleAddStory = () => {
     if (!storyForm.name.trim()) {
-      toast.error("Naam zaroori hai.");
+      toast.error("Name is required.");
       return;
     }
     addSuccessStory({
@@ -165,7 +165,7 @@ export default function AdminEmployment() {
       ...storyForm,
       photoUrl: storyImage || storyForm.photoUrl || undefined,
     });
-    toast.success("Success story add ho gayi.");
+    toast.success("Success story added.");
     setStoryOpen(false);
     setStoryForm({
       name: "",
@@ -201,7 +201,7 @@ export default function AdminEmployment() {
       ...editStoryForm,
       photoUrl: editStoryImage || editStoryForm.photoUrl || undefined,
     });
-    toast.success("Story update ho gayi.");
+    toast.success("Story updated.");
     setEditStory(null);
     setEditStoryImage(null);
   };
@@ -213,7 +213,7 @@ export default function AdminEmployment() {
           Employment Page Management
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Industry partners aur success stories manage karen
+          Manage industry partners and success stories
         </p>
       </div>
 
@@ -285,7 +285,7 @@ export default function AdminEmployment() {
                               Partner Delete Karen?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              "{p.name}" delete ho jayega.
+                              "{p.name}" will be permanently deleted.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -294,7 +294,7 @@ export default function AdminEmployment() {
                               className="bg-red-600"
                               onClick={() => {
                                 deleteEmploymentPartner(p.id);
-                                toast.success("Delete ho gaya.");
+                                toast.success("Deleted successfully.");
                               }}
                             >
                               Delete
@@ -381,7 +381,7 @@ export default function AdminEmployment() {
                               Story Delete Karen?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              "{s.name}" ki story delete ho jayegi.
+                              "{s.name}" 's story will be deleted.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -390,7 +390,7 @@ export default function AdminEmployment() {
                               className="bg-red-600"
                               onClick={() => {
                                 deleteSuccessStory(s.id);
-                                toast.success("Delete ho gayi.");
+                                toast.success("Deleted successfully.");
                               }}
                             >
                               Delete
@@ -592,7 +592,7 @@ export default function AdminEmployment() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={28} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>
@@ -615,7 +615,7 @@ export default function AdminEmployment() {
               )}
             </div>
             <div>
-              <Label>Naam *</Label>
+              <Label>Name *</Label>
               <Input
                 value={storyForm.name}
                 onChange={(e) =>
@@ -637,7 +637,7 @@ export default function AdminEmployment() {
                 />
               </div>
               <div>
-                <Label>Ab Kya Karti Hain</Label>
+                <Label>Current Work / Activity</Label>
                 <Input
                   value={storyForm.now}
                   onChange={(e) =>
@@ -716,7 +716,7 @@ export default function AdminEmployment() {
                 ) : (
                   <div className="text-gray-400">
                     <ImageIcon size={28} className="mx-auto mb-1" />
-                    <p className="text-sm">Photo select karein</p>
+                    <p className="text-sm">Select a photo</p>
                   </div>
                 )}
               </button>
@@ -739,7 +739,7 @@ export default function AdminEmployment() {
               )}
             </div>
             <div>
-              <Label>Naam *</Label>
+              <Label>Name *</Label>
               <Input
                 value={editStoryForm.name}
                 onChange={(e) =>
@@ -760,7 +760,7 @@ export default function AdminEmployment() {
                 />
               </div>
               <div>
-                <Label>Ab Kya Karti Hain</Label>
+                <Label>Current Work / Activity</Label>
                 <Input
                   value={editStoryForm.now}
                   onChange={(e) =>

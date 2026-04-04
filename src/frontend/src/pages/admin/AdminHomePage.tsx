@@ -28,6 +28,7 @@ import {
   type HomeImpactStory,
   type HomeInitiative,
   type HomeStat,
+  type SliderImage,
   useApp,
 } from "@/context/AppContext";
 import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
@@ -75,6 +76,406 @@ const BG_COLOR_OPTIONS = [
   "bg-yellow-50",
 ];
 
+// ---- Slider Images Management Component ----
+function SliderImagesTab({
+  sliderImages,
+  addSliderImage,
+  updateSliderImage,
+  deleteSliderImage,
+}: {
+  sliderImages: SliderImage[];
+  addSliderImage: (img: SliderImage) => void;
+  updateSliderImage: (id: string, updates: Partial<SliderImage>) => void;
+  deleteSliderImage: (id: string) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const editFileRef = useRef<HTMLInputElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState<SliderImage | null>(null);
+  const [form, setForm] = useState({
+    title: "",
+    subtitle: "",
+    imageUrl: "",
+    isActive: true,
+  });
+
+  const resetForm = () =>
+    setForm({ title: "", subtitle: "", imageUrl: "", isActive: true });
+
+  const handleFile = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isEdit = false,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const url = ev.target?.result as string;
+      if (isEdit && editItem) {
+        updateSliderImage(editItem.id, { imageUrl: url });
+        setEditItem((prev) => (prev ? { ...prev, imageUrl: url } : prev));
+      } else {
+        setForm((f) => ({ ...f, imageUrl: url }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAdd = () => {
+    if (!form.imageUrl) {
+      toast.error("Please upload an image first");
+      return;
+    }
+    addSliderImage({
+      id: `slider_${Date.now()}`,
+      imageUrl: form.imageUrl,
+      title: form.title,
+      subtitle: form.subtitle,
+      isActive: form.isActive,
+      sortOrder: sliderImages.length + 1,
+    });
+    toast.success("Slide added!");
+    resetForm();
+    setDialogOpen(false);
+  };
+
+  const sorted = [...sliderImages].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Main Page Image Slider</CardTitle>
+          <Button
+            size="sm"
+            className="bg-ngo-green text-white"
+            onClick={() => {
+              resetForm();
+              setDialogOpen(true);
+            }}
+          >
+            <Plus size={16} className="mr-1" /> Add Slide
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {sorted.length === 0 ? (
+            <div className="text-center text-gray-500 py-12">
+              <ImageIcon size={40} className="mx-auto mb-3 text-gray-300" />
+              <p>No slides added yet. Click "Add Slide" to upload images.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sorted.map((slide, idx) => (
+                <Card
+                  key={slide.id}
+                  className="overflow-hidden border-2 border-gray-100"
+                >
+                  <div className="relative">
+                    <img
+                      src={slide.imageUrl}
+                      alt={slide.title || `Slide ${idx + 1}`}
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <Badge
+                        className={
+                          slide.isActive
+                            ? "bg-green-500 text-white text-xs"
+                            : "bg-gray-400 text-white text-xs"
+                        }
+                      >
+                        {slide.isActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-black/50 text-white text-xs">
+                        #{idx + 1}
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-3 space-y-2">
+                    {slide.title && (
+                      <p className="font-semibold text-sm text-gray-800 truncate">
+                        {slide.title}
+                      </p>
+                    )}
+                    {slide.subtitle && (
+                      <p className="text-xs text-gray-500 truncate">
+                        {slide.subtitle}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500">Active</span>
+                        <Switch
+                          checked={slide.isActive}
+                          onCheckedChange={(v) =>
+                            updateSliderImage(slide.id, { isActive: v })
+                          }
+                        />
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2"
+                          onClick={() => setEditItem({ ...slide })}
+                        >
+                          <Pencil size={13} />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-red-500 border-red-200"
+                            >
+                              <Trash2 size={13} />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Slide?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will remove the slide from the homepage
+                                slider. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-600 text-white"
+                                onClick={() => {
+                                  deleteSliderImage(slide.id);
+                                  toast.success("Slide deleted");
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                    {/* Move up/down */}
+                    <div className="flex gap-1 pt-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 h-7 text-xs"
+                        disabled={idx === 0}
+                        onClick={() => {
+                          const prev = sorted[idx - 1];
+                          updateSliderImage(slide.id, {
+                            sortOrder: prev.sortOrder,
+                          });
+                          updateSliderImage(prev.id, {
+                            sortOrder: slide.sortOrder,
+                          });
+                        }}
+                      >
+                        ↑ Move Up
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 h-7 text-xs"
+                        disabled={idx === sorted.length - 1}
+                        onClick={() => {
+                          const next = sorted[idx + 1];
+                          updateSliderImage(slide.id, {
+                            sortOrder: next.sortOrder,
+                          });
+                          updateSliderImage(next.id, {
+                            sortOrder: slide.sortOrder,
+                          });
+                        }}
+                      >
+                        ↓ Move Down
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Add Slide Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add New Slide</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Slide Image *</Label>
+              <div
+                className="mt-2 border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-green-400 transition"
+                onClick={() => fileRef.current?.click()}
+                onKeyDown={() => fileRef.current?.click()}
+              >
+                {form.imageUrl ? (
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    className="mx-auto max-h-40 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="text-gray-400">
+                    <ImageIcon size={32} className="mx-auto mb-2" />
+                    <p className="text-sm">Click to upload image</p>
+                    <p className="text-xs mt-1">JPG, PNG, WebP (max 5MB)</p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFile(e, false)}
+              />
+            </div>
+            <div>
+              <Label>Title (shown on slide)</Label>
+              <input
+                className="w-full mt-1 border rounded-lg px-3 py-2 text-sm"
+                value={form.title}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, title: e.target.value }))
+                }
+                placeholder="e.g. Empowering Women Across India"
+              />
+            </div>
+            <div>
+              <Label>Subtitle</Label>
+              <input
+                className="w-full mt-1 border rounded-lg px-3 py-2 text-sm"
+                value={form.subtitle}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, subtitle: e.target.value }))
+                }
+                placeholder="e.g. Join DMVV Foundation today"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={form.isActive}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, isActive: v }))}
+              />
+              <Label>Active (visible on homepage)</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="bg-ngo-green text-white" onClick={handleAdd}>
+              Add Slide
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Slide Dialog */}
+      {editItem && (
+        <Dialog open={!!editItem} onOpenChange={() => setEditItem(null)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Slide</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div>
+                <Label>Slide Image</Label>
+                <div
+                  className="mt-2 border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-green-400 transition"
+                  onClick={() => editFileRef.current?.click()}
+                  onKeyDown={() => editFileRef.current?.click()}
+                >
+                  <img
+                    src={editItem.imageUrl}
+                    alt="Preview"
+                    className="mx-auto max-h-40 rounded-lg object-cover"
+                  />
+                  <p className="text-xs text-gray-400 mt-2">
+                    Click to change image
+                  </p>
+                </div>
+                <input
+                  ref={editFileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFile(e, true)}
+                />
+              </div>
+              <div>
+                <Label>Title</Label>
+                <input
+                  className="w-full mt-1 border rounded-lg px-3 py-2 text-sm"
+                  value={editItem.title}
+                  onChange={(e) =>
+                    setEditItem((prev) =>
+                      prev ? { ...prev, title: e.target.value } : prev,
+                    )
+                  }
+                />
+              </div>
+              <div>
+                <Label>Subtitle</Label>
+                <input
+                  className="w-full mt-1 border rounded-lg px-3 py-2 text-sm"
+                  value={editItem.subtitle}
+                  onChange={(e) =>
+                    setEditItem((prev) =>
+                      prev ? { ...prev, subtitle: e.target.value } : prev,
+                    )
+                  }
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={editItem.isActive}
+                  onCheckedChange={(v) =>
+                    setEditItem((prev) =>
+                      prev ? { ...prev, isActive: v } : prev,
+                    )
+                  }
+                />
+                <Label>Active</Label>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditItem(null)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-ngo-green text-white"
+                onClick={() => {
+                  if (editItem) {
+                    updateSliderImage(editItem.id, {
+                      title: editItem.title,
+                      subtitle: editItem.subtitle,
+                      isActive: editItem.isActive,
+                      imageUrl: editItem.imageUrl,
+                    });
+                    toast.success("Slide updated!");
+                    setEditItem(null);
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
+
 export default function AdminHomePage() {
   const {
     homeHero,
@@ -93,6 +494,10 @@ export default function AdminHomePage() {
     updateHomeImpactStory,
     deleteHomeImpactStory,
     updateHomeCTA,
+    sliderImages,
+    addSliderImage,
+    updateSliderImage,
+    deleteSliderImage,
   } = useApp();
 
   // --- Hero editing ---
@@ -291,6 +696,9 @@ export default function AdminHomePage() {
           </TabsTrigger>
           <TabsTrigger value="cta" data-ocid="admin_homepage.tab">
             CTA Section
+          </TabsTrigger>
+          <TabsTrigger value="slider" data-ocid="admin_homepage.tab">
+            Image Slider
           </TabsTrigger>
         </TabsList>
 
@@ -679,6 +1087,15 @@ export default function AdminHomePage() {
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+        {/* IMAGE SLIDER TAB */}
+        <TabsContent value="slider">
+          <SliderImagesTab
+            sliderImages={sliderImages}
+            addSliderImage={addSliderImage}
+            updateSliderImage={updateSliderImage}
+            deleteSliderImage={deleteSliderImage}
+          />
         </TabsContent>
       </Tabs>
 

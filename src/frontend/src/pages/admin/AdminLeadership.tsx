@@ -74,27 +74,27 @@ export default function AdminLeadership() {
 
   const handleSave = () => {
     if (!form.name.trim()) {
-      toast.error("Naam required hai");
+      toast.error("Name is required");
       return;
     }
     if (!form.designation.trim()) {
-      toast.error("Designation required hai");
+      toast.error("Designation is required");
       return;
     }
     if (editingId) {
       updateLeadershipMember(editingId, form);
-      toast.success("Leadership member update ho gaya!");
+      toast.success("Leadership member updated!");
     } else {
       addLeadershipMember({ id: `l${Date.now()}`, ...form });
-      toast.success("Naya leadership member add ho gaya!");
+      toast.success("New leadership member added!");
     }
     setDialogOpen(false);
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`"${name}" ko delete karna chahte hain?`)) {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       deleteLeadershipMember(id);
-      toast.success("Delete ho gaya!");
+      toast.success("Deleted successfully!");
     }
   };
 
@@ -108,14 +108,14 @@ export default function AdminLeadership() {
             Leadership Management
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            About Us page par dikhne wali leadership team yahan se manage karein
+            Manage the leadership team displayed on the About Us page
           </p>
         </div>
         <Button
           onClick={openAdd}
           className="bg-ngo-green text-white hover:bg-ngo-green-dark"
         >
-          <PlusCircle size={16} className="mr-2" /> Naya Member Add
+          <PlusCircle size={16} className="mr-2" /> Add New Member
         </Button>
       </div>
 
@@ -196,7 +196,7 @@ export default function AdminLeadership() {
           <Card className="col-span-full">
             <CardContent className="p-10 text-center text-gray-400">
               <User size={40} className="mx-auto mb-3 opacity-30" />
-              <p>Koi member nahi hai. "Naya Member Add" par click karein.</p>
+              <p>No members found. Click 'Add New Member' to get started.</p>
             </CardContent>
           </Card>
         )}
@@ -207,9 +207,7 @@ export default function AdminLeadership() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingId
-                ? "Leadership Member Edit Karein"
-                : "Naya Leadership Member"}
+              {editingId ? "Leadership Member Edit Karein" : "Add New Member"}
             </DialogTitle>
           </DialogHeader>
 
@@ -243,7 +241,7 @@ export default function AdminLeadership() {
             </div>
 
             <div>
-              <Label>Naam *</Label>
+              <Label>Name *</Label>
               <Input
                 value={form.name}
                 onChange={(e) =>
@@ -285,7 +283,7 @@ export default function AdminLeadership() {
                 onChange={(e) =>
                   setForm((p) => ({ ...p, message: e.target.value }))
                 }
-                placeholder="Is vyakti ka koi sandesh ya quote..."
+                placeholder="A message or quote from this person..."
                 className="mt-1 resize-none"
                 rows={3}
               />

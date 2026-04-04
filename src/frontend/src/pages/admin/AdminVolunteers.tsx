@@ -23,7 +23,7 @@ export default function AdminVolunteers() {
           className="text-center py-16 text-gray-400"
           data-ocid="admin_volunteers.empty_state"
         >
-          Koi volunteer registration nahi hai.
+          No volunteer registrations found.
         </div>
       ) : (
         <div className="space-y-3">

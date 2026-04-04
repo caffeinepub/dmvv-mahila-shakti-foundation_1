@@ -91,23 +91,23 @@ export default function AdminLegalDocs() {
 
   function handleSave() {
     if (!form.title.trim() || !form.issuedBy.trim() || !form.issuedDate) {
-      toast.error("Title, Issued By, aur Issued Date zaroori hai");
+      toast.error("Title, Issued By, and Issued Date are required");
       return;
     }
     if (editing) {
       updateLegalDocument(editing.id, form);
-      toast.success("Document update ho gaya!");
+      toast.success("Document updated!");
     } else {
       addLegalDocument(form);
-      toast.success("Naya document add ho gaya!");
+      toast.success("New document added!");
     }
     setShowForm(false);
   }
 
   function handleDelete(id: string) {
-    if (confirm("Is document ko delete karna chahte hain?")) {
+    if (confirm("Are you sure you want to delete this document?")) {
       deleteLegalDocument(id);
-      toast.success("Document delete ho gaya");
+      toast.success("Document deleted");
     }
   }
 
@@ -126,7 +126,7 @@ export default function AdminLegalDocs() {
           onClick={openAdd}
           className="bg-green-700 hover:bg-green-800 text-white"
         >
-          <Plus size={16} className="mr-1" /> Naya Document Add Karen
+          <Plus size={16} className="mr-1" /> Add New Document
         </Button>
       </div>
 
@@ -135,7 +135,7 @@ export default function AdminLegalDocs() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-lg text-green-800">
-                {editing ? "Document Edit Karen" : "Naya Document Add Karen"}
+                {editing ? "Edit Document" : "Add New Document"}
               </h2>
               <Button
                 variant="ghost"
@@ -226,7 +226,7 @@ export default function AdminLegalDocs() {
                     setForm((f) => ({ ...f, isActive: v }))
                   }
                 />
-                <Label>Active (Public page par dikhega)</Label>
+                <Label>Active (Visible on Public Page)</Label>
               </div>
               <div className="col-span-2">
                 <Label>Description</Label>
@@ -236,7 +236,7 @@ export default function AdminLegalDocs() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, description: e.target.value }))
                   }
-                  placeholder="Document ke baare mein details likhen..."
+                  placeholder="Enter document details..."
                 />
               </div>
               <div className="col-span-2">
@@ -366,8 +366,7 @@ export default function AdminLegalDocs() {
         <div className="text-center py-16 text-gray-400">
           <FileText size={40} className="mx-auto mb-2" />
           <p>
-            Abhi koi legal document nahi hai. "Naya Document Add Karen" click
-            karein.
+            No legal documents yet. Click "Add New Document" to get started.
           </p>
         </div>
       )}

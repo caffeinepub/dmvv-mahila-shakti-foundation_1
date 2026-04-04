@@ -165,7 +165,7 @@ export default function AdminFooter() {
                       DMVV BHARTIY MAHILA SHAKTI FOUNDATION™
                     </p>
                     <p className="text-green-300 text-xs">
-                      महिला सशक्तिकरण की ओर एक कदम
+                      Empowering Women — A Step Towards Change
                     </p>
                   </div>
                 </div>
