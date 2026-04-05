@@ -61,6 +61,7 @@ import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminLeadership from "@/pages/admin/AdminLeadership";
 import AdminLegalDocs from "@/pages/admin/AdminLegalDocs";
+import AdminLetterhead from "@/pages/admin/AdminLetterhead";
 import AdminLoan from "@/pages/admin/AdminLoan";
 import AdminLoanApplications from "@/pages/admin/AdminLoanApplications";
 import AdminLoginManagement from "@/pages/admin/AdminLoginManagement";
@@ -420,6 +421,7 @@ function AppRoutes() {
         <Route path="wallet" element={<AdminWallet />} />
         <Route path="franchise" element={<AdminFranchise />} />
         <Route path="franchise-partners" element={<AdminFranchisePartners />} />
+        <Route path="letterhead" element={<AdminLetterhead />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>

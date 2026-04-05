@@ -769,6 +769,53 @@ export interface FranchiseServiceRequest {
   adminResponseDate?: string;
 }
 
+export interface LetterheadConfig {
+  designId: number;
+  logoUrl: string;
+  orgName: string;
+  tagline: string;
+  address: string;
+  contactNumber: string;
+  email: string;
+  website: string;
+  authoritySignatureUrl: string;
+  authoritySignatureMethod: "upload" | "draw";
+  sealUrl: string;
+  signatoryName: string;
+  signatoryTitle: string;
+  footerNote: string;
+}
+
+export interface OfficialLetter {
+  id: string;
+  letterType:
+    | "appointment"
+    | "experience"
+    | "noc"
+    | "approval"
+    | "rejection"
+    | "recommendation"
+    | "notice"
+    | "promotion"
+    | "award"
+    | "custom";
+  letterTitle: string;
+  referenceNumber: string;
+  date: string;
+  issuedToName: string;
+  issuedToDesignation: string;
+  issuedToAddress: string;
+  issuedByName: string;
+  issuedByDesignation: string;
+  subject: string;
+  bodyContent: string;
+  designId: number;
+  signatureUrl: string;
+  sealUrl: string;
+  status: "draft" | "issued";
+  createdAt: string;
+}
+
 const initialReviews: Review[] = [
   {
     id: "rv1",
@@ -2666,6 +2713,13 @@ interface AppContextType {
     updates: Partial<FranchiseServiceRequest>,
   ) => void;
   deleteServiceRequest: (id: string) => void;
+  // Letterhead
+  letterheadConfig: LetterheadConfig;
+  updateLetterheadConfig: (updates: Partial<LetterheadConfig>) => void;
+  officialLetters: OfficialLetter[];
+  addOfficialLetter: (l: OfficialLetter) => void;
+  updateOfficialLetter: (id: string, updates: Partial<OfficialLetter>) => void;
+  deleteOfficialLetter: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -2876,6 +2930,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       [],
     );
 
+  // ─── Letterhead State ─────────────────────────────────────────────────────
+  const [letterheadConfig, setLetterheadConfig] =
+    useLocalStorage<LetterheadConfig>("dmvv_letterheadConfig", {
+      designId: 1,
+      logoUrl: "/assets/dmvv_01-019d502e-b12e-7281-9c5f-d104232dfddd.png",
+      orgName: "DMVV BHARTIY MAHILA SHAKTI FOUNDATION™",
+      tagline: "Empowering Women — A Step Towards Change",
+      address: "India",
+      contactNumber: "",
+      email: "",
+      website: "",
+      authoritySignatureUrl: "",
+      authoritySignatureMethod: "upload",
+      sealUrl: "",
+      signatoryName: "Administrator",
+      signatoryTitle: "Authorized Signatory",
+      footerNote:
+        "This is an official document issued by DMVV Bhartiy Mahila Shakti Foundation.",
+    });
+  const [officialLetters, setOfficialLetters] = useLocalStorage<
+    OfficialLetter[]
+  >("dmvv_officialLetters", []);
+
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   // On mount: load all content from backend canister (server-side persistent storage)
   // so that ALL users see the admin's latest updates, not just local device state.
@@ -2999,6 +3076,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setFranchiseServiceRequests(
           data.dmvv_franchiseServiceRequests as FranchiseServiceRequest[],
         );
+      if (data.dmvv_letterheadConfig)
+        setLetterheadConfig(data.dmvv_letterheadConfig as LetterheadConfig);
+      if (data.dmvv_officialLetters)
+        setOfficialLetters(data.dmvv_officialLetters as OfficialLetter[]);
     });
   }, []);
 
@@ -3174,6 +3255,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_franchiseServiceRequests", franchiseServiceRequests);
   }, [franchiseServiceRequests]);
+  useEffect(() => {
+    saveToBackend("dmvv_letterheadConfig", letterheadConfig);
+  }, [letterheadConfig]);
+  useEffect(() => {
+    saveToBackend("dmvv_officialLetters", officialLetters);
+  }, [officialLetters]);
   // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
@@ -3604,6 +3691,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const deleteServiceRequest = (id: string) =>
     setFranchiseServiceRequests((prev) => prev.filter((r) => r.id !== id));
 
+  // ─── Letterhead CRUD ────────────────────────────────────────────────────────────
+  const updateLetterheadConfig = (updates: Partial<LetterheadConfig>) =>
+    setLetterheadConfig((prev) => ({ ...prev, ...updates }));
+  const addOfficialLetter = (l: OfficialLetter) =>
+    setOfficialLetters((prev) => [l, ...prev]);
+  const updateOfficialLetter = (id: string, updates: Partial<OfficialLetter>) =>
+    setOfficialLetters((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...updates } : l)),
+    );
+  const deleteOfficialLetter = (id: string) =>
+    setOfficialLetters((prev) => prev.filter((l) => l.id !== id));
+
   return (
     <AppContext.Provider
       value={{
@@ -3811,6 +3910,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addFranchiseServiceRequest,
         updateFranchiseServiceRequest,
         deleteServiceRequest,
+        letterheadConfig,
+        updateLetterheadConfig,
+        officialLetters,
+        addOfficialLetter,
+        updateOfficialLetter,
+        deleteOfficialLetter,
       }}
     >
       {children}

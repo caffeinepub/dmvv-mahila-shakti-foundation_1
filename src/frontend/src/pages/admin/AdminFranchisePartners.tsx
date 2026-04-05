@@ -92,16 +92,54 @@ function LetterRow({
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="font-semibold text-gray-800">{letter.subject}</h3>
-              <span className={`text-xs rounded-full px-2 py-0.5 font-medium ${letterTypeColors[letter.type] || letterTypeColors.custom}`}>{letter.type}</span>
-              {!letter.isRead && <span className="text-xs bg-amber-100 text-amber-700 rounded-full px-2">Unread</span>}
+              <span
+                className={`text-xs rounded-full px-2 py-0.5 font-medium ${letterTypeColors[letter.type] || letterTypeColors.custom}`}
+              >
+                {letter.type}
+              </span>
+              {!letter.isRead && (
+                <span className="text-xs bg-amber-100 text-amber-700 rounded-full px-2">
+                  Unread
+                </span>
+              )}
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">To: {partnerName} � {letter.date} � Sent by: {letter.sentBy}</p>
-            {expanded && (<div className="mt-3 pt-3 border-t border-gray-100"><p className="text-sm text-gray-700 whitespace-pre-wrap">{letter.content}</p></div>)}
+            <p className="text-xs text-gray-400 mt-0.5">
+              To: {partnerName} � {letter.date} � Sent by: {letter.sentBy}
+            </p>
+            {expanded && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  {letter.content}
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex gap-1 flex-shrink-0">
-            <Button variant="ghost" size="sm" onClick={() => setExpanded((p) => !p)} data-ocid="franchise_partners.secondary_button"><Eye size={13} /></Button>
-            <Button variant="ghost" size="sm" onClick={() => window.print()} data-ocid="franchise_partners.secondary_button"><Printer size={13} /></Button>
-            <Button variant="ghost" size="sm" className="text-red-500" onClick={onDelete} data-ocid="franchise_partners.delete_button"><Trash2 size={13} /></Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setExpanded((p) => !p)}
+              data-ocid="franchise_partners.secondary_button"
+            >
+              <Eye size={13} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => window.print()}
+              data-ocid="franchise_partners.secondary_button"
+            >
+              <Printer size={13} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-500"
+              onClick={onDelete}
+              data-ocid="franchise_partners.delete_button"
+            >
+              <Trash2 size={13} />
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -668,11 +706,17 @@ export default function AdminFranchisePartners() {
               {filteredLetters.map((letter, i) => {
                 const partner = users.find((u) => u.id === letter.partnerId);
                 return (
-                  <div key={letter.id} data-ocid={`franchise_partners.item.${i + 1}`}>
+                  <div
+                    key={letter.id}
+                    data-ocid={`franchise_partners.item.${i + 1}`}
+                  >
                     <LetterRow
                       letter={letter}
                       partnerName={partner?.fullName || "Unknown"}
-                      onDelete={() => { deleteFranchiseLetter(letter.id); toast.success("Letter deleted."); }}
+                      onDelete={() => {
+                        deleteFranchiseLetter(letter.id);
+                        toast.success("Letter deleted.");
+                      }}
                     />
                   </div>
                 );
