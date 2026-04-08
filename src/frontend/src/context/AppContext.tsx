@@ -816,6 +816,285 @@ export interface OfficialLetter {
   createdAt: string;
 }
 
+export interface B2BPlanSettings {
+  heroTitle: string;
+  heroSubtitle: string;
+  heroDescription: string;
+  heroImage: string;
+  ctaText: string;
+  ctaPhone: string;
+  ctaEmail: string;
+}
+
+export interface B2BPlanCard {
+  id: string;
+  name: string;
+  price: string;
+  duration: string;
+  description: string;
+  features: string[];
+  badge: string;
+  image: string;
+  buttonText: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface B2BBenefit {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  isActive: boolean;
+}
+
+export interface B2BStep {
+  id: string;
+  stepNumber: number;
+  title: string;
+  description: string;
+  isActive: boolean;
+}
+
+export interface B2BEnquiry {
+  id: string;
+  name: string;
+  mobile: string;
+  email: string;
+  businessType: string;
+  message: string;
+  planInterested: string;
+  submittedAt: string;
+  status: "new" | "contacted" | "converted" | "rejected";
+}
+
+export interface InternshipVacancy {
+  id: string;
+  title: string;
+  department: string;
+  salary: string;
+  location: string;
+  duration: string;
+  seats: string;
+  lastDate: string;
+  description: string;
+  requirements: string;
+  perks: string;
+  photo: string;
+  videoUrl: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface InternshipApplication {
+  id: string;
+  vacancyId: string;
+  vacancyTitle: string;
+  appliedAt: string;
+  status: string;
+  fullName: string;
+  fatherName: string;
+  dob: string;
+  gender: string;
+  phone: string;
+  email: string;
+  address: string;
+  district: string;
+  state: string;
+  pincode: string;
+  qualification: string;
+  skills: string;
+  experience: string;
+  aadhaar: string;
+  pan: string;
+  bankAccount: string;
+  ifsc: string;
+  bankName: string;
+  passportPhoto: string;
+  passportPhotoName: string;
+  aadhaarDoc: string;
+  aadhaarDocName: string;
+  panDoc: string;
+  panDocName: string;
+  educationCert: string;
+  educationCertName: string;
+  resume: string;
+  resumeName: string;
+  declaration: boolean;
+  adminNote?: string;
+  kycApproved?: boolean;
+  accessLevel?: string;
+}
+
+export interface InternshipSettings {
+  heroTitle: string;
+  heroSubtitle: string;
+  description: string;
+}
+
+const initialB2BSettings: B2BPlanSettings = {
+  heroTitle: "B2B Business Partnership Plans",
+  heroSubtitle: "Grow Your Business With DMVV Foundation",
+  heroDescription:
+    "Join our exclusive B2B partnership program and unlock business opportunities, training support, marketing resources, and more for your enterprise.",
+  heroImage: "",
+  ctaText: "Enquire Now",
+  ctaPhone: "8349600835",
+  ctaEmail: "info@dmvv.org",
+};
+
+const initialB2BPlans: B2BPlanCard[] = [
+  {
+    id: "b2b1",
+    name: "Starter Plan",
+    price: "₹2,999/month",
+    duration: "Per Month",
+    description:
+      "Perfect for small businesses and startups looking to grow with DMVV.",
+    features: [
+      "Business Registration Support",
+      "2 Training Sessions/Month",
+      "Marketing Collateral",
+      "Dedicated Support",
+      "Certificate of Partnership",
+    ],
+    badge: "",
+    image: "",
+    buttonText: "Get Started",
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    id: "b2b2",
+    name: "Growth Plan",
+    price: "₹7,999/month",
+    duration: "Per Month",
+    description:
+      "For growing businesses that need advanced support and resources.",
+    features: [
+      "Everything in Starter",
+      "5 Training Sessions/Month",
+      "Priority Support",
+      "Product Listing on Platform",
+      "Sales & Revenue Support",
+      "Branding Assistance",
+    ],
+    badge: "Popular",
+    image: "",
+    buttonText: "Get Started",
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    id: "b2b3",
+    name: "Enterprise Plan",
+    price: "₹19,999/month",
+    duration: "Per Month",
+    description:
+      "Full-service enterprise package with maximum benefits and direct admin access.",
+    features: [
+      "Everything in Growth",
+      "Unlimited Training Sessions",
+      "Dedicated Account Manager",
+      "Custom Branding",
+      "Revenue Sharing Program",
+      "National Network Access",
+      "Priority Letter & Certificate",
+    ],
+    badge: "Best Value",
+    image: "",
+    buttonText: "Contact Us",
+    isActive: true,
+    sortOrder: 3,
+  },
+];
+
+const initialB2BBenefits: B2BBenefit[] = [
+  {
+    id: "b2b_ben1",
+    icon: "🤝",
+    title: "Strong Network",
+    description:
+      "Access a network of 10,000+ women entrepreneurs and business partners across India.",
+    isActive: true,
+  },
+  {
+    id: "b2b_ben2",
+    icon: "📈",
+    title: "Business Growth",
+    description:
+      "Proven strategies and mentorship to help scale your business revenue.",
+    isActive: true,
+  },
+  {
+    id: "b2b_ben3",
+    icon: "🎓",
+    title: "Skill Training",
+    description:
+      "Regular training sessions, workshops, and certification programs for your team.",
+    isActive: true,
+  },
+  {
+    id: "b2b_ben4",
+    icon: "📢",
+    title: "Marketing Support",
+    description:
+      "Full marketing collateral, digital presence support, and brand promotion.",
+    isActive: true,
+  },
+  {
+    id: "b2b_ben5",
+    icon: "🏆",
+    title: "Recognition & Awards",
+    description:
+      "National recognition certificates, award programs, and government documentation.",
+    isActive: true,
+  },
+  {
+    id: "b2b_ben6",
+    icon: "💼",
+    title: "Legal & Documentation",
+    description:
+      "Assistance with business registration, GST, licenses, and official documentation.",
+    isActive: true,
+  },
+];
+
+const initialB2BSteps: B2BStep[] = [
+  {
+    id: "b2b_step1",
+    stepNumber: 1,
+    title: "Apply Online",
+    description:
+      "Fill out the B2B enquiry form with your business details and select a plan.",
+    isActive: true,
+  },
+  {
+    id: "b2b_step2",
+    stepNumber: 2,
+    title: "Verification",
+    description:
+      "Our team reviews your application and verifies your business documents.",
+    isActive: true,
+  },
+  {
+    id: "b2b_step3",
+    stepNumber: 3,
+    title: "Agreement",
+    description:
+      "Sign the partnership agreement and make the initial plan payment.",
+    isActive: true,
+  },
+  {
+    id: "b2b_step4",
+    stepNumber: 4,
+    title: "Onboarding",
+    description:
+      "Get onboarded with a dedicated manager and start accessing all benefits.",
+    isActive: true,
+  },
+];
+
 const initialReviews: Review[] = [
   {
     id: "rv1",
@@ -2720,6 +2999,42 @@ interface AppContextType {
   addOfficialLetter: (l: OfficialLetter) => void;
   updateOfficialLetter: (id: string, updates: Partial<OfficialLetter>) => void;
   deleteOfficialLetter: (id: string) => void;
+  // B2B Plans
+  b2bSettings: B2BPlanSettings;
+  updateB2bSettings: (updates: Partial<B2BPlanSettings>) => void;
+  b2bPlans: B2BPlanCard[];
+  addB2bPlan: (p: B2BPlanCard) => void;
+  updateB2bPlan: (id: string, updates: Partial<B2BPlanCard>) => void;
+  deleteB2bPlan: (id: string) => void;
+  b2bBenefits: B2BBenefit[];
+  addB2bBenefit: (b: B2BBenefit) => void;
+  updateB2bBenefit: (id: string, updates: Partial<B2BBenefit>) => void;
+  deleteB2bBenefit: (id: string) => void;
+  b2bSteps: B2BStep[];
+  addB2bStep: (s: B2BStep) => void;
+  updateB2bStep: (id: string, updates: Partial<B2BStep>) => void;
+  deleteB2bStep: (id: string) => void;
+  b2bEnquiries: B2BEnquiry[];
+  addB2bEnquiry: (e: B2BEnquiry) => void;
+  updateB2bEnquiry: (id: string, updates: Partial<B2BEnquiry>) => void;
+  deleteB2bEnquiry: (id: string) => void;
+  // Internship
+  internshipVacancies: InternshipVacancy[];
+  addInternshipVacancy: (v: InternshipVacancy) => void;
+  updateInternshipVacancy: (
+    id: string,
+    updates: Partial<InternshipVacancy>,
+  ) => void;
+  deleteInternshipVacancy: (id: string) => void;
+  internshipApplications: InternshipApplication[];
+  addInternshipApplication: (a: InternshipApplication) => void;
+  updateInternshipApplication: (
+    id: string,
+    updates: Partial<InternshipApplication>,
+  ) => void;
+  deleteInternshipApplication: (id: string) => void;
+  internshipSettings: InternshipSettings;
+  updateInternshipSettings: (updates: Partial<InternshipSettings>) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -2952,6 +3267,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [officialLetters, setOfficialLetters] = useLocalStorage<
     OfficialLetter[]
   >("dmvv_officialLetters", []);
+  const [b2bSettings, setB2bSettings] = useLocalStorage<B2BPlanSettings>(
+    "dmvv_b2bSettings",
+    initialB2BSettings,
+  );
+  const [b2bPlans, setB2bPlans] = useLocalStorage<B2BPlanCard[]>(
+    "dmvv_b2bPlans",
+    initialB2BPlans,
+  );
+  const [b2bBenefits, setB2bBenefits] = useLocalStorage<B2BBenefit[]>(
+    "dmvv_b2bBenefits",
+    initialB2BBenefits,
+  );
+  const [b2bSteps, setB2bSteps] = useLocalStorage<B2BStep[]>(
+    "dmvv_b2bSteps",
+    initialB2BSteps,
+  );
+  const [b2bEnquiries, setB2bEnquiries] = useLocalStorage<B2BEnquiry[]>(
+    "dmvv_b2bEnquiries",
+    [],
+  );
+
+  const [internshipVacancies, setInternshipVacancies] = useLocalStorage<
+    InternshipVacancy[]
+  >("dmvv_internshipVacancies", []);
+  const [internshipApplications, setInternshipApplications] = useLocalStorage<
+    InternshipApplication[]
+  >("dmvv_internshipApplications", []);
+  const [internshipSettings, setInternshipSettings] =
+    useLocalStorage<InternshipSettings>("dmvv_internshipSettings", {
+      heroTitle: "Internship Opportunities",
+      heroSubtitle:
+        "Join DMVV Bhartiy Mahila Shakti Foundation and build your career.",
+      description: "",
+    });
 
   // ─── Backend Sync ────────────────────────────────────────────────────────────
   // On mount: load all content from backend canister (server-side persistent storage)
@@ -3080,6 +3429,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setLetterheadConfig(data.dmvv_letterheadConfig as LetterheadConfig);
       if (data.dmvv_officialLetters)
         setOfficialLetters(data.dmvv_officialLetters as OfficialLetter[]);
+      if (data.dmvv_b2bSettings)
+        setB2bSettings(data.dmvv_b2bSettings as B2BPlanSettings);
+      if (data.dmvv_b2bPlans) setB2bPlans(data.dmvv_b2bPlans as B2BPlanCard[]);
+      if (data.dmvv_b2bBenefits)
+        setB2bBenefits(data.dmvv_b2bBenefits as B2BBenefit[]);
+      if (data.dmvv_b2bSteps) setB2bSteps(data.dmvv_b2bSteps as B2BStep[]);
+      if (data.dmvv_b2bEnquiries)
+        setB2bEnquiries(data.dmvv_b2bEnquiries as B2BEnquiry[]);
+      if (data.dmvv_internshipVacancies)
+        setInternshipVacancies(
+          data.dmvv_internshipVacancies as InternshipVacancy[],
+        );
+      if (data.dmvv_internshipApplications)
+        setInternshipApplications(
+          data.dmvv_internshipApplications as InternshipApplication[],
+        );
+      if (data.dmvv_internshipSettings)
+        setInternshipSettings(
+          data.dmvv_internshipSettings as InternshipSettings,
+        );
     });
   }, []);
 
@@ -3261,6 +3630,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToBackend("dmvv_officialLetters", officialLetters);
   }, [officialLetters]);
+  useEffect(() => {
+    saveToBackend("dmvv_b2bSettings", b2bSettings);
+  }, [b2bSettings]);
+  useEffect(() => {
+    saveToBackend("dmvv_b2bPlans", b2bPlans);
+  }, [b2bPlans]);
+  useEffect(() => {
+    saveToBackend("dmvv_b2bBenefits", b2bBenefits);
+  }, [b2bBenefits]);
+  useEffect(() => {
+    saveToBackend("dmvv_b2bSteps", b2bSteps);
+  }, [b2bSteps]);
+  useEffect(() => {
+    saveToBackend("dmvv_b2bEnquiries", b2bEnquiries);
+  }, [b2bEnquiries]);
+  useEffect(() => {
+    saveToBackend("dmvv_internshipVacancies", internshipVacancies);
+  }, [internshipVacancies]);
+  useEffect(() => {
+    saveToBackend("dmvv_internshipApplications", internshipApplications);
+  }, [internshipApplications]);
+  useEffect(() => {
+    saveToBackend("dmvv_internshipSettings", internshipSettings);
+  }, [internshipSettings]);
   // ─────────────────────────────────────────────────────────────────────────────
 
   const addUser = (user: User) => setUsers((prev) => [...prev, user]);
@@ -3702,6 +4095,65 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
   const deleteOfficialLetter = (id: string) =>
     setOfficialLetters((prev) => prev.filter((l) => l.id !== id));
+  // B2B CRUD
+  const updateB2bSettings = (updates: Partial<B2BPlanSettings>) =>
+    setB2bSettings((prev) => ({ ...prev, ...updates }));
+  const addB2bPlan = (p: B2BPlanCard) => setB2bPlans((prev) => [...prev, p]);
+  const updateB2bPlan = (id: string, updates: Partial<B2BPlanCard>) =>
+    setB2bPlans((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    );
+  const deleteB2bPlan = (id: string) =>
+    setB2bPlans((prev) => prev.filter((p) => p.id !== id));
+  const addB2bBenefit = (b: B2BBenefit) =>
+    setB2bBenefits((prev) => [...prev, b]);
+  const updateB2bBenefit = (id: string, updates: Partial<B2BBenefit>) =>
+    setB2bBenefits((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, ...updates } : b)),
+    );
+  const deleteB2bBenefit = (id: string) =>
+    setB2bBenefits((prev) => prev.filter((b) => b.id !== id));
+  const addB2bStep = (s: B2BStep) => setB2bSteps((prev) => [...prev, s]);
+  const updateB2bStep = (id: string, updates: Partial<B2BStep>) =>
+    setB2bSteps((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, ...updates } : s)),
+    );
+  const deleteB2bStep = (id: string) =>
+    setB2bSteps((prev) => prev.filter((s) => s.id !== id));
+  const addB2bEnquiry = (e: B2BEnquiry) =>
+    setB2bEnquiries((prev) => [...prev, e]);
+  const updateB2bEnquiry = (id: string, updates: Partial<B2BEnquiry>) =>
+    setB2bEnquiries((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+    );
+  const deleteB2bEnquiry = (id: string) =>
+    setB2bEnquiries((prev) => prev.filter((e) => e.id !== id));
+
+  // Internship CRUD
+  const addInternshipVacancy = (v: InternshipVacancy) =>
+    setInternshipVacancies((prev) => [...prev, v]);
+  const updateInternshipVacancy = (
+    id: string,
+    updates: Partial<InternshipVacancy>,
+  ) =>
+    setInternshipVacancies((prev) =>
+      prev.map((v) => (v.id === id ? { ...v, ...updates } : v)),
+    );
+  const deleteInternshipVacancy = (id: string) =>
+    setInternshipVacancies((prev) => prev.filter((v) => v.id !== id));
+  const addInternshipApplication = (a: InternshipApplication) =>
+    setInternshipApplications((prev) => [...prev, a]);
+  const updateInternshipApplication = (
+    id: string,
+    updates: Partial<InternshipApplication>,
+  ) =>
+    setInternshipApplications((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+    );
+  const deleteInternshipApplication = (id: string) =>
+    setInternshipApplications((prev) => prev.filter((a) => a.id !== id));
+  const updateInternshipSettings = (updates: Partial<InternshipSettings>) =>
+    setInternshipSettings((prev) => ({ ...prev, ...updates }));
 
   return (
     <AppContext.Provider
@@ -3916,6 +4368,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         addOfficialLetter,
         updateOfficialLetter,
         deleteOfficialLetter,
+        // B2B Plans
+        b2bSettings,
+        updateB2bSettings,
+        b2bPlans,
+        addB2bPlan,
+        updateB2bPlan,
+        deleteB2bPlan,
+        b2bBenefits,
+        addB2bBenefit,
+        updateB2bBenefit,
+        deleteB2bBenefit,
+        b2bSteps,
+        addB2bStep,
+        updateB2bStep,
+        deleteB2bStep,
+        b2bEnquiries,
+        addB2bEnquiry,
+        updateB2bEnquiry,
+        deleteB2bEnquiry,
+        // Internship
+        internshipVacancies,
+        addInternshipVacancy,
+        updateInternshipVacancy,
+        deleteInternshipVacancy,
+        internshipApplications,
+        addInternshipApplication,
+        updateInternshipApplication,
+        deleteInternshipApplication,
+        internshipSettings,
+        updateInternshipSettings,
       }}
     >
       {children}

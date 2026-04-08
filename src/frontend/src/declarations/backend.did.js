@@ -8,263 +8,29 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const _CaffeineStorageCreateCertificateResult = IDL.Record({
-  'method' : IDL.Text,
-  'blob_hash' : IDL.Text,
-});
-export const _CaffeineStorageRefillInformation = IDL.Record({
-  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
-});
-export const _CaffeineStorageRefillResult = IDL.Record({
-  'success' : IDL.Opt(IDL.Bool),
-  'topped_up_amount' : IDL.Opt(IDL.Nat),
-});
-export const FolderId = IDL.Text;
-export const UserRole = IDL.Variant({
-  'admin' : IDL.Null,
-  'user' : IDL.Null,
-  'guest' : IDL.Null,
-});
-export const FileId = IDL.Text;
-export const ExternalBlob = IDL.Vec(IDL.Nat8);
-export const FileReference = IDL.Record({
-  'id' : FileId,
-  'isDeleted' : IDL.Bool,
-  'blob' : ExternalBlob,
-  'name' : IDL.Text,
-  'createdAt' : IDL.Int,
-  'createdBy' : IDL.Principal,
-  'size' : IDL.Nat,
-  'tags' : IDL.Vec(IDL.Text),
-  'description' : IDL.Text,
-  'timestamp' : IDL.Int,
-  'folderId' : FolderId,
-});
-export const FolderReference = IDL.Record({
-  'id' : FolderId,
-  'files' : IDL.Vec(FileId),
-  'isDeleted' : IDL.Bool,
-  'name' : IDL.Text,
-  'createdAt' : IDL.Int,
-  'createdBy' : IDL.Principal,
-  'description' : IDL.Text,
-  'parentFolderId' : IDL.Opt(FolderId),
-});
-export const SimpleFileInfo = IDL.Record({
-  'id' : FileId,
-  'blob' : ExternalBlob,
-  'name' : IDL.Text,
-  'size' : IDL.Nat,
-});
-export const ApprovalStatus = IDL.Variant({
-  'pending' : IDL.Null,
-  'approved' : IDL.Null,
-  'rejected' : IDL.Null,
-});
-export const UserApprovalInfo = IDL.Record({
-  'status' : ApprovalStatus,
-  'principal' : IDL.Principal,
-});
-
 export const idlService = IDL.Service({
-  '_caffeineStorageBlobIsLive' : IDL.Func(
-      [IDL.Vec(IDL.Nat8)],
-      [IDL.Bool],
+  'deleteContent' : IDL.Func([IDL.Text], [], []),
+  'getAllContent' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
       ['query'],
     ),
-  '_caffeineStorageBlobsToDelete' : IDL.Func(
-      [],
-      [IDL.Vec(IDL.Vec(IDL.Nat8))],
-      ['query'],
-    ),
-  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
-      [IDL.Vec(IDL.Vec(IDL.Nat8))],
-      [],
-      [],
-    ),
-  '_caffeineStorageCreateCertificate' : IDL.Func(
-      [IDL.Text],
-      [_CaffeineStorageCreateCertificateResult],
-      [],
-    ),
-  '_caffeineStorageRefillCashier' : IDL.Func(
-      [IDL.Opt(_CaffeineStorageRefillInformation)],
-      [_CaffeineStorageRefillResult],
-      [],
-    ),
-  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addFolder' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Opt(FolderId), IDL.Text],
-      [],
-      [],
-    ),
-  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'deleteFile' : IDL.Func([IDL.Text], [], []),
-  'deleteFolderInternal' : IDL.Func([IDL.Text], [], []),
-  'getAllDeletedFiles' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-  'getAllFiles' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-  'getAllFilesInFolders' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-  'getAllFolders' : IDL.Func([], [IDL.Vec(FolderReference)], ['query']),
-  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getFileById' : IDL.Func([FileId], [IDL.Opt(FileReference)], ['query']),
-  'getFilesByCaller' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-  'getFilesByFolderId' : IDL.Func(
-      [IDL.Text],
-      [IDL.Vec(FileReference)],
-      ['query'],
-    ),
-  'getFolderById' : IDL.Func([FolderId], [IDL.Opt(FolderReference)], ['query']),
-  'getSimpleFileInfoById' : IDL.Func(
-      [FileId],
-      [IDL.Opt(SimpleFileInfo)],
-      ['query'],
-    ),
-  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
-  'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
-  'moveFileToFolderByReference' : IDL.Func([FileId, FolderId], [], []),
-  'moveFileToFolderInternal' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'moveFileToRoot' : IDL.Func([FileId], [], []),
-  'moveFolderInternal' : IDL.Func([IDL.Text, FolderId], [], []),
-  'renameFolder' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'requestApproval' : IDL.Func([], [], []),
-  'restoreFile' : IDL.Func([IDL.Text], [], []),
-  'setApproval' : IDL.Func([IDL.Principal, ApprovalStatus], [], []),
-  'setMaxFileSize' : IDL.Func([IDL.Nat], [], []),
+  'getContent' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
+  'saveContent' : IDL.Func([IDL.Text, IDL.Text], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const _CaffeineStorageCreateCertificateResult = IDL.Record({
-    'method' : IDL.Text,
-    'blob_hash' : IDL.Text,
-  });
-  const _CaffeineStorageRefillInformation = IDL.Record({
-    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
-  });
-  const _CaffeineStorageRefillResult = IDL.Record({
-    'success' : IDL.Opt(IDL.Bool),
-    'topped_up_amount' : IDL.Opt(IDL.Nat),
-  });
-  const FolderId = IDL.Text;
-  const UserRole = IDL.Variant({
-    'admin' : IDL.Null,
-    'user' : IDL.Null,
-    'guest' : IDL.Null,
-  });
-  const FileId = IDL.Text;
-  const ExternalBlob = IDL.Vec(IDL.Nat8);
-  const FileReference = IDL.Record({
-    'id' : FileId,
-    'isDeleted' : IDL.Bool,
-    'blob' : ExternalBlob,
-    'name' : IDL.Text,
-    'createdAt' : IDL.Int,
-    'createdBy' : IDL.Principal,
-    'size' : IDL.Nat,
-    'tags' : IDL.Vec(IDL.Text),
-    'description' : IDL.Text,
-    'timestamp' : IDL.Int,
-    'folderId' : FolderId,
-  });
-  const FolderReference = IDL.Record({
-    'id' : FolderId,
-    'files' : IDL.Vec(FileId),
-    'isDeleted' : IDL.Bool,
-    'name' : IDL.Text,
-    'createdAt' : IDL.Int,
-    'createdBy' : IDL.Principal,
-    'description' : IDL.Text,
-    'parentFolderId' : IDL.Opt(FolderId),
-  });
-  const SimpleFileInfo = IDL.Record({
-    'id' : FileId,
-    'blob' : ExternalBlob,
-    'name' : IDL.Text,
-    'size' : IDL.Nat,
-  });
-  const ApprovalStatus = IDL.Variant({
-    'pending' : IDL.Null,
-    'approved' : IDL.Null,
-    'rejected' : IDL.Null,
-  });
-  const UserApprovalInfo = IDL.Record({
-    'status' : ApprovalStatus,
-    'principal' : IDL.Principal,
-  });
-  
   return IDL.Service({
-    '_caffeineStorageBlobIsLive' : IDL.Func(
-        [IDL.Vec(IDL.Nat8)],
-        [IDL.Bool],
+    'deleteContent' : IDL.Func([IDL.Text], [], []),
+    'getAllContent' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text))],
         ['query'],
       ),
-    '_caffeineStorageBlobsToDelete' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Vec(IDL.Nat8))],
-        ['query'],
-      ),
-    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
-        [IDL.Vec(IDL.Vec(IDL.Nat8))],
-        [],
-        [],
-      ),
-    '_caffeineStorageCreateCertificate' : IDL.Func(
-        [IDL.Text],
-        [_CaffeineStorageCreateCertificateResult],
-        [],
-      ),
-    '_caffeineStorageRefillCashier' : IDL.Func(
-        [IDL.Opt(_CaffeineStorageRefillInformation)],
-        [_CaffeineStorageRefillResult],
-        [],
-      ),
-    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
-    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addFolder' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Opt(FolderId), IDL.Text],
-        [],
-        [],
-      ),
-    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'deleteFile' : IDL.Func([IDL.Text], [], []),
-    'deleteFolderInternal' : IDL.Func([IDL.Text], [], []),
-    'getAllDeletedFiles' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-    'getAllFiles' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-    'getAllFilesInFolders' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-    'getAllFolders' : IDL.Func([], [IDL.Vec(FolderReference)], ['query']),
-    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getFileById' : IDL.Func([FileId], [IDL.Opt(FileReference)], ['query']),
-    'getFilesByCaller' : IDL.Func([], [IDL.Vec(FileReference)], ['query']),
-    'getFilesByFolderId' : IDL.Func(
-        [IDL.Text],
-        [IDL.Vec(FileReference)],
-        ['query'],
-      ),
-    'getFolderById' : IDL.Func(
-        [FolderId],
-        [IDL.Opt(FolderReference)],
-        ['query'],
-      ),
-    'getSimpleFileInfoById' : IDL.Func(
-        [FileId],
-        [IDL.Opt(SimpleFileInfo)],
-        ['query'],
-      ),
-    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
-    'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
-    'moveFileToFolderByReference' : IDL.Func([FileId, FolderId], [], []),
-    'moveFileToFolderInternal' : IDL.Func([IDL.Text, IDL.Text], [], []),
-    'moveFileToRoot' : IDL.Func([FileId], [], []),
-    'moveFolderInternal' : IDL.Func([IDL.Text, FolderId], [], []),
-    'renameFolder' : IDL.Func([IDL.Text, IDL.Text], [], []),
-    'requestApproval' : IDL.Func([], [], []),
-    'restoreFile' : IDL.Func([IDL.Text], [], []),
-    'setApproval' : IDL.Func([IDL.Principal, ApprovalStatus], [], []),
-    'setMaxFileSize' : IDL.Func([IDL.Nat], [], []),
+    'getContent' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
+    'saveContent' : IDL.Func([IDL.Text, IDL.Text], [], []),
   });
 };
 

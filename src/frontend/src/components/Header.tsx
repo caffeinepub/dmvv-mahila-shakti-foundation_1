@@ -158,6 +158,11 @@ export default function Header() {
           path: "/rewards",
           icon: <Award size={15} />,
         },
+        {
+          label: "B2B Plans",
+          path: "/b2b-plan",
+          icon: <Handshake size={15} />,
+        },
       ],
     },
     {

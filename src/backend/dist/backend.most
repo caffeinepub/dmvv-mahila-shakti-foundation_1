@@ -1,0 +1,69 @@
+// Version: 3.0.0
+type ApprovalStatus__641045796 = {#approved; #pending; #rejected};
+type Data__359466409<K, V> = {var count : Nat; kvs : [var ?(K, V)]};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__665380005 = Blob;
+type FileId__944099065 = Text;
+type FileReference__486842902 =
+  {
+    blob : ExternalBlob__665380005;
+    createdAt : Int;
+    createdBy : Principal;
+    description : Text;
+    folderId : FolderId__295876124;
+    id : FileId__944099065;
+    isDeleted : Bool;
+    name : Text;
+    size : Nat;
+    tags : [Text];
+    timestamp : Int
+  };
+type FolderId__295876124 = Text;
+type FolderReference__907717375 =
+  {
+    createdAt : Int;
+    createdBy : Principal;
+    description : Text;
+    files : [FileId__944099065];
+    id : FolderId__295876124;
+    isDeleted : Bool;
+    name : Text;
+    parentFolderId : ?FolderId__295876124
+  };
+type Internal__698724509<K, V> =
+  {children : [var ?Node__849645438<K, V>]; data : Data__359466409<K, V>};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__686525213<K, V> = {data : Data__359466409<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__849645438<K, V> =
+  {#internal : Internal__698724509<K, V>; #leaf : Leaf__686525213<K, V>};
+type RawMap__606753202<K, V> =
+  {var root : Node__849645438<K, V>; var size : Nat};
+type UserRole__717262347 = {#admin; #guest; #user};
+actor ({
+  in accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : RawMap__606753202<Principal, UserRole__717262347>
+    };
+  in approvalState :
+    {
+      var approvalStatus :
+        RawMap__606753202<Principal, ApprovalStatus__641045796>
+    };
+  in contentMap : RawMap__606753202<Text, Text>;
+  in deletedFiles : RawMap__606753202<Text, FileReference__486842902>;
+  in filesMap : RawMap__606753202<Text, FileReference__486842902>;
+  in folders : RawMap__606753202<Text, FolderReference__907717375>;
+  in maxFileSize : Nat;
+  in recentlyDeletedFiles : RawMap__606753202<Text, FileReference__486842902>
+}, {
+  stable contentMap :
+    {var root : Node__46230540<Text, Text>; var size : Nat__490723111}
+}) ;

@@ -89,796 +89,85 @@ export class ExternalBlob {
         return this;
     }
 }
-export type FolderId = string;
-export interface UserApprovalInfo {
-    status: ApprovalStatus;
-    principal: Principal;
-}
-export interface FolderReference {
-    id: FolderId;
-    files: Array<FileId>;
-    isDeleted: boolean;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    description: string;
-    parentFolderId?: FolderId;
-}
-export interface _CaffeineStorageRefillInformation {
-    proposed_top_up_amount?: bigint;
-}
-export type FileId = string;
-export interface _CaffeineStorageCreateCertificateResult {
-    method: string;
-    blob_hash: string;
-}
-export interface FileReference {
-    id: FileId;
-    isDeleted: boolean;
-    blob: ExternalBlob;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    size: bigint;
-    tags: Array<string>;
-    description: string;
-    timestamp: bigint;
-    folderId: FolderId;
-}
-export interface _CaffeineStorageRefillResult {
-    success?: boolean;
-    topped_up_amount?: bigint;
-}
-export interface SimpleFileInfo {
-    id: FileId;
-    blob: ExternalBlob;
-    name: string;
-    size: bigint;
-}
-export enum ApprovalStatus {
-    pending = "pending",
-    approved = "approved",
-    rejected = "rejected"
-}
-export enum UserRole {
-    admin = "admin",
-    user = "user",
-    guest = "guest"
-}
 export interface backendInterface {
-    _caffeineStorageBlobIsLive(hash: Uint8Array): Promise<boolean>;
-    _caffeineStorageBlobsToDelete(): Promise<Array<Uint8Array>>;
-    _caffeineStorageConfirmBlobDeletion(blobs: Array<Uint8Array>): Promise<void>;
-    _caffeineStorageCreateCertificate(blobHash: string): Promise<_CaffeineStorageCreateCertificateResult>;
-    _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
-    _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
-    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addFolder(folderId: string, name: string, parentId: FolderId | null, description: string): Promise<void>;
-    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    deleteFile(fileId: string): Promise<void>;
-    deleteFolderInternal(folderId: string): Promise<void>;
-    getAllDeletedFiles(): Promise<Array<FileReference>>;
-    getAllFiles(): Promise<Array<FileReference>>;
-    getAllFilesInFolders(): Promise<Array<FileReference>>;
-    getAllFolders(): Promise<Array<FolderReference>>;
-    getCallerUserRole(): Promise<UserRole>;
-    getFileById(fileId: FileId): Promise<FileReference | null>;
-    getFilesByCaller(): Promise<Array<FileReference>>;
-    getFilesByFolderId(folderId: string): Promise<Array<FileReference>>;
-    getFolderById(folderId: FolderId): Promise<FolderReference | null>;
-    getSimpleFileInfoById(fileId: FileId): Promise<SimpleFileInfo | null>;
-    isCallerAdmin(): Promise<boolean>;
-    isCallerApproved(): Promise<boolean>;
-    listApprovals(): Promise<Array<UserApprovalInfo>>;
-    moveFileToFolderByReference(fileId: FileId, newFolderId: FolderId): Promise<void>;
-    moveFileToFolderInternal(fileId: string, newFolderId: string): Promise<void>;
-    moveFileToRoot(fileId: FileId): Promise<void>;
-    moveFolderInternal(folderId: string, targetParentId: FolderId): Promise<void>;
-    renameFolder(folderId: string, newName: string): Promise<void>;
-    requestApproval(): Promise<void>;
-    restoreFile(fileId: string): Promise<void>;
-    setApproval(user: Principal, status: ApprovalStatus): Promise<void>;
-    setMaxFileSize(newMaxFileSize: bigint): Promise<void>;
+    /**
+     * / Delete the entry for a given key (no-op if the key does not exist).
+     */
+    deleteContent(key: string): Promise<void>;
+    /**
+     * / Return all key-value pairs currently stored.
+     */
+    getAllContent(): Promise<Array<[string, string]>>;
+    /**
+     * / Retrieve the value for a given key. Returns null if not found.
+     */
+    getContent(key: string): Promise<string | null>;
+    /**
+     * / Save or overwrite a value for the given key.
+     */
+    saveContent(key: string, jsonValue: string): Promise<void>;
 }
-import type { ApprovalStatus as _ApprovalStatus, ExternalBlob as _ExternalBlob, FileId as _FileId, FileReference as _FileReference, FolderId as _FolderId, FolderReference as _FolderReference, SimpleFileInfo as _SimpleFileInfo, UserApprovalInfo as _UserApprovalInfo, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
+    async deleteContent(arg0: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor._caffeineStorageBlobIsLive(arg0);
+                const result = await this.actor.deleteContent(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor._caffeineStorageBlobIsLive(arg0);
+            const result = await this.actor.deleteContent(arg0);
             return result;
         }
     }
-    async _caffeineStorageBlobsToDelete(): Promise<Array<Uint8Array>> {
+    async getAllContent(): Promise<Array<[string, string]>> {
         if (this.processError) {
             try {
-                const result = await this.actor._caffeineStorageBlobsToDelete();
+                const result = await this.actor.getAllContent();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor._caffeineStorageBlobsToDelete();
+            const result = await this.actor.getAllContent();
             return result;
         }
     }
-    async _caffeineStorageConfirmBlobDeletion(arg0: Array<Uint8Array>): Promise<void> {
+    async getContent(arg0: string): Promise<string | null> {
         if (this.processError) {
             try {
-                const result = await this.actor._caffeineStorageConfirmBlobDeletion(arg0);
+                const result = await this.actor.getContent(arg0);
+                return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getContent(arg0);
+            return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async saveContent(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveContent(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor._caffeineStorageConfirmBlobDeletion(arg0);
-            return result;
-        }
-    }
-    async _caffeineStorageCreateCertificate(arg0: string): Promise<_CaffeineStorageCreateCertificateResult> {
-        if (this.processError) {
-            try {
-                const result = await this.actor._caffeineStorageCreateCertificate(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor._caffeineStorageCreateCertificate(arg0);
-            return result;
-        }
-    }
-    async _caffeineStorageRefillCashier(arg0: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult> {
-        if (this.processError) {
-            try {
-                const result = await this.actor._caffeineStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
-                return from_candid__CaffeineStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor._caffeineStorageRefillCashier(to_candid_opt_n1(this._uploadFile, this._downloadFile, arg0));
-            return from_candid__CaffeineStorageRefillResult_n4(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async _caffeineStorageUpdateGatewayPrincipals(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor._caffeineStorageUpdateGatewayPrincipals();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor._caffeineStorageUpdateGatewayPrincipals();
-            return result;
-        }
-    }
-    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor._initializeAccessControlWithSecret(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor._initializeAccessControlWithSecret(arg0);
-            return result;
-        }
-    }
-    async addFolder(arg0: string, arg1: string, arg2: FolderId | null, arg3: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.addFolder(arg0, arg1, to_candid_opt_n8(this._uploadFile, this._downloadFile, arg2), arg3);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.addFolder(arg0, arg1, to_candid_opt_n8(this._uploadFile, this._downloadFile, arg2), arg3);
-            return result;
-        }
-    }
-    async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n9(this._uploadFile, this._downloadFile, arg1));
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n9(this._uploadFile, this._downloadFile, arg1));
-            return result;
-        }
-    }
-    async deleteFile(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.deleteFile(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.deleteFile(arg0);
-            return result;
-        }
-    }
-    async deleteFolderInternal(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.deleteFolderInternal(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.deleteFolderInternal(arg0);
-            return result;
-        }
-    }
-    async getAllDeletedFiles(): Promise<Array<FileReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getAllDeletedFiles();
-                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getAllDeletedFiles();
-            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getAllFiles(): Promise<Array<FileReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getAllFiles();
-                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getAllFiles();
-            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getAllFilesInFolders(): Promise<Array<FileReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getAllFilesInFolders();
-                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getAllFilesInFolders();
-            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getAllFolders(): Promise<Array<FolderReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getAllFolders();
-                return from_candid_vec_n15(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getAllFolders();
-            return from_candid_vec_n15(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getCallerUserRole(): Promise<UserRole> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n19(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n19(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getFileById(arg0: FileId): Promise<FileReference | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getFileById(arg0);
-                return from_candid_opt_n21(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getFileById(arg0);
-            return from_candid_opt_n21(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getFilesByCaller(): Promise<Array<FileReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getFilesByCaller();
-                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getFilesByCaller();
-            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getFilesByFolderId(arg0: string): Promise<Array<FileReference>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getFilesByFolderId(arg0);
-                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getFilesByFolderId(arg0);
-            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getFolderById(arg0: FolderId): Promise<FolderReference | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getFolderById(arg0);
-                return from_candid_opt_n22(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getFolderById(arg0);
-            return from_candid_opt_n22(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async getSimpleFileInfoById(arg0: FileId): Promise<SimpleFileInfo | null> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getSimpleFileInfoById(arg0);
-                return from_candid_opt_n23(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getSimpleFileInfoById(arg0);
-            return from_candid_opt_n23(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async isCallerAdmin(): Promise<boolean> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.isCallerAdmin();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.isCallerAdmin();
-            return result;
-        }
-    }
-    async isCallerApproved(): Promise<boolean> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.isCallerApproved();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.isCallerApproved();
-            return result;
-        }
-    }
-    async listApprovals(): Promise<Array<UserApprovalInfo>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.listApprovals();
-                return from_candid_vec_n26(this._uploadFile, this._downloadFile, result);
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.listApprovals();
-            return from_candid_vec_n26(this._uploadFile, this._downloadFile, result);
-        }
-    }
-    async moveFileToFolderByReference(arg0: FileId, arg1: FolderId): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.moveFileToFolderByReference(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.moveFileToFolderByReference(arg0, arg1);
-            return result;
-        }
-    }
-    async moveFileToFolderInternal(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.moveFileToFolderInternal(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.moveFileToFolderInternal(arg0, arg1);
-            return result;
-        }
-    }
-    async moveFileToRoot(arg0: FileId): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.moveFileToRoot(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.moveFileToRoot(arg0);
-            return result;
-        }
-    }
-    async moveFolderInternal(arg0: string, arg1: FolderId): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.moveFolderInternal(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.moveFolderInternal(arg0, arg1);
-            return result;
-        }
-    }
-    async renameFolder(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.renameFolder(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.renameFolder(arg0, arg1);
-            return result;
-        }
-    }
-    async requestApproval(): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.requestApproval();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.requestApproval();
-            return result;
-        }
-    }
-    async restoreFile(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.restoreFile(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.restoreFile(arg0);
-            return result;
-        }
-    }
-    async setApproval(arg0: Principal, arg1: ApprovalStatus): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.setApproval(arg0, to_candid_ApprovalStatus_n31(this._uploadFile, this._downloadFile, arg1));
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.setApproval(arg0, to_candid_ApprovalStatus_n31(this._uploadFile, this._downloadFile, arg1));
-            return result;
-        }
-    }
-    async setMaxFileSize(arg0: bigint): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.setMaxFileSize(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.setMaxFileSize(arg0);
+            const result = await this.actor.saveContent(arg0, arg1);
             return result;
         }
     }
 }
-function from_candid_ApprovalStatus_n29(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ApprovalStatus): ApprovalStatus {
-    return from_candid_variant_n30(_uploadFile, _downloadFile, value);
-}
-async function from_candid_ExternalBlob_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExternalBlob): Promise<ExternalBlob> {
-    return await _downloadFile(value);
-}
-async function from_candid_FileReference_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _FileReference): Promise<FileReference> {
-    return await from_candid_record_n13(_uploadFile, _downloadFile, value);
-}
-function from_candid_FolderReference_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _FolderReference): FolderReference {
-    return from_candid_record_n17(_uploadFile, _downloadFile, value);
-}
-async function from_candid_SimpleFileInfo_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _SimpleFileInfo): Promise<SimpleFileInfo> {
-    return await from_candid_record_n25(_uploadFile, _downloadFile, value);
-}
-function from_candid_UserApprovalInfo_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserApprovalInfo): UserApprovalInfo {
-    return from_candid_record_n28(_uploadFile, _downloadFile, value);
-}
-function from_candid_UserRole_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n20(_uploadFile, _downloadFile, value);
-}
-function from_candid__CaffeineStorageRefillResult_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: __CaffeineStorageRefillResult): _CaffeineStorageRefillResult {
-    return from_candid_record_n5(_uploadFile, _downloadFile, value);
-}
-function from_candid_opt_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_FolderId]): FolderId | null {
+function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
-}
-async function from_candid_opt_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_FileReference]): Promise<FileReference | null> {
-    return value.length === 0 ? null : await from_candid_FileReference_n12(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_FolderReference]): FolderReference | null {
-    return value.length === 0 ? null : from_candid_FolderReference_n16(_uploadFile, _downloadFile, value[0]);
-}
-async function from_candid_opt_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_SimpleFileInfo]): Promise<SimpleFileInfo | null> {
-    return value.length === 0 ? null : await from_candid_SimpleFileInfo_n24(_uploadFile, _downloadFile, value[0]);
-}
-function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [boolean]): boolean | null {
-    return value.length === 0 ? null : value[0];
-}
-function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
-    return value.length === 0 ? null : value[0];
-}
-async function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: _FileId;
-    isDeleted: boolean;
-    blob: _ExternalBlob;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    size: bigint;
-    tags: Array<string>;
-    description: string;
-    timestamp: bigint;
-    folderId: _FolderId;
-}): Promise<{
-    id: FileId;
-    isDeleted: boolean;
-    blob: ExternalBlob;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    size: bigint;
-    tags: Array<string>;
-    description: string;
-    timestamp: bigint;
-    folderId: FolderId;
-}> {
-    return {
-        id: value.id,
-        isDeleted: value.isDeleted,
-        blob: await from_candid_ExternalBlob_n14(_uploadFile, _downloadFile, value.blob),
-        name: value.name,
-        createdAt: value.createdAt,
-        createdBy: value.createdBy,
-        size: value.size,
-        tags: value.tags,
-        description: value.description,
-        timestamp: value.timestamp,
-        folderId: value.folderId
-    };
-}
-function from_candid_record_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: _FolderId;
-    files: Array<_FileId>;
-    isDeleted: boolean;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    description: string;
-    parentFolderId: [] | [_FolderId];
-}): {
-    id: FolderId;
-    files: Array<FileId>;
-    isDeleted: boolean;
-    name: string;
-    createdAt: bigint;
-    createdBy: Principal;
-    description: string;
-    parentFolderId?: FolderId;
-} {
-    return {
-        id: value.id,
-        files: value.files,
-        isDeleted: value.isDeleted,
-        name: value.name,
-        createdAt: value.createdAt,
-        createdBy: value.createdBy,
-        description: value.description,
-        parentFolderId: record_opt_to_undefined(from_candid_opt_n18(_uploadFile, _downloadFile, value.parentFolderId))
-    };
-}
-async function from_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: _FileId;
-    blob: _ExternalBlob;
-    name: string;
-    size: bigint;
-}): Promise<{
-    id: FileId;
-    blob: ExternalBlob;
-    name: string;
-    size: bigint;
-}> {
-    return {
-        id: value.id,
-        blob: await from_candid_ExternalBlob_n14(_uploadFile, _downloadFile, value.blob),
-        name: value.name,
-        size: value.size
-    };
-}
-function from_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    status: _ApprovalStatus;
-    principal: Principal;
-}): {
-    status: ApprovalStatus;
-    principal: Principal;
-} {
-    return {
-        status: from_candid_ApprovalStatus_n29(_uploadFile, _downloadFile, value.status),
-        principal: value.principal
-    };
-}
-function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    success: [] | [boolean];
-    topped_up_amount: [] | [bigint];
-}): {
-    success?: boolean;
-    topped_up_amount?: bigint;
-} {
-    return {
-        success: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.success)),
-        topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
-    };
-}
-function from_candid_variant_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    admin: null;
-} | {
-    user: null;
-} | {
-    guest: null;
-}): UserRole {
-    return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
-}
-function from_candid_variant_n30(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    pending: null;
-} | {
-    approved: null;
-} | {
-    rejected: null;
-}): ApprovalStatus {
-    return "pending" in value ? ApprovalStatus.pending : "approved" in value ? ApprovalStatus.approved : "rejected" in value ? ApprovalStatus.rejected : value;
-}
-async function from_candid_vec_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_FileReference>): Promise<Array<FileReference>> {
-    return await Promise.all(value.map(async (x)=>await from_candid_FileReference_n12(_uploadFile, _downloadFile, x)));
-}
-function from_candid_vec_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_FolderReference>): Array<FolderReference> {
-    return value.map((x)=>from_candid_FolderReference_n16(_uploadFile, _downloadFile, x));
-}
-function from_candid_vec_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_UserApprovalInfo>): Array<UserApprovalInfo> {
-    return value.map((x)=>from_candid_UserApprovalInfo_n27(_uploadFile, _downloadFile, x));
-}
-function to_candid_ApprovalStatus_n31(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ApprovalStatus): _ApprovalStatus {
-    return to_candid_variant_n32(_uploadFile, _downloadFile, value);
-}
-function to_candid_UserRole_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
-    return to_candid_variant_n10(_uploadFile, _downloadFile, value);
-}
-function to_candid__CaffeineStorageRefillInformation_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation): __CaffeineStorageRefillInformation {
-    return to_candid_record_n3(_uploadFile, _downloadFile, value);
-}
-function to_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation | null): [] | [__CaffeineStorageRefillInformation] {
-    return value === null ? candid_none() : candid_some(to_candid__CaffeineStorageRefillInformation_n2(_uploadFile, _downloadFile, value));
-}
-function to_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: FolderId | null): [] | [_FolderId] {
-    return value === null ? candid_none() : candid_some(value);
-}
-function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    proposed_top_up_amount?: bigint;
-}): {
-    proposed_top_up_amount: [] | [bigint];
-} {
-    return {
-        proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
-    };
-}
-function to_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
-    admin: null;
-} | {
-    user: null;
-} | {
-    guest: null;
-} {
-    return value == UserRole.admin ? {
-        admin: null
-    } : value == UserRole.user ? {
-        user: null
-    } : value == UserRole.guest ? {
-        guest: null
-    } : value;
-}
-function to_candid_variant_n32(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ApprovalStatus): {
-    pending: null;
-} | {
-    approved: null;
-} | {
-    rejected: null;
-} {
-    return value == ApprovalStatus.pending ? {
-        pending: null
-    } : value == ApprovalStatus.approved ? {
-        approved: null
-    } : value == ApprovalStatus.rejected ? {
-        rejected: null
-    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -1,60 +1,71 @@
 import Map "mo:core/Map";
-import Principal "mo:core/Principal";
-import AccessControl "authorization/access-control";
-import UserApproval "user-approval/approval";
-import Storage "blob-storage/Storage";
+
+// ==================== MIGRATION ====================
+// Drop all vendored-package state (authorization, object-storage, user-approval)
+// and preserve only the core content map.
+//
+// Old types are defined inline (copied from .old/src/backend/dist/backend.most)
+// to avoid importing from .old/ paths which are not resolvable at compile time.
 
 module {
-  type FolderId = Text;
-  type FileId = Text;
+
+  // --- Raw internal B-tree Map representation (matches mo:core/Map internals) ---
+  type Node<K, V> = { #internal : Internal<K, V>; #leaf : Leaf<K, V> };
+  type Internal<K, V> = { children : [var ?Node<K, V>]; data : Data<K, V> };
+  type Leaf<K, V> = { data : Data<K, V> };
+  type Data<K, V> = { var count : Nat; kvs : [var ?(K, V)] };
+  type RawMap<K, V> = { var root : Node<K, V>; var size : Nat };
+
+  // --- Old stable-field types (exact shapes from .old dist/backend.most) ---
+  type ExternalBlob    = Blob;
+  type FileId          = Text;
+  type FolderId        = Text;
+  type UserRole        = { #admin; #guest; #user };
+  type ApprovalStatus  = { #approved; #pending; #rejected };
 
   type FileReference = {
-    id : FileId;
-    name : Text;
-    blob : Storage.ExternalBlob;
-    size : Nat;
-    timestamp : Int;
-    tags : [Text];
-    folderId : FolderId;
+    blob        : ExternalBlob;
+    createdAt   : Int;
+    createdBy   : Principal;
     description : Text;
-    createdBy : Principal;
-    createdAt : Int;
-    isDeleted : Bool;
+    folderId    : FolderId;
+    id          : FileId;
+    isDeleted   : Bool;
+    name        : Text;
+    size        : Nat;
+    tags        : [Text];
+    timestamp   : Int;
   };
 
   type FolderReference = {
-    id : FolderId;
-    name : Text;
-    description : Text;
+    createdAt      : Int;
+    createdBy      : Principal;
+    description    : Text;
+    files          : [FileId];
+    id             : FolderId;
+    isDeleted      : Bool;
+    name           : Text;
     parentFolderId : ?FolderId;
-    files : [FileId];
-    createdBy : Principal;
-    createdAt : Int;
-    isDeleted : Bool;
   };
 
-  type OldActor = {};
-  type NewActor = {
-    filesMap : Map.Map<Text, FileReference>;
-    folders : Map.Map<Text, FolderReference>;
-    deletedFiles : Map.Map<Text, FileReference>;
-    recentlyDeletedFiles : Map.Map<Text, FileReference>;
-    maxFileSize : Nat;
-    accessControlState : AccessControl.AccessControlState;
-    approvalState : UserApproval.UserApprovalState;
+  public type OldActor = {
+    accessControlState   : { var adminAssigned : Bool; userRoles : RawMap<Principal, UserRole> };
+    approvalState        : { var approvalStatus : RawMap<Principal, ApprovalStatus> };
+    contentMap           : RawMap<Text, Text>;
+    deletedFiles         : RawMap<Text, FileReference>;
+    filesMap             : RawMap<Text, FileReference>;
+    folders              : RawMap<Text, FolderReference>;
+    maxFileSize          : Nat;
+    recentlyDeletedFiles : RawMap<Text, FileReference>;
+  };
+
+  public type NewActor = {
     contentMap : Map.Map<Text, Text>;
   };
 
-  public func run(_old : OldActor) : NewActor {
-    {
-      filesMap = Map.empty();
-      folders = Map.empty();
-      deletedFiles = Map.empty();
-      recentlyDeletedFiles = Map.empty();
-      maxFileSize = 1000000000;
-      accessControlState = AccessControl.initState();
-      approvalState = UserApproval.initState(AccessControl.initState());
-      contentMap = Map.empty();
-    };
+  // On upgrade: preserve contentMap data, drop all vendored state.
+  public func run(old : OldActor) : NewActor {
+    { contentMap = old.contentMap };
   };
+
 };

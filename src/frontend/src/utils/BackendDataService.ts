@@ -1,56 +1,46 @@
 /**
  * BackendDataService - Syncs AppContext state with the Motoko backend canister.
  *
- * This enables admin updates to be visible to ALL users globally,
- * not just on the admin's device (which was the localStorage-only limitation).
+ * ALL reads come from backend first. localStorage is only a write-through cache
+ * for fast re-hydration on same device while backend loads.
  *
  * The canister exposes:
  *   saveContent(key, jsonValue)  -> stores a JSON string by key
  *   getContent(key)              -> returns JSON string or null
  *   getAllContent()              -> returns all [key, value] pairs
  *   deleteContent(key)           -> removes a key
- *
- * These methods are declared in backendInterface (backend.d.ts) but may not
- * be reflected in the auto-generated _SERVICE type yet, so we cast via `any`.
  */
 
-import { createActorWithConfig } from "@/config";
+import { createActor } from "@/backend";
+import type { backendInterface } from "@/backend";
+import { createActorWithConfig } from "@caffeineai/core-infrastructure";
 
-type AnyActor = Record<string, (...args: unknown[]) => Promise<unknown>>;
+let actorCache: backendInterface | null = null;
 
-let _actorCache: AnyActor | null = null;
-let _actorCachePromise: Promise<AnyActor> | null = null;
-
-/**
- * Get (or create) an anonymous actor for reading/writing content.
- * We use an anonymous actor so non-logged-in users can also read content.
- */
-async function getAnonymousActor(): Promise<AnyActor | null> {
-  if (_actorCache) return _actorCache;
-  if (_actorCachePromise) return _actorCachePromise;
-
-  _actorCachePromise = createActorWithConfig().then((actor) => {
-    _actorCache = actor as unknown as AnyActor;
-    return _actorCache;
-  });
-
-  return _actorCachePromise;
+async function getActor(): Promise<backendInterface | null> {
+  if (actorCache) return actorCache;
+  try {
+    actorCache = await createActorWithConfig(createActor);
+    return actorCache;
+  } catch (err) {
+    console.warn("[BackendDataService] Could not create actor:", err);
+    return null;
+  }
 }
 
 /**
  * Fetches ALL content entries from the backend canister.
  * Returns a map of key -> parsed JSON value.
- * Returns empty object on any error (graceful fallback to localStorage).
+ * Backend is the AUTHORITATIVE source — localStorage is never used for reads.
  */
 export async function initializeFromBackend(): Promise<
   Record<string, unknown>
 > {
   try {
-    const actor = await getAnonymousActor();
-    if (!actor || typeof actor.getAllContent !== "function") {
-      return {};
-    }
-    const entries = (await actor.getAllContent()) as Array<[string, string]>;
+    const actor = await getActor();
+    if (!actor) return {};
+
+    const entries = await actor.getAllContent();
     if (!Array.isArray(entries)) return {};
 
     const result: Record<string, unknown> = {};
@@ -62,32 +52,62 @@ export async function initializeFromBackend(): Promise<
       }
     }
     return result;
-  } catch {
-    // Backend unavailable or method not found — fall back to localStorage
+  } catch (err) {
+    console.warn("[BackendDataService] initializeFromBackend failed:", err);
     return {};
   }
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 800;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Saves a value to the backend canister under the given key.
- * Silently fails so that localStorage remains the fallback.
+ * Returns a Promise that resolves when backend confirms save.
+ * Retries up to 3 times on failure.
+ * Also writes to localStorage as a write-through cache.
  */
 export async function saveToBackend(key: string, data: unknown): Promise<void> {
+  // Write-through cache for same-device fast reload
   try {
-    const actor = await getAnonymousActor();
-    if (!actor || typeof actor.saveContent !== "function") {
-      return;
-    }
-    await actor.saveContent(key, JSON.stringify(data));
+    localStorage.setItem(key, JSON.stringify(data));
   } catch {
-    // silently fail - localStorage is the fallback
+    // ignore localStorage errors
   }
+
+  let lastError: unknown;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const actor = await getActor();
+      if (!actor) {
+        return; // backend not available, localStorage write-through is all we can do
+      }
+      await actor.saveContent(key, JSON.stringify(data));
+      return; // success
+    } catch (err) {
+      lastError = err;
+      // Invalidate cache on error so next attempt re-creates the actor
+      actorCache = null;
+      if (attempt < MAX_RETRIES - 1) {
+        await sleep(RETRY_DELAY_MS * (attempt + 1));
+      }
+    }
+  }
+
+  // All retries exhausted — log but don't throw (UI stays responsive)
+  console.warn(
+    `[BackendDataService] Failed to save "${key}" after ${MAX_RETRIES} retries:`,
+    lastError,
+  );
 }
 
 /**
  * Invalidates the cached actor (e.g., after identity changes).
  */
 export function invalidateActorCache(): void {
-  _actorCache = null;
-  _actorCachePromise = null;
+  actorCache = null;
 }

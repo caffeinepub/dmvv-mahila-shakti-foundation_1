@@ -41,7 +41,10 @@ import WishesLetters from "@/pages/WishesLetters";
 import KYCPage from "@/pages/user/KYCPage";
 import UserDashboard from "@/pages/user/UserDashboard";
 
+import B2BPlan from "@/pages/B2BPlan";
+import InternshipPage from "@/pages/InternshipPage";
 import AdminApplyForm from "@/pages/admin/AdminApplyForm";
+import AdminB2BPlan from "@/pages/admin/AdminB2BPlan";
 import AdminCenters from "@/pages/admin/AdminCenters";
 import AdminCommunityCenter from "@/pages/admin/AdminCommunityCenter";
 import AdminCompanyProfile from "@/pages/admin/AdminCompanyProfile";
@@ -57,6 +60,7 @@ import AdminFranchisePartners from "@/pages/admin/AdminFranchisePartners";
 import AdminGallery from "@/pages/admin/AdminGallery";
 import AdminHomePage from "@/pages/admin/AdminHomePage";
 import AdminInsurance from "@/pages/admin/AdminInsurance";
+import AdminInternship from "@/pages/admin/AdminInternship";
 import AdminKYC from "@/pages/admin/AdminKYC";
 import AdminLayout from "@/pages/admin/AdminLayout";
 import AdminLeadership from "@/pages/admin/AdminLeadership";
@@ -346,6 +350,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/b2b-plan"
+        element={
+          <PublicLayout>
+            <B2BPlan />
+          </PublicLayout>
+        }
+      />
+      <Route
         path="/franchise-partner/login"
         element={
           <PublicLayout>
@@ -423,8 +435,20 @@ function AppRoutes() {
         <Route path="franchise-partners" element={<AdminFranchisePartners />} />
         <Route path="letterhead" element={<AdminLetterhead />} />
         <Route path="reviews" element={<AdminReviews />} />
+        <Route path="b2b-plan" element={<AdminB2BPlan />} />
+        <Route path="internship" element={<AdminInternship />} />
         <Route index element={<Navigate to="dashboard" replace />} />
       </Route>
+      <Route
+        path="/internship"
+        element={
+          <>
+            <Header />
+            <InternshipPage />
+            <Footer />
+          </>
+        }
+      />
 
       <Route
         path="/center/dashboard"

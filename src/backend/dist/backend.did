@@ -1,0 +1,13 @@
+service : {
+  /// Delete the entry for a given key (no-op if the key does not exist).
+  deleteContent: (key: text) -> ();
+  /// Return all key-value pairs currently stored.
+  getAllContent: () -> (vec record {
+                              text;
+                              text;
+                            }) query;
+  /// Retrieve the value for a given key. Returns null if not found.
+  getContent: (key: text) -> (opt text) query;
+  /// Save or overwrite a value for the given key.
+  saveContent: (key: text, jsonValue: text) -> ();
+}

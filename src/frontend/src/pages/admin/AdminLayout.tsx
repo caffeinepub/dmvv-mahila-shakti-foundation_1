@@ -74,6 +74,12 @@ const adminNav = [
     path: "/admin/franchise-partners",
     icon: Handshake,
   },
+  { label: "B2B Plans", path: "/admin/b2b-plan", icon: Briefcase },
+  {
+    label: "Internship Management",
+    path: "/admin/internship",
+    icon: GraduationCap,
+  },
   { label: "Center Management", path: "/admin/centers", icon: Building2 },
   { label: "News Management", path: "/admin/news", icon: Newspaper },
   { label: "Leadership Team", path: "/admin/leadership", icon: UserCheck },
